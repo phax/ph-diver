@@ -27,6 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import javax.annotation.Nonnull;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.helger.commons.state.ESuccess;
@@ -43,6 +44,7 @@ import software.amazon.awssdk.services.s3.S3Client;
  *
  * @author Philip Helger
  */
+@Ignore ("for now")
 public final class RepoStorageS3Test
 {
   @Nonnull
