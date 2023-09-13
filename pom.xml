@@ -102,6 +102,11 @@
         <artifactId>ph-diver-repo-http</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.helger.diver</groupId>
+        <artifactId>ph-diver-repo-s3</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -127,6 +132,7 @@
     <module>ph-diver-api</module>
     <module>ph-diver-repo</module>
     <module>ph-diver-repo-http</module>
+    <module>ph-diver-repo-s3</module>
   </modules>
   
   <build>
