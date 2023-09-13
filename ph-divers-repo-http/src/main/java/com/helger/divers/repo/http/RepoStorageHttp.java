@@ -48,7 +48,7 @@ import com.helger.httpclient.response.ResponseHandlerByteArray;
 
 /**
  * Base implementation of {@link IRepoStorage} for arbitrary HTTP connections.
- * Read-only.
+ * Supports HTTP GET, PUT and DELETE.
  *
  * @author Philip Helger
  */

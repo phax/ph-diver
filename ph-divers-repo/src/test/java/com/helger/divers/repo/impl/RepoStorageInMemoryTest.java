@@ -35,6 +35,11 @@ import com.helger.divers.repo.ERepoWritable;
 import com.helger.divers.repo.RepoStorageItem;
 import com.helger.divers.repo.RepoStorageKey;
 
+/**
+ * Test class for class {@link RepoStorageInMemory}.
+ *
+ * @author Philip Helger
+ */
 public final class RepoStorageInMemoryTest
 {
   @Test

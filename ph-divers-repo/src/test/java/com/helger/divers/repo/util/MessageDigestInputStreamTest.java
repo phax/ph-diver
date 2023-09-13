@@ -29,6 +29,11 @@ import javax.annotation.Nonnull;
 
 import org.junit.Test;
 
+/**
+ * Test class for class {@link MessageDigestInputStream}.
+ *
+ * @author Philip Helger
+ */
 public final class MessageDigestInputStreamTest
 {
   @Nonnull
