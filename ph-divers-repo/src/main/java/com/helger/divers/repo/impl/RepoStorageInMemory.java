@@ -39,6 +39,13 @@ import com.helger.divers.repo.ERepoWritable;
 import com.helger.divers.repo.RepoStorageKey;
 import com.helger.divers.repo.RepoStorageType;
 
+/**
+ * This class implements an in-memory repository storage. That is used for extra
+ * quick turn around times. To avoid memory overload, the maximum number of
+ * elements in memory storage can be configured in the constructor.
+ *
+ * @author Philip Helger
+ */
 @ThreadSafe
 public class RepoStorageInMemory extends AbstractRepoStorage <RepoStorageInMemory>
 {

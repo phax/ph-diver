@@ -44,6 +44,13 @@ import com.helger.divers.repo.util.MessageDigestInputStream;
 import com.helger.security.messagedigest.EMessageDigestAlgorithm;
 import com.helger.security.messagedigest.MessageDigestValue;
 
+/**
+ * Abstract implementation of a repository storage.
+ *
+ * @author Philip Helger
+ * @param <IMPLTYPE>
+ *        The real implementation type.
+ */
 public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage <IMPLTYPE>> implements
                                           IRepoStorage,
                                           IGenericImplTrait <IMPLTYPE>

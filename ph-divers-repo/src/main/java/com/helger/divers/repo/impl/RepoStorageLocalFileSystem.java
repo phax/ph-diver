@@ -38,7 +38,7 @@ import com.helger.divers.repo.RepoStorageKey;
 import com.helger.divers.repo.RepoStorageType;
 
 /**
- * Base implementation of {@link IRepoStorage} for Amazon AWS S3.
+ * Base implementation of {@link IRepoStorage} on a local file system.
  *
  * @author Philip Helger
  */
