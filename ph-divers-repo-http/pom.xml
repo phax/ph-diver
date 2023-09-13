@@ -24,11 +24,11 @@
     <artifactId>ph-divers-parent-pom</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>ph-divers-repo</artifactId>
+  <artifactId>ph-divers-repo-http</artifactId>
   <packaging>bundle</packaging>
-  <name>ph-divers-repo</name>
-  <description>phive - Philip Helger Digitally Versioned Resource Subsystem - Repository part</description>
-  <url>https://github.com/phax/ph-divers/ph-divers-repo</url>
+  <name>ph-divers-repo-http</name>
+  <description>phive - Philip Helger Digitally Versioned Resource Subsystem - Repository part with HTTP connections</description>
+  <url>https://github.com/phax/ph-divers/ph-divers-repo-http</url>
   <inceptionYear>2023</inceptionYear>
   
   <licenses>
@@ -59,12 +59,19 @@
       <artifactId>ph-commons</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.helger.commons</groupId>
-      <artifactId>ph-security</artifactId>
+      <groupId>com.helger.divers</groupId>
+      <artifactId>ph-divers-repo</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.helger.divers</groupId>
-      <artifactId>ph-divers-api</artifactId>
+      <groupId>com.helger.web</groupId>
+      <artifactId>ph-httpclient</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>${jetty.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   
@@ -78,9 +85,7 @@
           <instructions>
             <Automatic-Module-Name>com.helger.divers.repo</Automatic-Module-Name>
             <Export-Package>
-              com.helger.divers.repo.*,
-              com.helger.divers.repo.impl.*,
-              com.helger.divers.repo.util.*
+              com.helger.divers.repo.http.*
             </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>

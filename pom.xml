@@ -97,6 +97,11 @@
         <artifactId>ph-divers-repo</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.helger.divers</groupId>
+        <artifactId>ph-divers-repo-http</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -121,6 +126,7 @@
   <modules>
     <module>ph-divers-api</module>
     <module>ph-divers-repo</module>
+    <module>ph-divers-repo-http</module>
   </modules>
   
   <build>

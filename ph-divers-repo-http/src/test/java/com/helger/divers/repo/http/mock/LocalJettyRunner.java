@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.divers.repo.util;
+package com.helger.divers.repo.http.mock;
 
 import java.io.File;
 import java.io.FileOutputStream;

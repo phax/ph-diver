@@ -14,22 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.divers.repo.impl;
+package com.helger.divers.repo.http;
 
-import java.io.File;
+import org.junit.Test;
 
-import javax.annotation.Nonnull;
+import com.helger.commons.mock.SPITestHelper;
 
-import com.helger.divers.repo.ERepoDeletable;
-import com.helger.divers.repo.ERepoWritable;
-
-public final class MockRepoStorageLocalFileSystem extends RepoStorageLocalFileSystem
+/**
+ * Test SPI definitions
+ * 
+ * @author Philip Helger
+ */
+public final class SPITest
 {
-  public static final File TEST_REPO_DIR = new File ("src/test/resources/test-repo");
-
-  public MockRepoStorageLocalFileSystem (@Nonnull final ERepoWritable eWriteEnabled,
-                                         @Nonnull final ERepoDeletable eDeleteEnabled)
+  @Test
+  public void testBasic () throws Exception
   {
-    super (TEST_REPO_DIR, "unittest-fs", eWriteEnabled, eDeleteEnabled);
+    SPITestHelper.testIfAllSPIImplementationsAreValid ();
   }
 }

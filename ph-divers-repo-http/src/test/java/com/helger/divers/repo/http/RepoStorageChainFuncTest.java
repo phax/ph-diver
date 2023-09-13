@@ -1,20 +1,4 @@
-/*
- * Copyright (C) 2023 Philip Helger & ecosio
- * philip[at]helger[dot]com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.helger.divers.repo;
+package com.helger.divers.repo.http;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -28,14 +12,19 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.divers.repo.impl.MockRepoStorageLocalFileSystem;
-import com.helger.divers.repo.impl.RepoStorageHttp;
+import com.helger.divers.repo.ERepoDeletable;
+import com.helger.divers.repo.ERepoHashState;
+import com.helger.divers.repo.ERepoWritable;
+import com.helger.divers.repo.RepoStorageChain;
+import com.helger.divers.repo.RepoStorageItem;
+import com.helger.divers.repo.RepoStorageKey;
+import com.helger.divers.repo.http.mock.LocalJettyRunner;
+import com.helger.divers.repo.http.mock.MockRepoStorageLocalFileSystem;
 import com.helger.divers.repo.impl.RepoStorageInMemory;
 import com.helger.divers.repo.impl.RepoStorageLocalFileSystem;
-import com.helger.divers.repo.util.LocalJettyRunner;
 import com.helger.httpclient.HttpClientManager;
 
-public final class RepoStorageChainTest
+public final class RepoStorageChainFuncTest
 {
   private static final LocalJettyRunner JETTY_HELPER = LocalJettyRunner.createDefaultTestInstance (ERepoWritable.WITH_WRITE,
                                                                                                    ERepoDeletable.WITH_DELETE);

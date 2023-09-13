@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.divers.repo.impl;
+package com.helger.divers.repo.http;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -39,7 +39,7 @@ import com.helger.divers.repo.ERepoHashState;
 import com.helger.divers.repo.ERepoWritable;
 import com.helger.divers.repo.RepoStorageItem;
 import com.helger.divers.repo.RepoStorageKey;
-import com.helger.divers.repo.util.LocalJettyRunner;
+import com.helger.divers.repo.http.mock.LocalJettyRunner;
 import com.helger.httpclient.HttpClientManager;
 
 public final class RepoStorageHttpTest

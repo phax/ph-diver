@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.divers.repo.impl;
+package com.helger.divers.repo.http;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +42,7 @@ import com.helger.divers.repo.ERepoWritable;
 import com.helger.divers.repo.IRepoStorage;
 import com.helger.divers.repo.RepoStorageKey;
 import com.helger.divers.repo.RepoStorageType;
+import com.helger.divers.repo.impl.AbstractRepoStorage;
 import com.helger.httpclient.HttpClientManager;
 import com.helger.httpclient.response.ResponseHandlerByteArray;
 

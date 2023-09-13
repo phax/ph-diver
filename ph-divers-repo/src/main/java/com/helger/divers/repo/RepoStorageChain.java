@@ -75,13 +75,13 @@ public class RepoStorageChain implements IRepoStorageBase
 
   @Nonnull
   @Nonempty
-  protected final ICommonsList <IRepoStorage> internalGetAllStorages ()
+  public final ICommonsList <IRepoStorage> internalGetAllStorages ()
   {
     return m_aStorages.getClone ();
   }
 
   @Nonnull
-  protected final ICommonsList <IRepoStorage> internalGetAllWritableStorages ()
+  public final ICommonsList <IRepoStorage> internalGetAllWritableStorages ()
   {
     return m_aWritableStorages.getClone ();
   }

@@ -34,6 +34,7 @@ import com.helger.divers.repo.ERepoHashState;
 import com.helger.divers.repo.ERepoWritable;
 import com.helger.divers.repo.RepoStorageItem;
 import com.helger.divers.repo.RepoStorageKey;
+import com.helger.divers.repo.mock.MockRepoStorageLocalFileSystem;
 
 /**
  * Test class for class {@link RepoStorageLocalFileSystem}.
