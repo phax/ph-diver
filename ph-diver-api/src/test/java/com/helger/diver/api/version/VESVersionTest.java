@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.helger.commons.mock.CommonsTestHelper;
+import com.helger.commons.version.Version;
 
 /**
  * Test class for class {@link VESVersion}.
@@ -71,6 +72,12 @@ public final class VESVersionTest
     assertFalse (ver.isPseudoVersion ());
     assertNull (ver.getPseudoVersion ());
     assertEquals ("blafoo", ver.getAsString ());
+
+    final Version aVer = ver.getStaticVersion ();
+    assertEquals (0, aVer.getMajor ());
+    assertEquals (0, aVer.getMinor ());
+    assertEquals (0, aVer.getMicro ());
+    assertEquals ("blafoo", aVer.getQualifier ());
   }
 
   @Test

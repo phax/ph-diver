@@ -81,7 +81,16 @@ public final class VESIDTest
   public void testParseID ()
   {
     final VESID aID1 = new VESID ("com.helger", "phive", "3.0.0.SNAPSHOT");
+    assertEquals ("com.helger", aID1.getGroupID ());
+    assertEquals ("phive", aID1.getArtifactID ());
+    assertEquals ("3-SNAPSHOT", aID1.getVersionString ());
+    assertNull (aID1.getClassifier ());
+
     final VESID aID2 = aID1.getWithClassifier ("test");
+    assertEquals ("com.helger", aID2.getGroupID ());
+    assertEquals ("phive", aID2.getArtifactID ());
+    assertEquals ("3-SNAPSHOT", aID2.getVersionString ());
+    assertEquals ("test", aID2.getClassifier ());
 
     assertEquals (aID1, VESID.parseIDOrNull (aID1.getAsSingleID ()));
     assertEquals (aID1, VESID.parseIDOrNull (aID1.getAsSingleID () + VESID.ID_SEPARATOR));
