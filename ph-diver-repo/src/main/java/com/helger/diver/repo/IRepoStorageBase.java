@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 public interface IRepoStorageBase
 {
   /**
-   * Test if the provided repo storage element is present or not.
+   * Test if the provided key is present or not.
    *
    * @param aKey
    *        The key to check for existence. May not be <code>null</code>.
@@ -36,7 +36,7 @@ public interface IRepoStorageBase
   boolean exists (@Nonnull RepoStorageKey aKey);
 
   /**
-   * Read the provided key from any of the provided repository storages.
+   * Read the provided key from the underlying storage.
    *
    * @param aKey
    *        The key to read. May not be <code>null</code>.
