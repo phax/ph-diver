@@ -82,13 +82,25 @@ public final class VESVersion implements Comparable <VESVersion>
   }
 
   /**
+   * @param aVer
+   *        The version to check. May be <code>null</code>.,
+   * @return <code>true</code> if this is a static version, and if the qualifier
+   *         is "SNAPSHOT".
+   * @since 1.0.1
+   */
+  public static boolean isStaticSnapshotVersion (@Nullable final Version aVer)
+  {
+    return aVer != null && QUALIFIER_SNAPSHOT.equals (aVer.getQualifier ());
+  }
+
+  /**
    * @return <code>true</code> if this is a static version, and if the qualifier
    *         is "SNAPSHOT".
    * @see #isStaticVersion()
    */
   public boolean isStaticSnapshotVersion ()
   {
-    return m_aStaticVersion != null && QUALIFIER_SNAPSHOT.equals (m_aStaticVersion.getQualifier ());
+    return isStaticSnapshotVersion (m_aStaticVersion);
   }
 
   /**
