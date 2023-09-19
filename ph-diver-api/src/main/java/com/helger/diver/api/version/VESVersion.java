@@ -35,8 +35,18 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.version.Version;
 
 /**
- * This class contains the version of a VESID. This can either be a fixed
- * version or a pseudo version.
+ * This class contains the version of a VESID. This can either be a static
+ * version or a pseudo version. This version type has a specific kind of
+ * ordering, so that versions using the classifier "SNAPSHOT" are ordered BEFORE
+ * respective release versions. Example order:
+ * <ol>
+ * <li>1.0</li>
+ * <li>1.1-SNAPSHOT</li>
+ * <li>1.1</li>
+ * <li>1.2</li>
+ * <li>1.3-SNAPSHOT</li>
+ * <li>1.3</li>
+ * </ol>
  *
  * @author Philip Helger
  */
