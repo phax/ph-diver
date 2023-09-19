@@ -40,7 +40,7 @@ The limitations in the allowed characters for the different parts are meant to a
 
 ## VESID string representation
 
-Each VESID can be represented in a single string in the form `groupID:artifiactID:version[:classifier]`.
+Each VESID can be represented in a single string in the form `groupID:artifactID:version[:classifier]`.
 
 The string representation of version numbers is a bit tricky, because `1`, `1.0` and `1.0.0` are all semantically equivalent.
   Thats why it was decided, that trailing zeroes for minor and micro versions are NOT contained in the string representation, to be as brief as possible
