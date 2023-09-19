@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2023 Philip Helger & ecosio
+ * philip[at]helger[dot]com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.helger.diver.repo.toc;
 
 import static org.junit.Assert.assertEquals;
@@ -37,7 +53,7 @@ public final class RepoToc1MarshallerTest
 
     final RTVersionListType aVersions = aVersioning.getVersions ();
     assertNotNull (aVersions);
-    assertEquals (3, aVersions.getVersionCount ());
+    assertEquals (4, aVersions.getVersionCount ());
 
     final RTVersionType v0 = aVersions.getVersionAtIndex (0);
     assertEquals ("10.0.0", v0.getValue ());
@@ -50,5 +66,9 @@ public final class RepoToc1MarshallerTest
     final RTVersionType v2 = aVersions.getVersionAtIndex (2);
     assertEquals ("11.1.2", v2.getValue ());
     assertEquals ("2023-09-19T16:37:00", PDTWebDateHelper.getAsStringXSD (v2.getPublished ()));
+
+    final RTVersionType v3 = aVersions.getVersionAtIndex (3);
+    assertEquals ("11.1.3-SNAPSHOT", v3.getValue ());
+    assertEquals ("2023-09-19T17:45:12", PDTWebDateHelper.getAsStringXSD (v3.getPublished ()));
   }
 }
