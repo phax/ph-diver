@@ -120,6 +120,8 @@ public final class RepoStorageKey
   public static RepoStorageKey of (@Nonnull final VESID aVESID, @Nonnull @Nonempty final String sFileExt)
   {
     ValueEnforcer.notNull (aVESID, "VESID");
+    ValueEnforcer.isTrue (aVESID.getVersionObj ().isStaticVersion (),
+                          "VESID must use a static version to access a repository item");
     ValueEnforcer.notEmpty (sFileExt, "FileExt");
     ValueEnforcer.isTrue ( () -> sFileExt.startsWith ("."), "FileExt must start with a dot");
 
