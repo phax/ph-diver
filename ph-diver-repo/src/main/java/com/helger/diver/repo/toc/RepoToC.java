@@ -17,6 +17,7 @@
 package com.helger.diver.repo.toc;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 
 import javax.annotation.Nonnegative;
@@ -203,14 +204,20 @@ public class RepoToC
   }
 
   @Nonnull
+  private static OffsetDateTime _toODT (@Nonnull final XMLOffsetDateTime aXODT)
+  {
+    return aXODT.hasOffset () ? aXODT.toOffsetDateTime () : aXODT.withOffsetSameInstant (ZoneOffset.UTC)
+                                                                 .toOffsetDateTime ();
+  }
+
+  @Nonnull
   public static RepoToC createFromJaxbObject (@Nonnull final RepoTocType aRepoToc)
   {
     final RepoToC ret = new RepoToC (aRepoToc.getGroupId (), aRepoToc.getArtifactId ());
     aRepoToc.getVersioning ()
             .getVersions ()
             .getVersion ()
-            .forEach (x -> ret.addVersion (VESVersion.parseOrThrow (x.getValue ()),
-                                           x.getPublished ().toOffsetDateTime ()));
+            .forEach (x -> ret.addVersion (VESVersion.parseOrThrow (x.getValue ()), _toODT (x.getPublished ())));
     return ret;
   }
 }

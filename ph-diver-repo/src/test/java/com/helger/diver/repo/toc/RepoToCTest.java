@@ -151,18 +151,18 @@ public final class RepoToCTest
 
     OffsetDateTime aDT = aVersions.get (VESVersion.parseOrThrow ("10.0.0"));
     assertNotNull (aDT);
-    assertEquals ("2023-07-19T14:37:00+02:00", PDTWebDateHelper.getAsStringXSD (aDT));
+    assertEquals ("2023-07-19T14:37:00Z", PDTWebDateHelper.getAsStringXSD (aDT));
 
     aDT = aVersions.get (VESVersion.parseOrThrow ("10.1.4"));
     assertNotNull (aDT);
-    assertEquals ("2023-08-19T15:37:00+02:00", PDTWebDateHelper.getAsStringXSD (aDT));
+    assertEquals ("2023-08-19T15:37:00Z", PDTWebDateHelper.getAsStringXSD (aDT));
 
     aDT = aVersions.get (VESVersion.parseOrThrow ("11.1.2"));
     assertNotNull (aDT);
-    assertEquals ("2023-09-19T16:37:00+02:00", PDTWebDateHelper.getAsStringXSD (aDT));
+    assertEquals ("2023-09-19T16:37:00Z", PDTWebDateHelper.getAsStringXSD (aDT));
 
     aDT = aVersions.get (VESVersion.parseOrThrow ("11.1.3-SNAPSHOT"));
     assertNotNull (aDT);
-    assertEquals ("2023-09-19T17:45:12+02:00", PDTWebDateHelper.getAsStringXSD (aDT));
+    assertEquals ("2023-09-19T17:45:12Z", PDTWebDateHelper.getAsStringXSD (aDT));
   }
 }
