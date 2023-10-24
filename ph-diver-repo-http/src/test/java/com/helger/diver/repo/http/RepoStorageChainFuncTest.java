@@ -28,6 +28,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
@@ -40,6 +41,11 @@ import com.helger.diver.repo.impl.RepoStorageInMemory;
 import com.helger.diver.repo.impl.RepoStorageLocalFileSystem;
 import com.helger.httpclient.HttpClientManager;
 
+/**
+ * Test class for class {@link RepoStorageChain}.
+ *
+ * @author Philip Helger
+ */
 public final class RepoStorageChainFuncTest
 {
   private static final LocalJettyRunner JETTY_HELPER = LocalJettyRunner.createDefaultTestInstance (ERepoWritable.WITH_WRITE,
@@ -60,7 +66,7 @@ public final class RepoStorageChainFuncTest
   @Test
   public void testReadAndCacheAndRead ()
   {
-    final RepoStorageKey aKey = RepoStorageKey.of ("com/ecosio/http-only/http-only.txt");
+    final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio", "http-only", "1"), ".txt");
 
     final RepoStorageInMemory aInMemory = RepoStorageInMemory.createDefault ("unittest-local",
                                                                              ERepoWritable.WITH_WRITE,
@@ -114,7 +120,7 @@ public final class RepoStorageChainFuncTest
   @Test
   public void testReadNoCacheAndRead ()
   {
-    final RepoStorageKey aKey = RepoStorageKey.of ("com/ecosio/http-only/http-only.txt");
+    final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio", "http-only", "1"), ".txt");
 
     final RepoStorageInMemory aInMemory = RepoStorageInMemory.createDefault ("unittest-local",
                                                                              ERepoWritable.WITH_WRITE,
