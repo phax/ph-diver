@@ -46,7 +46,7 @@ import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
  *
  * @author Philip Helger
  */
-public class RepoToC
+public class RepoToc
 {
   private final String m_sGroupID;
   private final String m_sArtifactID;
@@ -56,13 +56,13 @@ public class RepoToC
   // Status var
   private VESVersion m_aLatestReleaseVersion;
 
-  public RepoToC (@Nonnull @Nonempty final String sGroupID, @Nonnull @Nonempty final String sArtifactID)
+  public RepoToc (@Nonnull @Nonempty final String sGroupID, @Nonnull @Nonempty final String sArtifactID)
   {
     this (sGroupID, sArtifactID, null);
   }
 
   @VisibleForTesting
-  RepoToC (@Nonnull @Nonempty final String sGroupID,
+  RepoToc (@Nonnull @Nonempty final String sGroupID,
            @Nonnull @Nonempty final String sArtifactID,
            @Nullable final Map <VESVersion, OffsetDateTime> aVersions)
   {
@@ -154,7 +154,7 @@ public class RepoToC
       return true;
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
-    final RepoToC rhs = (RepoToC) o;
+    final RepoToc rhs = (RepoToc) o;
     return m_sGroupID.equals (rhs.m_sGroupID) &&
            m_sArtifactID.equals (rhs.m_sArtifactID) &&
            m_aVersions.equals (rhs.m_aVersions);
@@ -211,9 +211,9 @@ public class RepoToC
   }
 
   @Nonnull
-  public static RepoToC createFromJaxbObject (@Nonnull final RepoTocType aRepoToc)
+  public static RepoToc createFromJaxbObject (@Nonnull final RepoTocType aRepoToc)
   {
-    final RepoToC ret = new RepoToC (aRepoToc.getGroupId (), aRepoToc.getArtifactId ());
+    final RepoToc ret = new RepoToc (aRepoToc.getGroupId (), aRepoToc.getArtifactId ());
     aRepoToc.getVersioning ()
             .getVersions ()
             .getVersion ()

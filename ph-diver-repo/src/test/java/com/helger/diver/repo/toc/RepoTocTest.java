@@ -36,16 +36,16 @@ import com.helger.diver.api.version.VESVersion;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 
 /**
- * Test class for class {@link RepoToC}.
+ * Test class for class {@link RepoToc}.
  *
  * @author Philip Helger
  */
-public final class RepoToCTest
+public final class RepoTocTest
 {
   @Test
   public void testBasic ()
   {
-    final RepoToC aToC = new RepoToC ("g", "a");
+    final RepoToc aToC = new RepoToc ("g", "a");
     assertEquals ("g", aToC.getGroupID ());
     assertEquals ("a", aToC.getArtifactID ());
 
@@ -117,15 +117,15 @@ public final class RepoToCTest
     final ICommonsMap <VESVersion, OffsetDateTime> aVersions = new CommonsHashMap <> ();
     aVersions.put (VESVersion.parseOrThrow ("1.0"), aODT);
     aVersions.put (VESVersion.parseOrThrow ("1.1"), aODT);
-    final RepoToC aToC = new RepoToC ("g", "a", aVersions);
+    final RepoToc aToC = new RepoToc ("g", "a", aVersions);
 
     final ICommonsMap <VESVersion, OffsetDateTime> aVersions2 = aVersions.getClone ();
     aVersions2.put (VESVersion.parseOrThrow ("1.2"), aODT);
 
-    CommonsTestHelper.testDefaultImplementationWithEqualContentObject (aToC, new RepoToC ("g", "a", aVersions));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (aToC, new RepoToC ("g2", "a", aVersions));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (aToC, new RepoToC ("g", "a2", aVersions));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (aToC, new RepoToC ("g", "a", aVersions2));
+    CommonsTestHelper.testDefaultImplementationWithEqualContentObject (aToC, new RepoToc ("g", "a", aVersions));
+    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (aToC, new RepoToc ("g2", "a", aVersions));
+    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (aToC, new RepoToc ("g", "a2", aVersions));
+    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (aToC, new RepoToc ("g", "a", aVersions2));
   }
 
   @Test
@@ -135,7 +135,7 @@ public final class RepoToCTest
     final RepoTocType aRepoToc1 = m.read (new ClassPathResource ("repotoc/repotoc-1.xml"));
     assertNotNull (aRepoToc1);
 
-    final RepoToC aToC = RepoToC.createFromJaxbObject (aRepoToc1);
+    final RepoToc aToC = RepoToc.createFromJaxbObject (aRepoToc1);
     assertNotNull (aToC);
 
     assertEquals ("com.ecosio", aToC.getGroupID ());
