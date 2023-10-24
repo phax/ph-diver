@@ -32,6 +32,9 @@ import com.helger.security.messagedigest.EMessageDigestAlgorithm;
  */
 public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
 {
+  /**
+   * Default Message Digest algorithm for artifact checksums: SH-256
+   */
   EMessageDigestAlgorithm DEFAULT_MD_ALGORITHM = EMessageDigestAlgorithm.SHA_256;
 
   /**

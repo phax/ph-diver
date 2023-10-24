@@ -36,7 +36,7 @@ import com.helger.commons.traits.IGenericImplTrait;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
-import com.helger.diver.repo.IRepoStorage;
+import com.helger.diver.repo.IRepoStorageWithToc;
 import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
@@ -52,10 +52,12 @@ import com.helger.security.messagedigest.MessageDigestValue;
  *        The real implementation type.
  */
 public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage <IMPLTYPE>> implements
-                                          IRepoStorage,
+                                          IRepoStorageWithToc,
                                           IGenericImplTrait <IMPLTYPE>
 {
   public static final boolean DEFAULT_VERIFY_HASH_VALUE = true;
+  public static final String FILENAME_DIVER_TOC_XML = "diver-toc.xml";
+
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractRepoStorage.class);
 
   private final RepoStorageType m_aType;
@@ -117,6 +119,25 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
    */
   @Nullable
   protected abstract InputStream getInputStream (@Nonnull final RepoStorageKey aKey);
+
+  @Nonnull
+  private static RepoStorageKey _getTocKey (@Nonnull @Nonempty final String sGroupID,
+                                            @Nonnull @Nonempty final String sArtifactID)
+  {
+    // ToC per group and artifact
+    return RepoStorageKey.of (RepoStorageKey.getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
+                              FILENAME_DIVER_TOC_XML);
+  }
+
+  @Nullable
+  public final RepoStorageItem readToc (@Nonnull @Nonempty final String sGroupID,
+                                        @Nonnull @Nonempty final String sArtifactID)
+  {
+    ValueEnforcer.notEmpty (sGroupID, "GroupID");
+    ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
+
+    return read (_getTocKey (sGroupID, sArtifactID));
+  }
 
   @Nullable
   public final RepoStorageItem read (@Nonnull final RepoStorageKey aKey)
@@ -232,9 +253,11 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     if (writeObject (aKey, aItem.data ().bytes ()).isFailure ())
       return ESuccess.FAILURE;
 
-    // Store the HASH value
+    // Store the hash value
     if (writeObject (aKey.getKeyHashSha256 (), aDigest).isFailure ())
       return ESuccess.FAILURE;
+
+    // TODO update ToC
 
     return ESuccess.SUCCESS;
   }
@@ -262,9 +285,11 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     if (deleteObject (aKey).isFailure ())
       return ESuccess.FAILURE;
 
-    // Delete the HASH value
+    // Delete the hash value
     if (deleteObject (aKey.getKeyHashSha256 ()).isFailure ())
       return ESuccess.FAILURE;
+
+    // TODO update ToC
 
     return ESuccess.SUCCESS;
   }

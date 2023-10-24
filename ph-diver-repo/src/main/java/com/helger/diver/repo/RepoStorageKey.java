@@ -102,6 +102,27 @@ public final class RepoStorageKey
   }
 
   /**
+   * Get the path representation of group ID and artifact ID only.
+   *
+   * @param sGroupID
+   *        Group ID. May neither be <code>null</code> nor empty.
+   * @param sArtifactID
+   *        Artifact ID. May neither be <code>null</code> nor empty.
+   * @return A path from group ID and artifact ID, ending with a trailing slash.
+   *         Can never be <code>null</code> or empty.
+   */
+  @Nonnull
+  @Nonempty
+  public static String getPathOfGroupIDAndArtifactID (@Nonnull @Nonempty final String sGroupID,
+                                                      @Nonnull @Nonempty final String sArtifactID)
+  {
+    ValueEnforcer.notEmpty (sGroupID, "GroupID");
+    ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
+
+    return sGroupID.replace ('.', '/') + "/" + sArtifactID + "/";
+  }
+
+  /**
    * Create a {@link RepoStorageKey} from the passed VESID and the file
    * extension. The algorithm is like this:
    * <code>sGroupID.replace ('.', '/') + "/" + sArtifactID + "/" + sVersion + "/" + sArtifactID + "-" + sVersion [+ "-" + sClassifier] + sFileExt</code>
@@ -129,10 +150,7 @@ public final class RepoStorageKey
     final String sArtifactID = aVESID.getArtifactID ();
     final String sVersion = aVESID.getVersionString ();
     final String sClassifier = aVESID.hasClassifier () ? "-" + aVESID.getClassifier () : "";
-    return new RepoStorageKey (sGroupID.replace ('.', '/') +
-                               "/" +
-                               sArtifactID +
-                               "/" +
+    return new RepoStorageKey (getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
                                sVersion +
                                "/" +
                                sArtifactID +
