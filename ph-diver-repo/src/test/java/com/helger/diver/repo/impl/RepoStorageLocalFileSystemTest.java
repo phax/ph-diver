@@ -22,13 +22,16 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.annotation.Nonnull;
 
 import org.junit.Test;
 
+import com.helger.commons.io.file.FileOperationManager;
 import com.helger.commons.state.ESuccess;
+import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
@@ -54,17 +57,17 @@ public final class RepoStorageLocalFileSystemTest
   {
     final RepoStorageLocalFileSystem aRepo = _createRepo ();
 
-    RepoStorageItem aItem = aRepo.read (RepoStorageKey.of ("com/ecosio/test/a.txt"));
+    RepoStorageItem aItem = aRepo.read (RepoStorageKey.of (new VESID ("com.ecosio.test", "a", "1"), ".txt"));
     assertNotNull (aItem);
     assertEquals ("A", aItem.getDataAsUtf8String ());
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
-    aItem = aRepo.read (RepoStorageKey.of ("com/ecosio/test/b.txt"));
+    aItem = aRepo.read (RepoStorageKey.of (new VESID ("com.ecosio.test", "b", "1"), ".txt"));
     assertNotNull (aItem);
     assertEquals ("B", aItem.getDataAsUtf8String ());
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
-    aItem = aRepo.read (RepoStorageKey.of ("com/ecosio/test/c.txt"));
+    aItem = aRepo.read (RepoStorageKey.of (new VESID ("com.ecosio.test", "c", "1"), ".txt"));
     assertNull (aItem);
   }
 
@@ -73,7 +76,7 @@ public final class RepoStorageLocalFileSystemTest
   {
     final RepoStorageLocalFileSystem aRepo = _createRepo ();
 
-    final RepoStorageKey aKey = RepoStorageKey.of ("com/ecosio/written/a1");
+    final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio.test", "fs-written", "1"), ".txt");
     // Ensure not existing
     assertNull (aRepo.read (aKey));
 
@@ -94,8 +97,13 @@ public final class RepoStorageLocalFileSystemTest
     finally
     {
       // Cleanup
-      aRepo.delete (aKey);
-      aRepo.delete (aKey.getKeyHashSha256 ());
+      final File file1 = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
+                                   "com/ecosio/test/fs-written/1/fs-written-1.txt");
+      FileOperationManager.INSTANCE.deleteFile (file1);
+
+      final File file2 = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
+                                   "com/ecosio/test/fs-written/1/fs-written-1.txt.sha256");
+      FileOperationManager.INSTANCE.deleteFile (file2);
     }
   }
 }

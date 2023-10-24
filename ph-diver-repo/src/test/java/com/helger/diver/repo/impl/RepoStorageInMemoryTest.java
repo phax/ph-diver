@@ -29,6 +29,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.junit.Test;
 
 import com.helger.commons.state.ESuccess;
+import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
@@ -51,7 +52,7 @@ public final class RepoStorageInMemoryTest
     assertTrue (aRepo.canWrite ());
     assertTrue (aRepo.canDelete ());
 
-    final RepoStorageKey aKey = RepoStorageKey.of ("com/ecosio/written/inmemory");
+    final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio", "local", "1"), ".txt");
     // Ensure not existing
     assertNull (aRepo.read (aKey));
 
@@ -94,7 +95,7 @@ public final class RepoStorageInMemoryTest
     assertFalse (aRepo.canDelete ());
     assertTrue (aRepo.isAllowOverwrite ());
 
-    final RepoStorageKey aKey = RepoStorageKey.of ("com/ecosio/written/inmemory");
+    final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio", "local", "1"), ".txt");
     final String sUploadedPayload = "bla-" + ThreadLocalRandom.current ().nextInt ();
 
     // Register only payload, but no hash
