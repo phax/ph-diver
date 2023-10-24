@@ -86,7 +86,8 @@
           <instructions>
             <Automatic-Module-Name>com.helger.diver.repo.s3</Automatic-Module-Name>
             <Export-Package>
-s3            </Export-Package>
+              com.helger.diver.repo.s3
+            </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
         </configuration>

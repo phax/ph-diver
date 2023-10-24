@@ -142,9 +142,10 @@
           <instructions>
             <Automatic-Module-Name>com.helger.diver.repo</Automatic-Module-Name>
             <Export-Package>
-              com.helger.diver.repo.*,
-              com.helger.diver.repo.impl.*,
-              com.helger.diver.repo.util.*
+              com.helger.diver.repo,
+              com.helger.diver.repo.impl,
+              com.helger.diver.repo.toc,
+              com.helger.diver.repo.util
             </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
