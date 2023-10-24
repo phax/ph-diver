@@ -126,13 +126,13 @@ public final class RepoStorageHttpTest
 
     final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio", "http-written", "1"), ".txt");
 
-    // Ensure not existing
-    assertNull (aRepo.read (aKey));
-
-    final String sUploadedPayload = "bla-" + ThreadLocalRandom.current ().nextInt ();
-
     try
     {
+      // Ensure not existing
+      assertNull (aRepo.read (aKey));
+
+      final String sUploadedPayload = "bla-" + ThreadLocalRandom.current ().nextInt ();
+
       // Write
       final ESuccess eSuccess = aRepo.write (aKey, RepoStorageItem.ofUtf8 (sUploadedPayload));
       assertTrue (eSuccess.isSuccess ());
