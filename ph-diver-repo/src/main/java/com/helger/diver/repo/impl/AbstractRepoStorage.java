@@ -56,7 +56,6 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
                                           IGenericImplTrait <IMPLTYPE>
 {
   public static final boolean DEFAULT_VERIFY_HASH_VALUE = true;
-  public static final String FILENAME_DIVER_TOC_XML = "diver-toc.xml";
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractRepoStorage.class);
 
@@ -120,15 +119,6 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   @Nullable
   protected abstract InputStream getInputStream (@Nonnull final RepoStorageKey aKey);
 
-  @Nonnull
-  private static RepoStorageKey _getTocKey (@Nonnull @Nonempty final String sGroupID,
-                                            @Nonnull @Nonempty final String sArtifactID)
-  {
-    // ToC per group and artifact
-    return RepoStorageKey.of (RepoStorageKey.getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
-                              FILENAME_DIVER_TOC_XML);
-  }
-
   @Nullable
   public final RepoStorageItem readToc (@Nonnull @Nonempty final String sGroupID,
                                         @Nonnull @Nonempty final String sArtifactID)
@@ -136,7 +126,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
 
-    return read (_getTocKey (sGroupID, sArtifactID));
+    return read (RepoStorageKey.ofToc (sGroupID, sArtifactID));
   }
 
   @Nullable

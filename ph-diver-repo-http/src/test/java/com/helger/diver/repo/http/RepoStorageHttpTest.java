@@ -151,7 +151,7 @@ public final class RepoStorageHttpTest
       FileOperationManager.INSTANCE.deleteFile (file1);
 
       final File file2 = new File (LocalJettyRunner.DEFAULT_TEST_BASE_DIR,
-                                   "com/ecosio/http-written/1/http-written-1.txt.sha256");
+                                   "com/ecosio/http-written/1/http-written-1.txt" + RepoStorageKey.SUFFIX_SHA256);
       FileOperationManager.INSTANCE.deleteFile (file2);
     }
   }

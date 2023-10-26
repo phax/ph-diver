@@ -102,7 +102,7 @@ public final class RepoStorageLocalFileSystemTest
       FileOperationManager.INSTANCE.deleteFile (file1);
 
       final File file2 = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
-                                   "com/ecosio/test/fs-written/1/fs-written-1.txt.sha256");
+                                   "com/ecosio/test/fs-written/1/fs-written-1.txt" + RepoStorageKey.SUFFIX_SHA256);
       FileOperationManager.INSTANCE.deleteFile (file2);
     }
   }

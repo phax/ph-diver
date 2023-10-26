@@ -41,6 +41,7 @@ import com.helger.diver.repo.RepoStorageKey;
 
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 
@@ -63,6 +64,7 @@ public final class RepoStorageS3Test
   private static S3Client _s3Client ()
   {
     return S3Client.builder ()
+                   .region (Region.EU_WEST_1)
                    // This URL is intended for the s3Mock Docker image
                    .endpointOverride (URLHelper.getAsURI ("http://localhost:9090/" + TEST_BUCKET_NAME))
                    .credentialsProvider (AnonymousCredentialsProvider.create ())
@@ -125,7 +127,8 @@ public final class RepoStorageS3Test
                                             .build ());
         s3.deleteObject (DeleteObjectRequest.builder ()
                                             .bucket (TEST_BUCKET_NAME)
-                                            .key ("com/ecosio/s3-written/1/s3-written-1.txt.sha256")
+                                            .key ("com/ecosio/s3-written/1/s3-written-1.txt" +
+                                                  RepoStorageKey.SUFFIX_SHA256)
                                             .build ());
       }
     }

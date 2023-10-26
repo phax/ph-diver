@@ -38,17 +38,30 @@ import com.helger.diver.api.version.VESID;
 @Immutable
 public final class RepoStorageKey
 {
+  public static final String FILENAME_DIVER_TOC_XML = "diver-toc.xml";
   public static final String SUFFIX_SHA256 = ".sha256";
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageKey.class);
 
+  private final VESID m_aVESID;
   private final String m_sPath;
 
-  protected RepoStorageKey (@Nonnull @Nonempty final String sPath)
+  private RepoStorageKey (@Nonnull final VESID aVESID, @Nonnull @Nonempty final String sPath)
   {
+    ValueEnforcer.notNull (aVESID, "VESID");
+    ValueEnforcer.isTrue (aVESID.getVersionObj ().isStaticVersion (),
+                          "VESID must use a static version to access a repository item");
     ValueEnforcer.notEmpty (sPath, "Path");
     ValueEnforcer.isFalse (sPath.startsWith ("/"), "Path should not start with a Slash");
     ValueEnforcer.isFalse (sPath.endsWith ("/"), "Path should not end with a Slash");
+
+    m_aVESID = aVESID;
     m_sPath = sPath;
+  }
+
+  @Nonnull
+  public VESID getVESID ()
+  {
+    return m_aVESID;
   }
 
   @Nonnull
@@ -69,7 +82,7 @@ public final class RepoStorageKey
                    m_sPath +
                    "'");
     }
-    return new RepoStorageKey (m_sPath + SUFFIX_SHA256);
+    return new RepoStorageKey (m_aVESID, m_sPath + SUFFIX_SHA256);
   }
 
   @Override
@@ -93,12 +106,6 @@ public final class RepoStorageKey
   public String toString ()
   {
     return new ToStringGenerator (null).append ("Path", m_sPath).getToString ();
-  }
-
-  @Nonnull
-  public static RepoStorageKey of (@Nonnull @Nonempty final String sPath)
-  {
-    return new RepoStorageKey (sPath);
   }
 
   /**
@@ -150,13 +157,23 @@ public final class RepoStorageKey
     final String sArtifactID = aVESID.getArtifactID ();
     final String sVersion = aVESID.getVersionString ();
     final String sClassifier = aVESID.hasClassifier () ? "-" + aVESID.getClassifier () : "";
-    return new RepoStorageKey (getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
-                               sVersion +
-                               "/" +
-                               sArtifactID +
-                               "-" +
-                               sVersion +
-                               sClassifier +
-                               sFileExt);
+    return new RepoStorageKey (aVESID,
+                               getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
+                                       sVersion +
+                                       "/" +
+                                       sArtifactID +
+                                       "-" +
+                                       sVersion +
+                                       sClassifier +
+                                       sFileExt);
+  }
+
+  @Nonnull
+  public static RepoStorageKey ofToc (@Nonnull @Nonempty final String sGroupID,
+                                      @Nonnull @Nonempty final String sArtifactID)
+  {
+    // ToC per group and artifact
+    return new RepoStorageKey (new VESID (sGroupID, sArtifactID, "0"),
+                               getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) + FILENAME_DIVER_TOC_XML);
   }
 }
