@@ -19,6 +19,7 @@ package com.helger.diver.repo.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,6 +41,9 @@ import com.helger.diver.repo.IRepoStorageWithToc;
 import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
+import com.helger.diver.repo.toc.RepoToc;
+import com.helger.diver.repo.toc.RepoToc1Marshaller;
+import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 import com.helger.diver.repo.util.MessageDigestInputStream;
 import com.helger.security.messagedigest.EMessageDigestAlgorithm;
 import com.helger.security.messagedigest.MessageDigestValue;
@@ -214,19 +218,40 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   }
 
   @Nonnull
+  private ESuccess _updateToc (@Nonnull final RepoStorageKey aKeyToc, final Consumer <? super RepoToc> aTocConsumer)
+  {
+    // Read existing ToC
+    final RepoStorageItem aTocItem = read (aKeyToc);
+    final RepoToc aToc;
+    if (aTocItem == null)
+    {
+      // Create a new one
+      aToc = new RepoToc (aKeyToc.getVESID ().getGroupID (), aKeyToc.getVESID ().getArtifactID ());
+    }
+    else
+    {
+      final RepoTocType aJaxbToc = new RepoToc1Marshaller ().read (aTocItem.data ());
+      if (aJaxbToc == null)
+        throw new IllegalStateException ("Invalid TOC found in '" + aKeyToc.getPath () + "'");
+      aToc = RepoToc.createFromJaxbObject (aJaxbToc);
+    }
+
+    // Make modifications
+    aTocConsumer.accept (aToc);
+
+    // Write ToC again
+    // Don't check if enabled or not
+    return _doWrite (aKeyToc, RepoStorageItem.of (new RepoToc1Marshaller ().getAsBytes (aToc.getAsJaxbObject ())));
+  }
+
+  @Nonnull
   protected abstract ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload);
 
   @Nonnull
-  public final ESuccess write (@Nonnull final RepoStorageKey aKey, @Nonnull final RepoStorageItem aItem)
+  private final ESuccess _doWrite (@Nonnull final RepoStorageKey aKey, @Nonnull final RepoStorageItem aItem)
   {
     ValueEnforcer.notNull (aKey, "Key");
     ValueEnforcer.notNull (aItem, "Item");
-
-    if (!canWrite ())
-    {
-      LOGGER.error ("Trying to write on a RepoStorage[" + m_aType.getID () + "] with write disabled");
-      throw new UnsupportedOperationException ("write is not enabled");
-    }
 
     LOGGER.info ("Writing item '" +
                  aKey.getPath () +
@@ -247,7 +272,27 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     if (writeObject (aKey.getKeyHashSha256 (), aDigest).isFailure ())
       return ESuccess.FAILURE;
 
+    return ESuccess.SUCCESS;
+  }
+
+  @Nonnull
+  public final ESuccess write (@Nonnull final RepoStorageKey aKey, @Nonnull final RepoStorageItem aItem)
+  {
+    ValueEnforcer.notNull (aKey, "Key");
+    ValueEnforcer.notNull (aItem, "Item");
+
+    if (!canWrite ())
+    {
+      LOGGER.error ("Trying to write on a RepoStorage[" + m_aType.getID () + "] with write disabled");
+      throw new UnsupportedOperationException ("write is not enabled");
+    }
+
+    if (_doWrite (aKey, aItem).isFailure ())
+      return ESuccess.FAILURE;
+
     // TODO update ToC
+    if (_updateToc (aKey.getKeyToc (), toc -> {}).isFailure ())
+      return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;
   }
@@ -261,6 +306,22 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   protected abstract ESuccess deleteObject (@Nonnull final RepoStorageKey aKey);
 
   @Nonnull
+  private ESuccess _doDelete (@Nonnull final RepoStorageKey aKey)
+  {
+    LOGGER.info ("Deleting item '" + aKey.getPath () + "' from RepoStorage[" + m_aType.getID () + "]");
+
+    // Delete the main data
+    if (deleteObject (aKey).isFailure ())
+      return ESuccess.FAILURE;
+
+    // Delete the hash value
+    if (deleteObject (aKey.getKeyHashSha256 ()).isFailure ())
+      return ESuccess.FAILURE;
+
+    return ESuccess.SUCCESS;
+  }
+
+  @Nonnull
   public final ESuccess delete (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
@@ -271,15 +332,12 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
       throw new UnsupportedOperationException ("delete is not enabled");
     }
 
-    // Delete the main data
-    if (deleteObject (aKey).isFailure ())
-      return ESuccess.FAILURE;
-
-    // Delete the hash value
-    if (deleteObject (aKey.getKeyHashSha256 ()).isFailure ())
+    if (_doDelete (aKey).isFailure ())
       return ESuccess.FAILURE;
 
     // TODO update ToC
+    if (_updateToc (aKey.getKeyToc (), toc -> {}).isFailure ())
+      return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;
   }

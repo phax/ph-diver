@@ -40,7 +40,9 @@ public final class RepoStorageKey
 {
   public static final String FILENAME_DIVER_TOC_XML = "diver-toc.xml";
   public static final String SUFFIX_SHA256 = ".sha256";
+
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageKey.class);
+  private static final String TOC_VERSION = "0";
 
   private final VESID m_aVESID;
   private final String m_sPath;
@@ -83,6 +85,13 @@ public final class RepoStorageKey
                    "'");
     }
     return new RepoStorageKey (m_aVESID, m_sPath + SUFFIX_SHA256);
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public RepoStorageKey getKeyToc ()
+  {
+    return ofToc (m_aVESID.getGroupID (), m_aVESID.getArtifactID ());
   }
 
   @Override
@@ -173,7 +182,7 @@ public final class RepoStorageKey
                                       @Nonnull @Nonempty final String sArtifactID)
   {
     // ToC per group and artifact
-    return new RepoStorageKey (new VESID (sGroupID, sArtifactID, "0"),
+    return new RepoStorageKey (new VESID (sGroupID, sArtifactID, TOC_VERSION),
                                getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) + FILENAME_DIVER_TOC_XML);
   }
 }
