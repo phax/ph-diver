@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.io.stream.StreamHelper;
@@ -238,9 +239,21 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     return m_eWriteEnabled.isWriteEnabled ();
   }
 
+  /**
+   * Update the table of contents for a specific group ID and artifact ID.
+   *
+   * @param aKeyToc
+   *        The ToC key with group ID and artifact ID. Never <code>null</code>.
+   * @param aTocConsumer
+   *        The main activities are done in the callback. Never
+   *        <code>null</code>.
+   * @return {@link ESuccess#SUCCESS} if updating was successful. Never
+   *         <code>null</code>.
+   */
   @Nonnull
-  private ESuccess _updateToc (@Nonnull final RepoStorageKey aKeyToc,
-                               @Nonnull final Consumer <? super RepoToc> aTocConsumer)
+  @OverrideOnDemand
+  protected ESuccess updateToc (@Nonnull final RepoStorageKey aKeyToc,
+                                @Nonnull final Consumer <? super RepoToc> aTocConsumer)
   {
     // Read existing ToC
     final RepoStorageItem aTocItem = read (aKeyToc);
@@ -258,8 +271,16 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
       aToc = RepoToc.createFromJaxbObject (aJaxbToc);
     }
 
-    // Make modifications
-    aTocConsumer.accept (aToc);
+    try
+    {
+      // Make modifications
+      aTocConsumer.accept (aToc);
+    }
+    catch (final RuntimeException ex)
+    {
+      LOGGER.error ("Error invoking ToC consumer", ex);
+      return ESuccess.FAILURE;
+    }
 
     // Write ToC again
     // Don't check if enabled or not
@@ -319,7 +340,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     if (isEnableTocUpdates ())
     {
       // Update ToC
-      if (_updateToc (aKey.getKeyToc (), toc -> {
+      if (updateToc (aKey.getKeyToc (), toc -> {
         // Make sure a publication DT is present and always UTC
         final OffsetDateTime aRealPubDT = aPublicationDT != null ? aPublicationDT : PDTFactory
                                                                                               .getCurrentOffsetDateTimeUTC ();
@@ -383,7 +404,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     if (isEnableTocUpdates ())
     {
       // Update ToC
-      if (_updateToc (aKey.getKeyToc (), toc -> {
+      if (updateToc (aKey.getKeyToc (), toc -> {
         // Remove deleted version
         if (toc.removeVersion (aKey.getVESID ().getVersionObj ()).isUnchanged ())
         {
