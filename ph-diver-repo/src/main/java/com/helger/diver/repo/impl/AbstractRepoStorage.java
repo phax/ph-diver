@@ -276,7 +276,8 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     // Write ToC again
     // Don't check if enabled or not
     return _doWriteRepoStorageItem (aKeyToc,
-                                    RepoStorageItem.of (new RepoToc1Marshaller ().getAsBytes (aToc.getAsJaxbObject ())));
+                                    RepoStorageItem.of (new RepoToc1Marshaller ().setFormattedOutput (true)
+                                                                                 .getAsBytes (aToc.getAsJaxbObject ())));
   }
 
   @Nonnull
