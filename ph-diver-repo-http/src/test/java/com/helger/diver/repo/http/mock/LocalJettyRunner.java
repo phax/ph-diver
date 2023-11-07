@@ -48,19 +48,20 @@ import jakarta.servlet.http.HttpServletResponse;
 public class LocalJettyRunner
 {
   public static final int DEFAULT_PORT = 8282;
-  public static final File DEFAULT_TEST_BASE_DIR = new File ("src/test/resources/test-http");
-  public static final String ACCESS_URL_DEFAULT = "http://localhost:" + DEFAULT_PORT + "/";
+  public static final String DEFAULT_ACCESS_URL = "http://localhost:" + DEFAULT_PORT + "/";
+
+  public static final File DEFAULT_TEST_RESOURCE_BASE = new File ("src/test/resources/test-http");
 
   private static final Logger LOGGER = LoggerFactory.getLogger (LocalJettyRunner.class);
 
   private final Server m_aServer;
 
   public LocalJettyRunner (@Nonnegative final int nPort,
-                           @Nonnull final File resourceBase,
+                           @Nonnull final File aResourceBase,
                            @Nonnull final ERepoWritable eWriteEnabled,
                            @Nonnull final ERepoDeletable eDeleteEnabled)
   {
-    LOGGER.info ("Starting Jetty with resource base dir '" + resourceBase.getAbsolutePath () + "'");
+    LOGGER.info ("Starting Jetty with resource base dir '" + aResourceBase.getAbsolutePath () + "'");
     m_aServer = new Server (nPort);
 
     final AbstractHandler putHandler = new AbstractHandler ()
@@ -73,7 +74,7 @@ public class LocalJettyRunner
       {
         if (request.getMethod ().equals (EHttpMethod.PUT.getName ()))
         {
-          final File targetFile = new File (resourceBase, target);
+          final File targetFile = new File (aResourceBase, target);
           LOGGER.info ("Jetty PUT '" + targetFile.getAbsolutePath () + "'");
 
           FileHelper.ensureParentDirectoryIsPresent (targetFile);
@@ -110,7 +111,7 @@ public class LocalJettyRunner
       {
         if (request.getMethod ().equals (EHttpMethod.DELETE.getName ()))
         {
-          final File targetFile = new File (resourceBase, target);
+          final File targetFile = new File (aResourceBase, target);
           LOGGER.info ("Jetty DELETE '" + targetFile.getAbsolutePath () + "'");
           FileOperationManager.INSTANCE.deleteFileIfExisting (targetFile);
 
@@ -121,7 +122,7 @@ public class LocalJettyRunner
     };
 
     final ResourceHandler resourceHandler = new ResourceHandler ();
-    resourceHandler.setBaseResource (Resource.newResource (resourceBase));
+    resourceHandler.setBaseResource (Resource.newResource (aResourceBase));
 
     final ICommonsList <Handler> aHandlers = new CommonsArrayList <> ();
     if (eWriteEnabled.isWriteEnabled ())
@@ -148,6 +149,6 @@ public class LocalJettyRunner
   public static LocalJettyRunner createDefaultTestInstance (@Nonnull final ERepoWritable eWriteEnabled,
                                                             @Nonnull final ERepoDeletable eDeleteEnabled)
   {
-    return new LocalJettyRunner (DEFAULT_PORT, DEFAULT_TEST_BASE_DIR, eWriteEnabled, eDeleteEnabled);
+    return new LocalJettyRunner (DEFAULT_PORT, DEFAULT_TEST_RESOURCE_BASE, eWriteEnabled, eDeleteEnabled);
   }
 }

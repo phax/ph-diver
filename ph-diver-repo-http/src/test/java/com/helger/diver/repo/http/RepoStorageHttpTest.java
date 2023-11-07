@@ -69,7 +69,7 @@ public final class RepoStorageHttpTest
   private static RepoStorageHttp _createRepoReadOnly ()
   {
     return new RepoStorageHttp (new HttpClientManager (),
-                                LocalJettyRunner.ACCESS_URL_DEFAULT,
+                                LocalJettyRunner.DEFAULT_ACCESS_URL,
                                 "unittest",
                                 ERepoWritable.WITHOUT_WRITE,
                                 ERepoDeletable.WITHOUT_DELETE);
@@ -96,7 +96,7 @@ public final class RepoStorageHttpTest
   private static RepoStorageHttp _createRepoWritable ()
   {
     return new RepoStorageHttp (new HttpClientManager (),
-                                LocalJettyRunner.ACCESS_URL_DEFAULT,
+                                LocalJettyRunner.DEFAULT_ACCESS_URL,
                                 "unittest",
                                 ERepoWritable.WITH_WRITE,
                                 ERepoDeletable.WITH_DELETE);
@@ -121,24 +121,24 @@ public final class RepoStorageHttpTest
   @Test
   public void testWritableWriteAndRead ()
   {
-    final RepoStorageHttp aRepo = _createRepoWritable ();
-    assertTrue (aRepo.canWrite ());
+    final RepoStorageHttp aRepoHttp = _createRepoWritable ();
+    assertTrue (aRepoHttp.canWrite ());
 
     final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio", "http-written", "1"), ".txt");
 
     try
     {
       // Ensure not existing
-      assertNull (aRepo.read (aKey));
+      assertNull (aRepoHttp.read (aKey));
 
       final String sUploadedPayload = "bla-" + ThreadLocalRandom.current ().nextInt ();
 
       // Write
-      final ESuccess eSuccess = aRepo.write (aKey, RepoStorageItem.ofUtf8 (sUploadedPayload));
+      final ESuccess eSuccess = aRepoHttp.write (aKey, RepoStorageItem.ofUtf8 (sUploadedPayload));
       assertTrue (eSuccess.isSuccess ());
 
       // Read again
-      final RepoStorageItem aItem = aRepo.read (aKey);
+      final RepoStorageItem aItem = aRepoHttp.read (aKey);
       assertNotNull (aItem);
       assertEquals (sUploadedPayload, aItem.getDataAsUtf8String ());
       assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
@@ -146,13 +146,21 @@ public final class RepoStorageHttpTest
     finally
     {
       // Cleanup
-      final File file1 = new File (LocalJettyRunner.DEFAULT_TEST_BASE_DIR,
-                                   "com/ecosio/http-written/1/http-written-1.txt");
-      FileOperationManager.INSTANCE.deleteFile (file1);
+      File f = new File (LocalJettyRunner.DEFAULT_TEST_RESOURCE_BASE, "com/ecosio/http-written/1/http-written-1.txt");
+      FileOperationManager.INSTANCE.deleteFile (f);
 
-      final File file2 = new File (LocalJettyRunner.DEFAULT_TEST_BASE_DIR,
-                                   "com/ecosio/http-written/1/http-written-1.txt" + RepoStorageKey.SUFFIX_SHA256);
-      FileOperationManager.INSTANCE.deleteFile (file2);
+      f = new File (LocalJettyRunner.DEFAULT_TEST_RESOURCE_BASE,
+                    "com/ecosio/http-written/1/http-written-1.txt" + RepoStorageKey.SUFFIX_SHA256);
+      FileOperationManager.INSTANCE.deleteFile (f);
+
+      // Delete ToC as well
+      f = new File (LocalJettyRunner.DEFAULT_TEST_RESOURCE_BASE,
+                    "com/ecosio/http-written/" + RepoStorageKey.FILENAME_TOC_DIVER_XML);
+      FileOperationManager.INSTANCE.deleteFile (f);
+
+      f = new File (LocalJettyRunner.DEFAULT_TEST_RESOURCE_BASE,
+                    "com/ecosio/http-written/" + RepoStorageKey.FILENAME_TOC_DIVER_XML + RepoStorageKey.SUFFIX_SHA256);
+      FileOperationManager.INSTANCE.deleteFile (f);
     }
   }
 }

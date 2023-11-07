@@ -23,11 +23,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.io.file.FileOperationManager;
 import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
@@ -68,52 +71,68 @@ public final class RepoStorageChainFuncTest
   {
     final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio", "http-only", "1"), ".txt");
 
-    final RepoStorageInMemory aInMemory = RepoStorageInMemory.createDefault ("unittest-local",
-                                                                             ERepoWritable.WITH_WRITE,
-                                                                             ERepoDeletable.WITHOUT_DELETE);
-    final RepoStorageLocalFileSystem aLocalFS = new MockRepoStorageLocalFileSystem (ERepoWritable.WITH_WRITE,
-                                                                                    ERepoDeletable.WITH_DELETE);
-    final RepoStorageHttp aHttp = new RepoStorageHttp (new HttpClientManager (),
-                                                       LocalJettyRunner.ACCESS_URL_DEFAULT,
-                                                       "unittest-http",
-                                                       ERepoWritable.WITHOUT_WRITE,
-                                                       ERepoDeletable.WITHOUT_DELETE);
+    final RepoStorageInMemory aRepoInMemory = RepoStorageInMemory.createDefault ("unittest-local",
+                                                                                 ERepoWritable.WITH_WRITE,
+                                                                                 ERepoDeletable.WITHOUT_DELETE);
+    final RepoStorageLocalFileSystem aRepoLocalFS = new MockRepoStorageLocalFileSystem (ERepoWritable.WITH_WRITE,
+                                                                                        ERepoDeletable.WITH_DELETE);
+    final RepoStorageHttp aRepoHttp = new RepoStorageHttp (new HttpClientManager (),
+                                                           LocalJettyRunner.DEFAULT_ACCESS_URL,
+                                                           "unittest-http",
+                                                           ERepoWritable.WITHOUT_WRITE,
+                                                           ERepoDeletable.WITHOUT_DELETE);
 
-    final RepoStorageChain aChain = RepoStorageChain.of (new CommonsArrayList <> (aInMemory, aLocalFS, aHttp),
-                                                         new CommonsArrayList <> (aInMemory, aLocalFS));
-    assertTrue (aChain.isCacheRemoteContent ());
-    assertEquals (3, aChain.internalGetAllStorages ().size ());
-    assertEquals (2, aChain.internalGetAllWritableStorages ().size ());
+    final RepoStorageChain aRepoChain = RepoStorageChain.of (new CommonsArrayList <> (aRepoInMemory,
+                                                                                      aRepoLocalFS,
+                                                                                      aRepoHttp),
+                                                             new CommonsArrayList <> (aRepoInMemory, aRepoLocalFS));
+    assertTrue (aRepoChain.isCacheRemoteContent ());
+    assertEquals (3, aRepoChain.internalGetAllStorages ().size ());
+    assertEquals (2, aRepoChain.internalGetAllWritableStorages ().size ());
 
     // Ensure it does not exist locally
-    assertNull (aInMemory.read (aKey));
-    assertNull (aLocalFS.read (aKey));
+    assertNull (aRepoInMemory.read (aKey));
+    assertNull (aRepoLocalFS.read (aKey));
 
     try
     {
       // Read from chain, ending up with the item from HTTP
-      RepoStorageItem aItem = aChain.read (aKey);
+      // This should implicitly copy the item to in-memory and local FS repo
+      RepoStorageItem aItem = aRepoChain.read (aKey);
       assertNotNull (aItem);
       assertEquals ("This file is on HTTP native", aItem.getDataAsUtf8String ());
       assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
       // Now it should be present in memory as well
-      aItem = aInMemory.read (aKey);
+      aItem = aRepoInMemory.read (aKey);
       assertNotNull (aItem);
       assertEquals ("This file is on HTTP native", aItem.getDataAsUtf8String ());
       assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
 
       // Now it should be present locally as well
-      aItem = aLocalFS.read (aKey);
+      aItem = aRepoLocalFS.read (aKey);
       assertNotNull (aItem);
       assertEquals ("This file is on HTTP native", aItem.getDataAsUtf8String ());
       assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
     }
     finally
     {
-      // Delete local files again
-      aLocalFS.delete (aKey);
-      aLocalFS.delete (aKey.getKeyHashSha256 ());
+      // Cleanup
+      File f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR, "com/ecosio/http-only/1/http-only-1.txt");
+      FileOperationManager.INSTANCE.deleteFile (f);
+
+      f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
+                    "com/ecosio/http-only/1/http-only-1.txt" + RepoStorageKey.SUFFIX_SHA256);
+      FileOperationManager.INSTANCE.deleteFile (f);
+
+      // Delete ToC as well
+      f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
+                    "com/ecosio/http-only/" + RepoStorageKey.FILENAME_TOC_DIVER_XML);
+      FileOperationManager.INSTANCE.deleteFile (f);
+
+      f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
+                    "com/ecosio/http-only/" + RepoStorageKey.FILENAME_TOC_DIVER_XML + RepoStorageKey.SUFFIX_SHA256);
+      FileOperationManager.INSTANCE.deleteFile (f);
     }
   }
 
@@ -128,7 +147,7 @@ public final class RepoStorageChainFuncTest
     final RepoStorageLocalFileSystem aLocalFS = new MockRepoStorageLocalFileSystem (ERepoWritable.WITH_WRITE,
                                                                                     ERepoDeletable.WITH_DELETE);
     final RepoStorageHttp aHttp = new RepoStorageHttp (new HttpClientManager (),
-                                                       LocalJettyRunner.ACCESS_URL_DEFAULT,
+                                                       LocalJettyRunner.DEFAULT_ACCESS_URL,
                                                        "unittest-http",
                                                        ERepoWritable.WITHOUT_WRITE,
                                                        ERepoDeletable.WITHOUT_DELETE);
