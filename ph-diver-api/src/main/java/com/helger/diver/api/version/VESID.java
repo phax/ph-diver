@@ -46,9 +46,11 @@ import com.helger.commons.string.ToStringGenerator;
 @MustImplementEqualsAndHashcode
 public final class VESID implements Comparable <VESID>
 {
+  public static final int PART_MAX_LEN = 64;
+
   /** The regular expression to which each part must conform */
   @RegEx
-  public static final String REGEX_PART = "[a-zA-Z0-9_\\-\\.]+";
+  public static final String REGEX_PART = "[a-zA-Z0-9_\\-\\.]{1," + PART_MAX_LEN + "}";
 
   /** The separator char between ID elements */
   public static final char ID_SEPARATOR = ':';

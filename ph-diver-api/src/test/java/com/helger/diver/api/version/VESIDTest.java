@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.helger.commons.mock.CommonsTestHelper;
+import com.helger.commons.string.StringHelper;
 
 /**
  * Test class for class {@link VESID}.
@@ -46,6 +47,10 @@ public final class VESIDTest
     assertFalse (VESID.isValidPart (""));
     assertFalse (VESID.isValidPart ("ä"));
     assertFalse (VESID.isValidPart ("a:b"));
+
+    // Max length
+    assertTrue (VESID.isValidPart (StringHelper.getRepeated ('a', VESID.PART_MAX_LEN)));
+    assertFalse (VESID.isValidPart (StringHelper.getRepeated ('a', VESID.PART_MAX_LEN + 1)));
   }
 
   @Test
