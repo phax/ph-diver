@@ -33,6 +33,7 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsTreeMap;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsSortedMap;
+import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.datetime.XMLOffsetDateTime;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.state.EChange;
@@ -60,6 +61,7 @@ public class RepoToc
 
   // Status var
   private VESVersion m_aLatestReleaseVersion;
+  private OffsetDateTime m_aLatestReleaseVersionPubDT;
 
   public RepoToc (@Nonnull @Nonempty final String sGroupID, @Nonnull @Nonempty final String sArtifactID)
   {
@@ -120,6 +122,12 @@ public class RepoToc
   }
 
   @Nullable
+  public OffsetDateTime getLatestVersionPublicationDateTime ()
+  {
+    return m_aVersions.getLastValue ();
+  }
+
+  @Nullable
   public VESVersion getLatestReleaseVersion ()
   {
     return m_aLatestReleaseVersion;
@@ -132,6 +140,12 @@ public class RepoToc
     return aVer == null ? null : aVer.getAsString ();
   }
 
+  @Nullable
+  public OffsetDateTime getLatestReleaseVersionPublicationDateTime ()
+  {
+    return m_aLatestReleaseVersionPubDT;
+  }
+
   @Nonnull
   public EChange addVersion (@Nonnull final VESVersion aVersion, @Nonnull final OffsetDateTime aPublishDT)
   {
@@ -142,14 +156,17 @@ public class RepoToc
     if (m_aVersions.containsKey (aVersion))
       return EChange.UNCHANGED;
 
-    // Use UTC only
-    final OffsetDateTime aRealPublishDT = aPublishDT.withOffsetSameInstant (ZoneOffset.UTC);
+    // Use UTC only; truncate to millisecond precision
+    final OffsetDateTime aRealPublishDT = PDTFactory.getWithMillisOnly (aPublishDT.withOffsetSameInstant (ZoneOffset.UTC));
     m_aVersions.put (aVersion, aRealPublishDT);
 
     // Remember last non-snapshot version
     if (!aVersion.isStaticSnapshotVersion ())
       if (m_aLatestReleaseVersion == null || aVersion.compareTo (m_aLatestReleaseVersion) > 0)
+      {
         m_aLatestReleaseVersion = aVersion;
+        m_aLatestReleaseVersionPubDT = aRealPublishDT;
+      }
 
     return EChange.CHANGED;
   }
@@ -165,18 +182,20 @@ public class RepoToc
 
     // Remember last non-snapshot version
     m_aLatestReleaseVersion = null;
+    m_aLatestReleaseVersionPubDT = null;
     if (m_aVersions.isNotEmpty ())
     {
       // Copy from Set to List
-      final ICommonsList <VESVersion> aVersionList = new CommonsArrayList <> (m_aVersions.keySet ());
+      final ICommonsList <Map.Entry <VESVersion, OffsetDateTime>> aVersionList = new CommonsArrayList <> (m_aVersions.entrySet ());
       // Iterate backwards
-      final ListIterator <VESVersion> it = aVersionList.listIterator (aVersionList.size ());
-      while (it.hasPrevious ())
+      final ListIterator <Map.Entry <VESVersion, OffsetDateTime>> aIter = aVersionList.listIterator (aVersionList.size ());
+      while (aIter.hasPrevious ())
       {
-        final VESVersion aCurVersion = it.previous ();
-        if (!aCurVersion.isStaticSnapshotVersion ())
+        final Map.Entry <VESVersion, OffsetDateTime> aCur = aIter.previous ();
+        if (!aCur.getKey ().isStaticSnapshotVersion ())
         {
-          m_aLatestReleaseVersion = aCurVersion;
+          m_aLatestReleaseVersion = aCur.getKey ();
+          m_aLatestReleaseVersionPubDT = aCur.getValue ();
           break;
         }
       }

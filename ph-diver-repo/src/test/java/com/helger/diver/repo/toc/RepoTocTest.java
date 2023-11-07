@@ -21,7 +21,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Month;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.junit.Test;
 
@@ -144,6 +146,11 @@ public final class RepoTocTest
     assertEquals ("11.1.3-SNAPSHOT", aToC.getLatestVersionAsString ());
     assertEquals ("11.1.2", aToC.getLatestReleaseVersionAsString ());
 
+    assertEquals (PDTFactory.createOffsetDateTimeUTC (2023, Month.SEPTEMBER, 19, 17, 45, 12)
+                            .plus (456, ChronoUnit.MILLIS), aToC.getLatestVersionPublicationDateTime ());
+    assertEquals (PDTFactory.createOffsetDateTimeUTC (2023, Month.SEPTEMBER, 19, 16, 37, 00)
+                            .plus (123, ChronoUnit.MILLIS), aToC.getLatestReleaseVersionPublicationDateTime ());
+
     assertEquals (4, aToC.getVersionCount ());
     final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
@@ -159,11 +166,11 @@ public final class RepoTocTest
 
     aDT = aVersions.get (VESVersion.parseOrThrow ("11.1.2"));
     assertNotNull (aDT);
-    assertEquals ("2023-09-19T16:37:00Z", PDTWebDateHelper.getAsStringXSD (aDT));
+    assertEquals ("2023-09-19T16:37:00.123Z", PDTWebDateHelper.getAsStringXSD (aDT));
 
     aDT = aVersions.get (VESVersion.parseOrThrow ("11.1.3-SNAPSHOT"));
     assertNotNull (aDT);
-    assertEquals ("2023-09-19T17:45:12Z", PDTWebDateHelper.getAsStringXSD (aDT));
+    assertEquals ("2023-09-19T17:45:12.456Z", PDTWebDateHelper.getAsStringXSD (aDT));
 
     // Make sure it is convertible
     assertNotNull (new RepoToc1Marshaller ().getAsDocument (aToC.getAsJaxbObject ()));
