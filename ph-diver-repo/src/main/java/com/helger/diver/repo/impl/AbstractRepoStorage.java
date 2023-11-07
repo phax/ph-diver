@@ -51,7 +51,9 @@ import com.helger.security.messagedigest.EMessageDigestAlgorithm;
 import com.helger.security.messagedigest.MessageDigestValue;
 
 /**
- * Abstract implementation of a repository storage.
+ * Abstract implementation of a repository storage. It supports the verification
+ * of hash values upon reading and the update of the table of contents on
+ * writing.
  *
  * @author Philip Helger
  * @param <IMPLTYPE>
@@ -62,6 +64,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
                                           IGenericImplTrait <IMPLTYPE>
 {
   public static final boolean DEFAULT_VERIFY_HASH_VALUE = true;
+  public static final boolean DEFAULT_ENABLE_TOC_UPDATES = true;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractRepoStorage.class);
 
@@ -71,7 +74,10 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   private final EMessageDigestAlgorithm m_eMDAlgo = DEFAULT_MD_ALGORITHM;
   private final ERepoWritable m_eWriteEnabled;
   private final ERepoDeletable m_eDeleteEnabled;
+  // Verify hash value on read
   private boolean m_bVerifyHash = DEFAULT_VERIFY_HASH_VALUE;
+  // Enable ToC updates on write and delete
+  private boolean m_bEnableTocUpdates = DEFAULT_ENABLE_TOC_UPDATES;
 
   protected AbstractRepoStorage (@Nonnull final RepoStorageType aType,
                                  @Nonnull @Nonempty final String sID,
@@ -111,6 +117,19 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   {
     m_bVerifyHash = b;
     LOGGER.info ("RepoStorage[" + m_aType.getID () + "]: hash verification is now: " + (b ? "enabled" : "disabled"));
+    return thisAsT ();
+  }
+
+  public final boolean isEnableTocUpdates ()
+  {
+    return m_bEnableTocUpdates;
+  }
+
+  @Nonnull
+  public final IMPLTYPE setEnableTocUpdates (final boolean b)
+  {
+    m_bEnableTocUpdates = b;
+    LOGGER.info ("RepoStorage[" + m_aType.getID () + "]: ToC updates are now: " + (b ? "enabled" : "disabled"));
     return thisAsT ();
   }
 
@@ -297,25 +316,28 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     if (_doWriteRepoStorageItem (aKey, aItem).isFailure ())
       return ESuccess.FAILURE;
 
-    // Update ToC
-    if (_updateToc (aKey.getKeyToc (), toc -> {
-      // Make sure a publication DT is present and always UTC
-      final OffsetDateTime aRealPubDT = aPublicationDT != null ? aPublicationDT : PDTFactory
-                                                                                            .getCurrentOffsetDateTimeUTC ();
+    if (isEnableTocUpdates ())
+    {
+      // Update ToC
+      if (_updateToc (aKey.getKeyToc (), toc -> {
+        // Make sure a publication DT is present and always UTC
+        final OffsetDateTime aRealPubDT = aPublicationDT != null ? aPublicationDT : PDTFactory
+                                                                                              .getCurrentOffsetDateTimeUTC ();
 
-      // Add new version
-      if (toc.addVersion (aKey.getVESID ().getVersionObj (), aRealPubDT).isUnchanged ())
-      {
-        LOGGER.warn ("Failed to add version '" +
-                     aKey.getVESID ().getVersionString () +
-                     "' to ToC because it is already contained");
-      }
-      else
-      {
-        LOGGER.info ("Successfully added version '" + aKey.getVESID ().getVersionString () + "' to ToC");
-      }
-    }).isFailure ())
-      return ESuccess.FAILURE;
+        // Add new version
+        if (toc.addVersion (aKey.getVESID ().getVersionObj (), aRealPubDT).isUnchanged ())
+        {
+          LOGGER.warn ("Failed to add version '" +
+                       aKey.getVESID ().getVersionString () +
+                       "' to ToC because it is already contained");
+        }
+        else
+        {
+          LOGGER.info ("Successfully added version '" + aKey.getVESID ().getVersionString () + "' to ToC");
+        }
+      }).isFailure ())
+        return ESuccess.FAILURE;
+    }
 
     return ESuccess.SUCCESS;
   }
@@ -358,21 +380,24 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     if (_doDeleteRepoStorageItem (aKey).isFailure ())
       return ESuccess.FAILURE;
 
-    // Update ToC
-    if (_updateToc (aKey.getKeyToc (), toc -> {
-      // Remove deleted version
-      if (toc.removeVersion (aKey.getVESID ().getVersionObj ()).isUnchanged ())
-      {
-        LOGGER.warn ("Failed to delete version '" +
-                     aKey.getVESID ().getVersionString () +
-                     "' from ToC because it is not contained");
-      }
-      else
-      {
-        LOGGER.info ("Successfully deleted version '" + aKey.getVESID ().getVersionString () + "' from ToC");
-      }
-    }).isFailure ())
-      return ESuccess.FAILURE;
+    if (isEnableTocUpdates ())
+    {
+      // Update ToC
+      if (_updateToc (aKey.getKeyToc (), toc -> {
+        // Remove deleted version
+        if (toc.removeVersion (aKey.getVESID ().getVersionObj ()).isUnchanged ())
+        {
+          LOGGER.warn ("Failed to delete version '" +
+                       aKey.getVESID ().getVersionString () +
+                       "' from ToC because it is not contained");
+        }
+        else
+        {
+          LOGGER.info ("Successfully deleted version '" + aKey.getVESID ().getVersionString () + "' from ToC");
+        }
+      }).isFailure ())
+        return ESuccess.FAILURE;
+    }
 
     return ESuccess.SUCCESS;
   }
@@ -386,6 +411,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
                                        .append ("WriteEnabled", m_eWriteEnabled)
                                        .append ("DeleteEnabled", m_eDeleteEnabled)
                                        .append ("VerifyHash", m_bVerifyHash)
+                                       .append ("EnableTocUpdates", m_bEnableTocUpdates)
                                        .getToString ();
   }
 }
