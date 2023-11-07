@@ -35,6 +35,7 @@ import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
+import com.helger.diver.repo.toc.RepoToc;
 
 /**
  * Test class for class {@link RepoStorageInMemory}.
@@ -51,6 +52,7 @@ public final class RepoStorageInMemoryTest
                                                                          ERepoDeletable.WITH_DELETE);
     assertTrue (aRepo.canWrite ());
     assertTrue (aRepo.canDelete ());
+    assertTrue (aRepo.isEnableTocUpdates ());
 
     final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio", "local", "1"), ".txt");
     // Ensure not existing
@@ -64,6 +66,12 @@ public final class RepoStorageInMemoryTest
       ESuccess eSuccess = aRepo.write (aKey, RepoStorageItem.ofUtf8 (sUploadedPayload));
       assertTrue (eSuccess.isSuccess ());
 
+      {
+        final RepoToc aToc = aRepo.readTocModel (aKey.getVESID ());
+        assertNotNull (aToc);
+        assertEquals (1, aToc.getVersionCount ());
+      }
+
       // Read again
       RepoStorageItem aItem = aRepo.read (aKey);
       assertNotNull (aItem);
@@ -73,6 +81,12 @@ public final class RepoStorageInMemoryTest
       // Delete
       eSuccess = aRepo.delete (aKey);
       assertTrue (eSuccess.isSuccess ());
+
+      {
+        final RepoToc aToc = aRepo.readTocModel (aKey.getVESID ());
+        assertNotNull (aToc);
+        assertEquals (0, aToc.getVersionCount ());
+      }
 
       // Read again
       aItem = aRepo.read (aKey);

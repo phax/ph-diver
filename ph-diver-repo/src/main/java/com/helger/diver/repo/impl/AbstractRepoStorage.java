@@ -37,13 +37,14 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.traits.IGenericImplTrait;
+import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
-import com.helger.diver.repo.IRepoStorageWithToc;
 import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
+import com.helger.diver.repo.toc.IRepoStorageWithToc;
 import com.helger.diver.repo.toc.RepoToc;
 import com.helger.diver.repo.toc.RepoToc1Marshaller;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
@@ -144,16 +145,6 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
    */
   @Nullable
   protected abstract InputStream getInputStream (@Nonnull final RepoStorageKey aKey);
-
-  @Nullable
-  public final RepoStorageItem readToc (@Nonnull @Nonempty final String sGroupID,
-                                        @Nonnull @Nonempty final String sArtifactID)
-  {
-    ValueEnforcer.notEmpty (sGroupID, "GroupID");
-    ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
-
-    return read (RepoStorageKey.ofToc (sGroupID, sArtifactID));
-  }
 
   @Nullable
   public final RepoStorageItem read (@Nonnull final RepoStorageKey aKey)
@@ -341,20 +332,21 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     {
       // Update ToC
       if (updateToc (aKey.getKeyToc (), toc -> {
+        final VESID aVESID = aKey.getVESID ();
         // Make sure a publication DT is present and always UTC
         final OffsetDateTime aRealPubDT = aPublicationDT != null ? aPublicationDT : PDTFactory
                                                                                               .getCurrentOffsetDateTimeUTC ();
 
         // Add new version
-        if (toc.addVersion (aKey.getVESID ().getVersionObj (), aRealPubDT).isUnchanged ())
+        if (toc.addVersion (aVESID.getVersionObj (), aRealPubDT).isUnchanged ())
         {
           LOGGER.warn ("Failed to add version '" +
-                       aKey.getVESID ().getVersionString () +
-                       "' to ToC because it is already contained");
+                       aVESID.getAsSingleID () +
+                       "' to ToC of because it is already contained");
         }
         else
         {
-          LOGGER.info ("Successfully added version '" + aKey.getVESID ().getVersionString () + "' to ToC");
+          LOGGER.info ("Successfully added version '" + aVESID.getAsSingleID () + "' to ToC");
         }
       }).isFailure ())
         return ESuccess.FAILURE;
@@ -405,16 +397,17 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     {
       // Update ToC
       if (updateToc (aKey.getKeyToc (), toc -> {
+        final VESID aVESID = aKey.getVESID ();
         // Remove deleted version
-        if (toc.removeVersion (aKey.getVESID ().getVersionObj ()).isUnchanged ())
+        if (toc.removeVersion (aVESID.getVersionObj ()).isUnchanged ())
         {
           LOGGER.warn ("Failed to delete version '" +
-                       aKey.getVESID ().getVersionString () +
+                       aVESID.getAsSingleID () +
                        "' from ToC because it is not contained");
         }
         else
         {
-          LOGGER.info ("Successfully deleted version '" + aKey.getVESID ().getVersionString () + "' from ToC");
+          LOGGER.info ("Successfully deleted version '" + aVESID.getAsSingleID () + "' from ToC");
         }
       }).isFailure ())
         return ESuccess.FAILURE;

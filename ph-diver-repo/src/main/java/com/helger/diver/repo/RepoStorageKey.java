@@ -190,6 +190,9 @@ public final class RepoStorageKey
   public static RepoStorageKey ofToc (@Nonnull @Nonempty final String sGroupID,
                                       @Nonnull @Nonempty final String sArtifactID)
   {
+    ValueEnforcer.notEmpty (sGroupID, "GroupID");
+    ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
+
     // ToC per group and artifact
     return new RepoStorageKey (new VESID (sGroupID, sArtifactID, TOC_VERSION),
                                getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) + FILENAME_TOC_DIVER_XML);
