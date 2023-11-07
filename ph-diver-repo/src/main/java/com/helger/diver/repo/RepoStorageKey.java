@@ -38,10 +38,19 @@ import com.helger.diver.api.version.VESID;
 @Immutable
 public final class RepoStorageKey
 {
-  public static final String FILENAME_TOC_DIVER_XML = "toc-diver.xml";
+  /**
+   * The filename suffix for the hash values of uploaded content.
+   */
   public static final String SUFFIX_SHA256 = ".sha256";
 
+  /**
+   * The default filename for the table of contents.
+   */
+  public static final String FILENAME_TOC_DIVER_XML = "toc-diver.xml";
+
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageKey.class);
+
+  // Special fake version to be used by the ToC where we don't need any version
   private static final String TOC_VERSION = "0";
 
   private final VESID m_aVESID;
