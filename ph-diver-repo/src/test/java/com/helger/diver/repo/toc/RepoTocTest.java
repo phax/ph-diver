@@ -164,6 +164,9 @@ public final class RepoTocTest
     aDT = aVersions.get (VESVersion.parseOrThrow ("11.1.3-SNAPSHOT"));
     assertNotNull (aDT);
     assertEquals ("2023-09-19T17:45:12Z", PDTWebDateHelper.getAsStringXSD (aDT));
+
+    // Make sure it is convertible
+    assertNotNull (new RepoToc1Marshaller ().getAsDocument (aToC.getAsJaxbObject ()));
   }
 
   @Test
@@ -186,6 +189,9 @@ public final class RepoTocTest
     final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
     assertEquals (3, aVersions.size ());
+
+    // Make sure it is convertible
+    assertNotNull (new RepoToc1Marshaller ().getAsDocument (aToC.getAsJaxbObject ()));
   }
 
   @Test
@@ -208,6 +214,9 @@ public final class RepoTocTest
     final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
     assertEquals (3, aVersions.size ());
+
+    // Make sure it is convertible
+    assertNotNull (new RepoToc1Marshaller ().getAsDocument (aToC.getAsJaxbObject ()));
   }
 
   @Test
@@ -230,6 +239,9 @@ public final class RepoTocTest
     final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
     assertEquals (3, aVersions.size ());
+
+    // Make sure it is convertible
+    assertNotNull (new RepoToc1Marshaller ().getAsDocument (aToC.getAsJaxbObject ()));
   }
 
   @Test
@@ -255,5 +267,8 @@ public final class RepoTocTest
     final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
     assertEquals (0, aVersions.size ());
+
+    // Make sure it is convertible
+    assertNotNull (new RepoToc1Marshaller ().getAsDocument (aToC.getAsJaxbObject ()));
   }
 }

@@ -45,7 +45,14 @@ Version: 2023-09-19
   
   <xs:complexType name="RTVersionListType">
     <xs:sequence>
-      <xs:element name="version" type="RTVersionType" minOccurs="1" maxOccurs="unbounded" />
+      <xs:element name="version" type="RTVersionType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>
+            minOccurs = 0 so that deletion of the last version is supported.
+            Otherwise minOccurs = 1 is the value that naturally would make more sense. 
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
   

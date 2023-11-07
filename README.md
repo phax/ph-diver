@@ -62,6 +62,12 @@ Each repository is always readable, and optionally writable and optionally allow
 Several repositories may be chained together for reading.
   E.g., first the local file system is queried for a resource - if the artefact is not found locally, another remote repository might be used instead.
   The local caching of remote resources is also supported, to limit the necessity for external access.
+  
+## Table of Contents per Group ID and Artefact ID
+
+Since v1.0.1 a special "table of contents" is supported per Group ID and Artefact ID.
+It contains all the versions of that combination and allows for easy access of the latest version, without iterating any directory structure.
+The filename used is `toc-diver.xml` per default.  
 
 # Maven usage
 
@@ -89,6 +95,8 @@ Alternate usage as a Maven BOM:
   
 # News and Noteworthy
 
+* v1.0.1 - work in progress
+    * Added support for a "Table of contents" per Group ID and Artefact ID.
 * v1.0.0 - 2023-09-13
     * Initial version with support for in-memory, file system, HTTP and S3 repositories
 
