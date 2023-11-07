@@ -18,6 +18,7 @@ package com.helger.diver.repo.toc;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ListIterator;
 import java.util.Map;
 
 import javax.annotation.Nonnegative;
@@ -28,7 +29,9 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.VisibleForTesting;
+import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsTreeMap;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsSortedMap;
 import com.helger.commons.datetime.XMLOffsetDateTime;
 import com.helger.commons.hashcode.HashCodeGenerator;
@@ -50,9 +53,11 @@ public class RepoToc
 {
   private final String m_sGroupID;
   private final String m_sArtifactID;
-  // Latest last
+
+  // Latest version last
   // VESVersion uses a different "compare" then Version!
   private final ICommonsSortedMap <VESVersion, OffsetDateTime> m_aVersions = new CommonsTreeMap <> ();
+
   // Status var
   private VESVersion m_aLatestReleaseVersion;
 
@@ -137,12 +142,45 @@ public class RepoToc
     if (m_aVersions.containsKey (aVersion))
       return EChange.UNCHANGED;
 
-    m_aVersions.put (aVersion, aPublishDT);
+    // Use UTC only
+    final OffsetDateTime aRealPublishDT = aPublishDT.withOffsetSameInstant (ZoneOffset.UTC);
+    m_aVersions.put (aVersion, aRealPublishDT);
 
     // Remember last non-snapshot version
     if (!aVersion.isStaticSnapshotVersion ())
       if (m_aLatestReleaseVersion == null || aVersion.compareTo (m_aLatestReleaseVersion) > 0)
         m_aLatestReleaseVersion = aVersion;
+
+    return EChange.CHANGED;
+  }
+
+  @Nonnull
+  public EChange removeVersion (@Nonnull final VESVersion aVersion)
+  {
+    ValueEnforcer.notNull (aVersion, "Version");
+    ValueEnforcer.isTrue (aVersion.isStaticVersion (), "Version must be static and not pseudo");
+
+    if (m_aVersions.removeObject (aVersion).isUnchanged ())
+      return EChange.UNCHANGED;
+
+    // Remember last non-snapshot version
+    m_aLatestReleaseVersion = null;
+    if (m_aVersions.isNotEmpty ())
+    {
+      // Copy from Set to List
+      final ICommonsList <VESVersion> aVersionList = new CommonsArrayList <> (m_aVersions.keySet ());
+      // Iterate backwards
+      final ListIterator <VESVersion> it = aVersionList.listIterator (aVersionList.size ());
+      while (it.hasPrevious ())
+      {
+        final VESVersion aCurVersion = it.previous ();
+        if (!aCurVersion.isStaticSnapshotVersion ())
+        {
+          m_aLatestReleaseVersion = aCurVersion;
+          break;
+        }
+      }
+    }
 
     return EChange.CHANGED;
   }

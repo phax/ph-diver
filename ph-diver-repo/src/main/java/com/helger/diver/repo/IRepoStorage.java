@@ -16,6 +16,8 @@
  */
 package com.helger.diver.repo;
 
+import java.time.OffsetDateTime;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -81,7 +83,8 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
 
   /**
    * Write the provided item to the repository. This can only be called if
-   * {@link #canWrite()} returned <code>true</code>.
+   * {@link #canWrite()} returned <code>true</code>. This overload uses the
+   * current date time as the publication date time.
    *
    * @param aKey
    *        The key to write. May not be <code>null</code>.
@@ -90,7 +93,28 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    * @return {@link ESuccess}
    */
   @Nonnull
-  ESuccess write (@Nonnull RepoStorageKey aKey, @Nonnull RepoStorageItem aItem);
+  default ESuccess write (@Nonnull final RepoStorageKey aKey, @Nonnull final RepoStorageItem aItem)
+  {
+    return write (aKey, aItem, (OffsetDateTime) null);
+  }
+
+  /**
+   * Write the provided item to the repository. This can only be called if
+   * {@link #canWrite()} returned <code>true</code>.
+   *
+   * @param aKey
+   *        The key to write. May not be <code>null</code>.
+   * @param aItem
+   *        The main item to write. May not be <code>null</code>.
+   * @param aPublicationDT
+   *        Publication date and time. If <code>null</code> the current date
+   *        time is used.
+   * @return {@link ESuccess}
+   */
+  @Nonnull
+  ESuccess write (@Nonnull RepoStorageKey aKey,
+                  @Nonnull RepoStorageItem aItem,
+                  @Nullable OffsetDateTime aPublicationDT);
 
   /**
    * @return <code>true</code> if this storage can also delete objects.

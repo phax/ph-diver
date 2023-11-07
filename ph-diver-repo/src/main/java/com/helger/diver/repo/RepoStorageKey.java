@@ -38,7 +38,7 @@ import com.helger.diver.api.version.VESID;
 @Immutable
 public final class RepoStorageKey
 {
-  public static final String FILENAME_DIVER_TOC_XML = "diver-toc.xml";
+  public static final String FILENAME_TOC_DIVER_XML = "toc-diver.xml";
   public static final String SUFFIX_SHA256 = ".sha256";
 
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageKey.class);
@@ -102,19 +102,19 @@ public final class RepoStorageKey
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
     final RepoStorageKey rhs = (RepoStorageKey) o;
-    return m_sPath.equals (rhs.m_sPath);
+    return m_aVESID.equals (rhs.m_aVESID) && m_sPath.equals (rhs.m_sPath);
   }
 
   @Override
   public int hashCode ()
   {
-    return new HashCodeGenerator (this).append (m_sPath).getHashCode ();
+    return new HashCodeGenerator (this).append (m_aVESID).append (m_sPath).getHashCode ();
   }
 
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (null).append ("Path", m_sPath).getToString ();
+    return new ToStringGenerator (null).append ("VESID", m_aVESID).append ("Path", m_sPath).getToString ();
   }
 
   /**
@@ -183,6 +183,6 @@ public final class RepoStorageKey
   {
     // ToC per group and artifact
     return new RepoStorageKey (new VESID (sGroupID, sArtifactID, TOC_VERSION),
-                               getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) + FILENAME_DIVER_TOC_XML);
+                               getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) + FILENAME_TOC_DIVER_XML);
   }
 }

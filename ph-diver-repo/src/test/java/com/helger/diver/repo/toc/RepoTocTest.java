@@ -165,4 +165,95 @@ public final class RepoTocTest
     assertNotNull (aDT);
     assertEquals ("2023-09-19T17:45:12Z", PDTWebDateHelper.getAsStringXSD (aDT));
   }
+
+  @Test
+  public void testDeleteVersionOldestRelease ()
+  {
+    final RepoToc1Marshaller m = new RepoToc1Marshaller ();
+    final RepoTocType aRepoToc1 = m.read (new ClassPathResource ("repotoc/repotoc-1.xml"));
+    assertNotNull (aRepoToc1);
+
+    final RepoToc aToC = RepoToc.createFromJaxbObject (aRepoToc1);
+    assertNotNull (aToC);
+
+    // removed oldest release version
+    aToC.removeVersion (VESVersion.parseOrThrow ("10.0.0"));
+
+    assertEquals ("11.1.3-SNAPSHOT", aToC.getLatestVersionAsString ());
+    assertEquals ("11.1.2", aToC.getLatestReleaseVersionAsString ());
+
+    assertEquals (3, aToC.getVersionCount ());
+    final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
+    assertNotNull (aVersions);
+    assertEquals (3, aVersions.size ());
+  }
+
+  @Test
+  public void testDeleteVersionNewestRelease ()
+  {
+    final RepoToc1Marshaller m = new RepoToc1Marshaller ();
+    final RepoTocType aRepoToc1 = m.read (new ClassPathResource ("repotoc/repotoc-1.xml"));
+    assertNotNull (aRepoToc1);
+
+    final RepoToc aToC = RepoToc.createFromJaxbObject (aRepoToc1);
+    assertNotNull (aToC);
+
+    // removed newest release version
+    aToC.removeVersion (VESVersion.parseOrThrow ("11.1.2"));
+
+    assertEquals ("11.1.3-SNAPSHOT", aToC.getLatestVersionAsString ());
+    assertEquals ("10.1.4", aToC.getLatestReleaseVersionAsString ());
+
+    assertEquals (3, aToC.getVersionCount ());
+    final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
+    assertNotNull (aVersions);
+    assertEquals (3, aVersions.size ());
+  }
+
+  @Test
+  public void testDeleteVersionNewestSnapshot ()
+  {
+    final RepoToc1Marshaller m = new RepoToc1Marshaller ();
+    final RepoTocType aRepoToc1 = m.read (new ClassPathResource ("repotoc/repotoc-1.xml"));
+    assertNotNull (aRepoToc1);
+
+    final RepoToc aToC = RepoToc.createFromJaxbObject (aRepoToc1);
+    assertNotNull (aToC);
+
+    // removed newest release version
+    aToC.removeVersion (VESVersion.parseOrThrow ("11.1.3-SNAPSHOT"));
+
+    assertEquals ("11.1.2", aToC.getLatestVersionAsString ());
+    assertEquals ("11.1.2", aToC.getLatestReleaseVersionAsString ());
+
+    assertEquals (3, aToC.getVersionCount ());
+    final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
+    assertNotNull (aVersions);
+    assertEquals (3, aVersions.size ());
+  }
+
+  @Test
+  public void testDeleteVersionAll ()
+  {
+    final RepoToc1Marshaller m = new RepoToc1Marshaller ();
+    final RepoTocType aRepoToc1 = m.read (new ClassPathResource ("repotoc/repotoc-1.xml"));
+    assertNotNull (aRepoToc1);
+
+    final RepoToc aToC = RepoToc.createFromJaxbObject (aRepoToc1);
+    assertNotNull (aToC);
+
+    // removed newest release version
+    aToC.removeVersion (VESVersion.parseOrThrow ("10.0.0"));
+    aToC.removeVersion (VESVersion.parseOrThrow ("10.1.4"));
+    aToC.removeVersion (VESVersion.parseOrThrow ("11.1.2"));
+    aToC.removeVersion (VESVersion.parseOrThrow ("11.1.3-SNAPSHOT"));
+
+    assertNull (aToC.getLatestVersionAsString ());
+    assertNull (aToC.getLatestReleaseVersionAsString ());
+
+    assertEquals (0, aToC.getVersionCount ());
+    final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
+    assertNotNull (aVersions);
+    assertEquals (0, aVersions.size ());
+  }
 }

@@ -19,6 +19,7 @@ package com.helger.diver.repo.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.time.OffsetDateTime;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.collection.ArrayHelper;
+import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.ToStringGenerator;
@@ -218,7 +220,8 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   }
 
   @Nonnull
-  private ESuccess _updateToc (@Nonnull final RepoStorageKey aKeyToc, final Consumer <? super RepoToc> aTocConsumer)
+  private ESuccess _updateToc (@Nonnull final RepoStorageKey aKeyToc,
+                               @Nonnull final Consumer <? super RepoToc> aTocConsumer)
   {
     // Read existing ToC
     final RepoStorageItem aTocItem = read (aKeyToc);
@@ -241,14 +244,16 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
 
     // Write ToC again
     // Don't check if enabled or not
-    return _doWrite (aKeyToc, RepoStorageItem.of (new RepoToc1Marshaller ().getAsBytes (aToc.getAsJaxbObject ())));
+    return _doWriteRepoStorageItem (aKeyToc,
+                                    RepoStorageItem.of (new RepoToc1Marshaller ().getAsBytes (aToc.getAsJaxbObject ())));
   }
 
   @Nonnull
   protected abstract ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload);
 
   @Nonnull
-  private final ESuccess _doWrite (@Nonnull final RepoStorageKey aKey, @Nonnull final RepoStorageItem aItem)
+  private final ESuccess _doWriteRepoStorageItem (@Nonnull final RepoStorageKey aKey,
+                                                  @Nonnull final RepoStorageItem aItem)
   {
     ValueEnforcer.notNull (aKey, "Key");
     ValueEnforcer.notNull (aItem, "Item");
@@ -276,7 +281,9 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   }
 
   @Nonnull
-  public final ESuccess write (@Nonnull final RepoStorageKey aKey, @Nonnull final RepoStorageItem aItem)
+  public final ESuccess write (@Nonnull final RepoStorageKey aKey,
+                               @Nonnull final RepoStorageItem aItem,
+                               @Nullable final OffsetDateTime aPublicationDT)
   {
     ValueEnforcer.notNull (aKey, "Key");
     ValueEnforcer.notNull (aItem, "Item");
@@ -287,11 +294,27 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
       throw new UnsupportedOperationException ("write is not enabled");
     }
 
-    if (_doWrite (aKey, aItem).isFailure ())
+    if (_doWriteRepoStorageItem (aKey, aItem).isFailure ())
       return ESuccess.FAILURE;
 
-    // TODO update ToC
-    if (_updateToc (aKey.getKeyToc (), toc -> {}).isFailure ())
+    // Update ToC
+    if (_updateToc (aKey.getKeyToc (), toc -> {
+      // Make sure a publication DT is present and always UTC
+      final OffsetDateTime aRealPubDT = aPublicationDT != null ? aPublicationDT : PDTFactory
+                                                                                            .getCurrentOffsetDateTimeUTC ();
+
+      // Add new version
+      if (toc.addVersion (aKey.getVESID ().getVersionObj (), aRealPubDT).isUnchanged ())
+      {
+        LOGGER.warn ("Failed to add version '" +
+                     aKey.getVESID ().getVersionString () +
+                     "' to ToC because it is already contained");
+      }
+      else
+      {
+        LOGGER.info ("Successfully added version '" + aKey.getVESID ().getVersionString () + "' to ToC");
+      }
+    }).isFailure ())
       return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;
@@ -306,7 +329,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   protected abstract ESuccess deleteObject (@Nonnull final RepoStorageKey aKey);
 
   @Nonnull
-  private ESuccess _doDelete (@Nonnull final RepoStorageKey aKey)
+  private ESuccess _doDeleteRepoStorageItem (@Nonnull final RepoStorageKey aKey)
   {
     LOGGER.info ("Deleting item '" + aKey.getPath () + "' from RepoStorage[" + m_aType.getID () + "]");
 
@@ -332,11 +355,23 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
       throw new UnsupportedOperationException ("delete is not enabled");
     }
 
-    if (_doDelete (aKey).isFailure ())
+    if (_doDeleteRepoStorageItem (aKey).isFailure ())
       return ESuccess.FAILURE;
 
-    // TODO update ToC
-    if (_updateToc (aKey.getKeyToc (), toc -> {}).isFailure ())
+    // Update ToC
+    if (_updateToc (aKey.getKeyToc (), toc -> {
+      // Remove deleted version
+      if (toc.removeVersion (aKey.getVESID ().getVersionObj ()).isUnchanged ())
+      {
+        LOGGER.warn ("Failed to delete version '" +
+                     aKey.getVESID ().getVersionString () +
+                     "' from ToC because it is not contained");
+      }
+      else
+      {
+        LOGGER.info ("Successfully deleted version '" + aKey.getVESID ().getVersionString () + "' from ToC");
+      }
+    }).isFailure ())
       return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;
