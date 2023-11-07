@@ -25,6 +25,9 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -46,12 +49,18 @@ import com.helger.diver.repo.toc.jaxb.v10.RTVersioningType;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 
 /**
- * Local representation of a Repository Table of Contents for a single artifact
+ * Local representation of a Repository Table of Contents (ToC) for a single
+ * artifact. The key is the combination of Group ID and Artefact ID. A table of
+ * contents can only contain static versions. Pseudo versions can never be in a
+ * ToC.
  *
  * @author Philip Helger
+ * @since 1.0.1
  */
 public class RepoToc
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (RepoToc.class);
+
   private final String m_sGroupID;
   private final String m_sArtifactID;
 
@@ -59,10 +68,20 @@ public class RepoToc
   // VESVersion uses a different "compare" then Version!
   private final ICommonsSortedMap <VESVersion, OffsetDateTime> m_aVersions = new CommonsTreeMap <> ();
 
-  // Status var
+  // Status variables
   private VESVersion m_aLatestReleaseVersion;
   private OffsetDateTime m_aLatestReleaseVersionPubDT;
 
+  /**
+   * Constructor
+   *
+   * @param sGroupID
+   *        VESID Group ID of the ToC. May neither be <code>null</code> nor
+   *        empty.
+   * @param sArtifactID
+   *        VESID Artifact ID of the ToC. May neither be <code>null</code> nor
+   *        empty.
+   */
   public RepoToc (@Nonnull @Nonempty final String sGroupID, @Nonnull @Nonempty final String sArtifactID)
   {
     this (sGroupID, sArtifactID, null);
@@ -81,6 +100,10 @@ public class RepoToc
       aVersions.forEach (this::addVersion);
   }
 
+  /**
+   * @return The VESID Group ID as provided in the constructor. Neither
+   *         <code>null</code> nor empty.
+   */
   @Nonnull
   @Nonempty
   public final String getGroupID ()
@@ -88,6 +111,10 @@ public class RepoToc
     return m_sGroupID;
   }
 
+  /**
+   * @return The VESID Artefact ID as provided in the constructor. Neither
+   *         <code>null</code> nor empty.
+   */
   @Nonnull
   @Nonempty
   public final String getArtifactID ()
@@ -95,12 +122,19 @@ public class RepoToc
     return m_sArtifactID;
   }
 
+  /**
+   * @return The total number of contained versions. Always &ge; 0.
+   */
   @Nonnegative
   public int getVersionCount ()
   {
     return m_aVersions.size ();
   }
 
+  /**
+   * @return A copy of all contained versions as a map from version to its
+   *         publication date. Never <code>null</code>.
+   */
   @Nonnull
   @ReturnsMutableCopy
   public final ICommonsSortedMap <VESVersion, OffsetDateTime> getAllVersions ()
@@ -108,12 +142,26 @@ public class RepoToc
     return m_aVersions.getClone ();
   }
 
+  /**
+   * Get the latest overall version, including snapshot versions.
+   *
+   * @return The latest overall version. May be <code>null</code> if no version
+   *         is contained.
+   * @see #getLatestReleaseVersion()
+   */
   @Nullable
   public VESVersion getLatestVersion ()
   {
     return m_aVersions.getLastKey ();
   }
 
+  /**
+   * Get the latest overall version number, including snapshot versions.
+   *
+   * @return The version number of the latest overall version. May be
+   *         <code>null</code> if no version is contained.
+   * @see #getLatestReleaseVersionAsString()
+   */
   @Nullable
   public String getLatestVersionAsString ()
   {
@@ -121,18 +169,39 @@ public class RepoToc
     return aVer == null ? null : aVer.getAsString ();
   }
 
+  /**
+   * Get the latest overall publication date time, including snapshot versions.
+   *
+   * @return The publication date time of the latest overall version. May be
+   *         <code>null</code> if no version is contained.
+   * @see #getLatestReleaseVersionPublicationDateTime()
+   */
   @Nullable
   public OffsetDateTime getLatestVersionPublicationDateTime ()
   {
     return m_aVersions.getLastValue ();
   }
 
+  /**
+   * Get the latest overall version, without snapshot versions.
+   *
+   * @return The latest overall release version. May be <code>null</code> if no
+   *         version is contained.
+   * @see #getLatestVersion()
+   */
   @Nullable
   public VESVersion getLatestReleaseVersion ()
   {
     return m_aLatestReleaseVersion;
   }
 
+  /**
+   * Get the latest overall version number, without snapshot versions.
+   *
+   * @return The version number of the latest overall release version. May be
+   *         <code>null</code> if no version is contained.
+   * @see #getLatestVersionAsString()
+   */
   @Nullable
   public String getLatestReleaseVersionAsString ()
   {
@@ -140,6 +209,13 @@ public class RepoToc
     return aVer == null ? null : aVer.getAsString ();
   }
 
+  /**
+   * Get the latest overall publication date time, without snapshot versions.
+   *
+   * @return The publication date time of the latest overall release version.
+   *         May be <code>null</code> if no version is contained.
+   * @see #getLatestVersionPublicationDateTime()
+   */
   @Nullable
   public OffsetDateTime getLatestReleaseVersionPublicationDateTime ()
   {
@@ -147,14 +223,26 @@ public class RepoToc
   }
 
   @Nonnull
-  public EChange addVersion (@Nonnull final VESVersion aVersion, @Nonnull final OffsetDateTime aPublishDT)
+  private EChange _addVersion (@Nonnull final VESVersion aVersion,
+                               @Nonnull final OffsetDateTime aPublishDT,
+                               final boolean bDoLog)
   {
-    ValueEnforcer.notNull (aVersion, "Version");
-    ValueEnforcer.isTrue (aVersion.isStaticVersion (), "Version must be static and not pseudo");
-    ValueEnforcer.notNull (aPublishDT, "PublishDT");
+    if (!aVersion.isStaticVersion ())
+    {
+      if (bDoLog)
+        LOGGER.error ("Only static versions can be added to a table of contents. The version '" +
+                      aVersion.getAsString () +
+                      "' is not allowed.");
+      return EChange.UNCHANGED;
+    }
 
     if (m_aVersions.containsKey (aVersion))
+    {
+      if (bDoLog)
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("The version '" + aVersion.getAsString () + "' is already contained in the table of contents.");
       return EChange.UNCHANGED;
+    }
 
     // Use UTC only; truncate to millisecond precision
     final OffsetDateTime aRealPublishDT = PDTFactory.getWithMillisOnly (aPublishDT.withOffsetSameInstant (ZoneOffset.UTC));
@@ -166,9 +254,36 @@ public class RepoToc
       {
         m_aLatestReleaseVersion = aVersion;
         m_aLatestReleaseVersionPubDT = aRealPublishDT;
+
+        if (bDoLog)
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("The added version '" +
+                          aVersion.getAsString () +
+                          "' is now the latest release version in the table of contents");
       }
 
     return EChange.CHANGED;
+  }
+
+  /**
+   * Add a new version to the ToC.
+   *
+   * @param aVersion
+   *        The version to be added. May not be <code>null</code>. Must be a
+   *        static version - pseudo versions are not allowed.
+   * @param aPublishDT
+   *        The publication date time to use. May not be <code>null</code>. It
+   *        is internally converted to UTC and cut after millisecond precision.
+   * @return {@link EChange#CHANGED} if the version was successfully added,
+   *         {@link EChange#UNCHANGED} otherwise.
+   */
+  @Nonnull
+  public EChange addVersion (@Nonnull final VESVersion aVersion, @Nonnull final OffsetDateTime aPublishDT)
+  {
+    ValueEnforcer.notNull (aVersion, "Version");
+    ValueEnforcer.notNull (aPublishDT, "PublishDT");
+
+    return _addVersion (aVersion, aPublishDT, true);
   }
 
   @Nonnull
@@ -178,7 +293,11 @@ public class RepoToc
     ValueEnforcer.isTrue (aVersion.isStaticVersion (), "Version must be static and not pseudo");
 
     if (m_aVersions.removeObject (aVersion).isUnchanged ())
+    {
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("The version '" + aVersion.getAsString () + "' is not contained in the table of contents.");
       return EChange.UNCHANGED;
+    }
 
     // Remember last non-snapshot version
     m_aLatestReleaseVersion = null;
@@ -196,6 +315,14 @@ public class RepoToc
         {
           m_aLatestReleaseVersion = aCur.getKey ();
           m_aLatestReleaseVersionPubDT = aCur.getValue ();
+
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("After deletion of '" +
+                          aVersion.getAsString () +
+                          "' the new latest release version '" +
+                          m_aLatestReleaseVersion.getAsString () +
+                          "' is used in the table of contents");
+
           break;
         }
       }
@@ -271,10 +398,13 @@ public class RepoToc
   public static RepoToc createFromJaxbObject (@Nonnull final RepoTocType aRepoToc)
   {
     final RepoToc ret = new RepoToc (aRepoToc.getGroupId (), aRepoToc.getArtifactId ());
+    // Try to read as silently as possible, without unnecessary logging
     aRepoToc.getVersioning ()
             .getVersions ()
             .getVersion ()
-            .forEach (x -> ret.addVersion (VESVersion.parseOrThrow (x.getValue ()), _toODT (x.getPublished ())));
+            .forEach (x -> ret._addVersion (VESVersion.parseOrThrow (x.getValue ()),
+                                            _toODT (x.getPublished ()),
+                                            false));
     return ret;
   }
 }

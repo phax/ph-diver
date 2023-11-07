@@ -57,18 +57,18 @@ public final class RepoToc1MarshallerTest
 
     final RTVersionType v0 = aVersions.getVersionAtIndex (0);
     assertEquals ("10.0.0", v0.getValue ());
-    assertEquals ("2023-07-19T14:37:00", PDTWebDateHelper.getAsStringXSD (v0.getPublished ()));
+    assertEquals ("2023-07-19T14:37:00Z", PDTWebDateHelper.getAsStringXSD (v0.getPublished ()));
 
     final RTVersionType v1 = aVersions.getVersionAtIndex (1);
     assertEquals ("10.1.4", v1.getValue ());
-    assertEquals ("2023-08-19T15:37:00", PDTWebDateHelper.getAsStringXSD (v1.getPublished ()));
+    assertEquals ("2023-08-19T15:37:00Z", PDTWebDateHelper.getAsStringXSD (v1.getPublished ()));
 
     final RTVersionType v2 = aVersions.getVersionAtIndex (2);
     assertEquals ("11.1.2", v2.getValue ());
-    assertEquals ("2023-09-19T16:37:00", PDTWebDateHelper.getAsStringXSD (v2.getPublished ()));
+    assertEquals ("2023-09-19T16:37:00.123Z", PDTWebDateHelper.getAsStringXSD (v2.getPublished ()));
 
     final RTVersionType v3 = aVersions.getVersionAtIndex (3);
     assertEquals ("11.1.3-SNAPSHOT", v3.getValue ());
-    assertEquals ("2023-09-19T17:45:12", PDTWebDateHelper.getAsStringXSD (v3.getPublished ()));
+    assertEquals ("2023-09-19T17:45:12.456Z", PDTWebDateHelper.getAsStringXSD (v3.getPublished ()));
   }
 }
