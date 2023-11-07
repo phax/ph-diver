@@ -53,6 +53,10 @@
     </developer>
   </developers>
   
+  <properties>
+    <awssdk-version>2.21.15</awssdk-version>
+  </properties>
+  
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
@@ -66,12 +70,17 @@
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>s3</artifactId>
-      <version>2.20.147</version>
+      <version>${awssdk-version}</version>
     </dependency>
     
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
