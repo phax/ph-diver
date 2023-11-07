@@ -117,7 +117,7 @@ public final class RepoStorageChainFuncTest
     }
     finally
     {
-      // Cleanup
+      // Cleanup from local FS
       File f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR, "com/ecosio/http-only/1/http-only-1.txt");
       FileOperationManager.INSTANCE.deleteFile (f);
 
