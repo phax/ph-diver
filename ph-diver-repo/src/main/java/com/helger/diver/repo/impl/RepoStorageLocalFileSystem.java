@@ -42,7 +42,7 @@ import com.helger.diver.repo.RepoStorageType;
  *
  * @author Philip Helger
  */
-public class RepoStorageLocalFileSystem extends AbstractRepoStorage <RepoStorageLocalFileSystem>
+public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <RepoStorageLocalFileSystem>
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageLocalFileSystem.class);
 

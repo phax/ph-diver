@@ -65,9 +65,11 @@ Several repositories may be chained together for reading.
   
 ## Table of Contents per Group ID and Artefact ID
 
-Since v1.0.1 a special "table of contents" is supported per Group ID and Artefact ID.
+Since v1.0.1 a special "table of contents" (ToC) is supported per Group ID and Artefact ID.
 It contains all the versions of that combination and allows for easy access of the latest version, without iterating any directory structure.
-The filename used is `toc-diver.xml` per default.  
+The filename used is `toc-diver.xml` per default.
+
+An extended API is available for repository storage implementations via the `IRepoStorageWithToc` interface. 
 
 # Maven usage
 
@@ -95,7 +97,7 @@ Alternate usage as a Maven BOM:
   
 # News and Noteworthy
 
-* v1.0.1 - work in progress
+* v1.0.1 - 2023-11-07
     * Added support for a "Table of contents" per Group ID and Artefact ID.
 * v1.0.0 - 2023-09-13
     * Initial version with support for in-memory, file system, HTTP and S3 repositories

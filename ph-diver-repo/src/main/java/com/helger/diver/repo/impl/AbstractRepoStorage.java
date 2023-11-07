@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.time.OffsetDateTime;
-import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,41 +31,34 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.ArrayHelper;
-import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.traits.IGenericImplTrait;
-import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
+import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
-import com.helger.diver.repo.toc.IRepoStorageWithToc;
-import com.helger.diver.repo.toc.RepoToc;
-import com.helger.diver.repo.toc.RepoToc1Marshaller;
-import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 import com.helger.diver.repo.util.MessageDigestInputStream;
 import com.helger.security.messagedigest.EMessageDigestAlgorithm;
 import com.helger.security.messagedigest.MessageDigestValue;
 
 /**
  * Abstract implementation of a repository storage. It supports the verification
- * of hash values upon reading and the update of the table of contents on
- * writing.
+ * of hash values upon reading.
  *
  * @author Philip Helger
  * @param <IMPLTYPE>
  *        The real implementation type.
  */
 public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage <IMPLTYPE>> implements
-                                          IRepoStorageWithToc,
+                                          IRepoStorage,
                                           IGenericImplTrait <IMPLTYPE>
 {
   public static final boolean DEFAULT_VERIFY_HASH_VALUE = true;
-  public static final boolean DEFAULT_ENABLE_TOC_UPDATES = true;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractRepoStorage.class);
 
@@ -78,8 +70,6 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   private final ERepoDeletable m_eDeleteEnabled;
   // Verify hash value on read
   private boolean m_bVerifyHash = DEFAULT_VERIFY_HASH_VALUE;
-  // Enable ToC updates on write and delete
-  private boolean m_bEnableTocUpdates = DEFAULT_ENABLE_TOC_UPDATES;
 
   protected AbstractRepoStorage (@Nonnull final RepoStorageType aType,
                                  @Nonnull @Nonempty final String sID,
@@ -119,19 +109,6 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   {
     m_bVerifyHash = b;
     LOGGER.info ("RepoStorage[" + m_aType.getID () + "]: hash verification is now: " + (b ? "enabled" : "disabled"));
-    return thisAsT ();
-  }
-
-  public final boolean isEnableTocUpdates ()
-  {
-    return m_bEnableTocUpdates;
-  }
-
-  @Nonnull
-  public final IMPLTYPE setEnableTocUpdates (final boolean b)
-  {
-    m_bEnableTocUpdates = b;
-    LOGGER.info ("RepoStorage[" + m_aType.getID () + "]: ToC updates are now: " + (b ? "enabled" : "disabled"));
     return thisAsT ();
   }
 
@@ -230,62 +207,12 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     return m_eWriteEnabled.isWriteEnabled ();
   }
 
-  /**
-   * Update the table of contents for a specific group ID and artifact ID.
-   *
-   * @param aKeyToc
-   *        The ToC key with group ID and artifact ID. Never <code>null</code>.
-   * @param aTocConsumer
-   *        The main activities are done in the callback. Never
-   *        <code>null</code>.
-   * @return {@link ESuccess#SUCCESS} if updating was successful. Never
-   *         <code>null</code>.
-   */
-  @Nonnull
-  @OverrideOnDemand
-  protected ESuccess updateToc (@Nonnull final RepoStorageKey aKeyToc,
-                                @Nonnull final Consumer <? super RepoToc> aTocConsumer)
-  {
-    // Read existing ToC
-    final RepoStorageItem aTocItem = read (aKeyToc);
-    final RepoToc aToc;
-    if (aTocItem == null)
-    {
-      // Create a new one
-      aToc = new RepoToc (aKeyToc.getVESID ().getGroupID (), aKeyToc.getVESID ().getArtifactID ());
-    }
-    else
-    {
-      final RepoTocType aJaxbToc = new RepoToc1Marshaller ().read (aTocItem.data ());
-      if (aJaxbToc == null)
-        throw new IllegalStateException ("Invalid TOC found in '" + aKeyToc.getPath () + "'");
-      aToc = RepoToc.createFromJaxbObject (aJaxbToc);
-    }
-
-    try
-    {
-      // Make modifications
-      aTocConsumer.accept (aToc);
-    }
-    catch (final RuntimeException ex)
-    {
-      LOGGER.error ("Error invoking ToC consumer", ex);
-      return ESuccess.FAILURE;
-    }
-
-    // Write ToC again
-    // Don't check if enabled or not
-    return _doWriteRepoStorageItem (aKeyToc,
-                                    RepoStorageItem.of (new RepoToc1Marshaller ().setFormattedOutput (true)
-                                                                                 .getAsBytes (aToc.getAsJaxbObject ())));
-  }
-
   @Nonnull
   protected abstract ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload);
 
   @Nonnull
-  private final ESuccess _doWriteRepoStorageItem (@Nonnull final RepoStorageKey aKey,
-                                                  @Nonnull final RepoStorageItem aItem)
+  protected final ESuccess doWriteRepoStorageItem (@Nonnull final RepoStorageKey aKey,
+                                                    @Nonnull final RepoStorageItem aItem)
   {
     ValueEnforcer.notNull (aKey, "Key");
     ValueEnforcer.notNull (aItem, "Item");
@@ -312,6 +239,26 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     return ESuccess.SUCCESS;
   }
 
+  /**
+   * Callback invoked after successful writing.
+   *
+   * @param aKey
+   *        The key of the created repo item. Never <code>null</code>.
+   * @param aItem
+   *        The created repo item content. Never <code>null</code>.
+   * @param aPublicationDT
+   *        The publication date time of the item. May be <code>null</code>.
+   * @return {@link ESuccess}
+   */
+  @OverrideOnDemand
+  @Nonnull
+  protected ESuccess onAfterWrite (@Nonnull final RepoStorageKey aKey,
+                                   @Nonnull final RepoStorageItem aItem,
+                                   @Nullable final OffsetDateTime aPublicationDT)
+  {
+    return ESuccess.SUCCESS;
+  }
+
   @Nonnull
   public final ESuccess write (@Nonnull final RepoStorageKey aKey,
                                @Nonnull final RepoStorageItem aItem,
@@ -326,32 +273,11 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
       throw new UnsupportedOperationException ("write is not enabled");
     }
 
-    if (_doWriteRepoStorageItem (aKey, aItem).isFailure ())
+    if (doWriteRepoStorageItem (aKey, aItem).isFailure ())
       return ESuccess.FAILURE;
 
-    if (isEnableTocUpdates ())
-    {
-      // Update ToC
-      if (updateToc (aKey.getKeyToc (), toc -> {
-        final VESID aVESID = aKey.getVESID ();
-        // Make sure a publication DT is present and always UTC
-        final OffsetDateTime aRealPubDT = aPublicationDT != null ? aPublicationDT : PDTFactory
-                                                                                              .getCurrentOffsetDateTimeUTC ();
-
-        // Add new version
-        if (toc.addVersion (aVESID.getVersionObj (), aRealPubDT).isUnchanged ())
-        {
-          LOGGER.warn ("Failed to add version '" +
-                       aVESID.getAsSingleID () +
-                       "' to ToC of because it is already contained");
-        }
-        else
-        {
-          LOGGER.info ("Successfully added version '" + aVESID.getAsSingleID () + "' to ToC");
-        }
-      }).isFailure ())
-        return ESuccess.FAILURE;
-    }
+    if (onAfterWrite (aKey, aItem, aPublicationDT).isFailure ())
+      return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;
   }
@@ -380,6 +306,20 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     return ESuccess.SUCCESS;
   }
 
+  /**
+   * Callback invoked after successful deletion
+   *
+   * @param aKey
+   *        The key of the deleted repo item. Never <code>null</code>.
+   * @return {@link ESuccess}
+   */
+  @Nonnull
+  @OverrideOnDemand
+  protected ESuccess onAfterDelete (@Nonnull final RepoStorageKey aKey)
+  {
+    return ESuccess.SUCCESS;
+  }
+
   @Nonnull
   public final ESuccess delete (@Nonnull final RepoStorageKey aKey)
   {
@@ -394,25 +334,8 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     if (_doDeleteRepoStorageItem (aKey).isFailure ())
       return ESuccess.FAILURE;
 
-    if (isEnableTocUpdates ())
-    {
-      // Update ToC
-      if (updateToc (aKey.getKeyToc (), toc -> {
-        final VESID aVESID = aKey.getVESID ();
-        // Remove deleted version
-        if (toc.removeVersion (aVESID.getVersionObj ()).isUnchanged ())
-        {
-          LOGGER.warn ("Failed to delete version '" +
-                       aVESID.getAsSingleID () +
-                       "' from ToC because it is not contained");
-        }
-        else
-        {
-          LOGGER.info ("Successfully deleted version '" + aVESID.getAsSingleID () + "' from ToC");
-        }
-      }).isFailure ())
-        return ESuccess.FAILURE;
-    }
+    if (onAfterDelete (aKey).isFailure ())
+      return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;
   }
@@ -426,7 +349,6 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
                                        .append ("WriteEnabled", m_eWriteEnabled)
                                        .append ("DeleteEnabled", m_eDeleteEnabled)
                                        .append ("VerifyHash", m_bVerifyHash)
-                                       .append ("EnableTocUpdates", m_bEnableTocUpdates)
                                        .getToString ();
   }
 }

@@ -42,7 +42,7 @@ import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
-import com.helger.diver.repo.impl.AbstractRepoStorage;
+import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
 import com.helger.httpclient.HttpClientManager;
 import com.helger.httpclient.response.ResponseHandlerByteArray;
 
@@ -52,7 +52,7 @@ import com.helger.httpclient.response.ResponseHandlerByteArray;
  *
  * @author Philip Helger
  */
-public class RepoStorageHttp extends AbstractRepoStorage <RepoStorageHttp>
+public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp>
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageHttp.class);
 

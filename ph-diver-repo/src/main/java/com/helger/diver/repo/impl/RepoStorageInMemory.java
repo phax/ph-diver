@@ -47,7 +47,7 @@ import com.helger.diver.repo.RepoStorageType;
  * @author Philip Helger
  */
 @ThreadSafe
-public class RepoStorageInMemory extends AbstractRepoStorage <RepoStorageInMemory>
+public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorageInMemory>
 {
   public static final class MaxSizeMap extends CommonsLinkedHashMap <String, byte []>
   {

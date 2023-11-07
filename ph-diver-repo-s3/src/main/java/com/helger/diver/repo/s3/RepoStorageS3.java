@@ -32,7 +32,7 @@ import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
-import com.helger.diver.repo.impl.AbstractRepoStorage;
+import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
 
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -50,7 +50,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
  *
  * @author Philip Helger
  */
-public class RepoStorageS3 extends AbstractRepoStorage <RepoStorageS3>
+public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
 {
   public static final RepoStorageType AWS_S3 = new RepoStorageType ("aws-s3", true, true);
 
