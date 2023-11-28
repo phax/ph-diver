@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.diver.repo.toptoc;
+package com.helger.diver.repo.toc;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -53,7 +53,7 @@ public final class RepoTopToc1MarshallerTest
     assertEquals (2, aCom.getGroupAtIndex (0).getArtifactCount ());
     assertEquals (0, aCom.getGroupAtIndex (1).getGroupCount ());
     assertEquals (1, aCom.getGroupAtIndex (1).getArtifactCount ());
-    assertEquals (0, aCom.getGroupAtIndex (2).getGroupCount ());
+    assertEquals (1, aCom.getGroupAtIndex (2).getGroupCount ());
     assertEquals (0, aCom.getGroupAtIndex (2).getArtifactCount ());
   }
 }

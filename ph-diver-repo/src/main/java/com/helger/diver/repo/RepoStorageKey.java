@@ -48,6 +48,8 @@ public final class RepoStorageKey
    */
   public static final String FILENAME_TOC_DIVER_XML = "toc-diver.xml";
 
+  public static final char GROUP_LEVEL_SEPARATOR = '.';
+
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageKey.class);
 
   // Special fake version to be used by the ToC where we don't need any version
@@ -144,7 +146,7 @@ public final class RepoStorageKey
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
 
-    return sGroupID.replace ('.', '/') + "/" + sArtifactID + "/";
+    return sGroupID.replace (GROUP_LEVEL_SEPARATOR, '/') + "/" + sArtifactID + "/";
   }
 
   /**

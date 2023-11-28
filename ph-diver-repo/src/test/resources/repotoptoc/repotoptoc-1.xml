@@ -27,7 +27,13 @@
       <artifact name="artifact3" />
     </group>
     <group name="rest">
-      <!-- empty -->
+      <group name="of">
+        <group name="the">
+          <group name="fest">
+            <!-- empty -->
+          </group>
+        </group>
+      </group>
     </group>
   </group>
   <group name="org">
