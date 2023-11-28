@@ -14,34 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.diver.repo.toc;
+package com.helger.diver.repo.toptoc;
 
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.diver.repo.toc.jaxb.v10.ObjectFactory;
-import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
+import com.helger.diver.repo.toptoc.jaxb.v10.ObjectFactory;
+import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
 import com.helger.jaxb.GenericJAXBMarshaller;
 
 /**
- * JAXB marshaller for {@link RepoTocType} objects.
+ * JAXB marshaller for {@link RepoTopTocType} objects.
  *
  * @author Philip Helger
  */
-public class RepoToc1Marshaller extends GenericJAXBMarshaller <RepoTocType>
+public class RepoTopToc1Marshaller extends GenericJAXBMarshaller <RepoTopTocType>
 {
   /**
    * The namespace URI of the RepoToc1 XML data model
    */
-  public static final String NAMESPACE_URI = "urn:com:helger:diver:repotoc:v1.0";
+  public static final String NAMESPACE_URI = "urn:com:helger:diver:repotoptoc:v1.0";
 
   /**
    * The XML Schema path to validate against.
    */
-  public static final ClassPathResource XSD_RES = new ClassPathResource ("schemas/repotoc-1.0.xsd",
-                                                                         RepoToc1Marshaller.class.getClassLoader ());
+  public static final ClassPathResource XSD_RES = new ClassPathResource ("schemas/repotoptoc-1.0.xsd",
+                                                                         RepoTopToc1Marshaller.class.getClassLoader ());
 
-  public RepoToc1Marshaller ()
+  public RepoTopToc1Marshaller ()
   {
-    super (RepoTocType.class, new CommonsArrayList <> (XSD_RES), new ObjectFactory ()::createRepotoc);
+    super (RepoTopTocType.class, new CommonsArrayList <> (XSD_RES), new ObjectFactory ()::createRepotoptoc);
   }
 }

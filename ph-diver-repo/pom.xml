@@ -100,7 +100,7 @@
             </goals>
             <id>ves</id>
             <configuration>
-              <schemaDirectory>${basedir}/src/main/resources/schemas/repotoc</schemaDirectory>
+              <schemaDirectory>${basedir}/src/main/resources/schemas</schemaDirectory>
               <bindingIncludes>
                 <bindingInclude>bindings.xjb</bindingInclude>
               </bindingIncludes>
