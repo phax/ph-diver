@@ -33,8 +33,8 @@ Each VESID consists of:
     * Each Version Number must be unique per combination of Group ID and Artefact ID
     * The usage of semantic version supports the strict ordering of elements
     * Each version must follow either the form `major[.minor[.micro[-classifier]]]` where `major`, `minor` and `micro` must be unsigned integer values (like 1 or 2023) or the form `classifier` which is interpreted as `0.0.0-classifier`.
+    * The version classifier `SNAPSHOT` is a special case and identifies "work in progress" artefacts that are not final yet
 * an optional *Classifier* - it MAY be empty and follow the regular expression `[a-zA-Z0-9_\-\.]{0,64}`
-    * The classifier `SNAPSHOT` is a special case and identifies "work in progress" artefacts that are not final yet
 
 The limitations in the allowed characters for the different parts are meant to allow an easy representation on file systems. 
 

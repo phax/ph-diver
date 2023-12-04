@@ -29,6 +29,12 @@ import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
  */
 public class RepoTopToc
 {
+  /**
+   * Represents a single group with a name, a list of sub groups and a list of
+   * artifacts.
+   *
+   * @author Philip Helger
+   */
   private static final class Group
   {
     private final String m_sName;
