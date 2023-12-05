@@ -55,6 +55,28 @@ public final class VESVersionTest
     assertNull (ver.getPseudoVersion ());
     assertEquals ("1.2.3-a", ver.getAsString ());
 
+    // Valid static
+    ver = VESVersion.parseOrNull ("1.2.3.4.5.6.7.8");
+    assertNotNull (ver);
+    assertTrue (ver.isStaticVersion ());
+    assertNotNull (ver.getStaticVersion ());
+    assertFalse (ver.isPseudoVersion ());
+    assertNull (ver.getPseudoVersion ());
+    assertEquals ("1.2.3-4.5.6.7.8", ver.getAsString ());
+
+    // Valid static
+    ver = VESVersion.parseOrNull ("1.2.3-a");
+    assertNotNull (ver);
+    assertTrue (ver.isStaticVersion ());
+    assertNotNull (ver.getStaticVersion ());
+    assertFalse (ver.isPseudoVersion ());
+    assertNull (ver.getPseudoVersion ());
+    assertEquals ("1.2.3-a", ver.getAsString ());
+
+    // Invalid static
+    ver = VESVersion.parseOrNull ("0.09.5");
+    assertNull (ver);
+
     // Valid pseudo version
     ver = VESVersion.parseOrNull ("latest");
     assertNotNull (ver);

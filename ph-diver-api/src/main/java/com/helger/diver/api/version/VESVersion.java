@@ -368,7 +368,10 @@ public final class VESVersion implements Comparable <VESVersion>
       return false;
 
     // Check if the parsing result equals the original in a way
+    // This section clearly would win the price for ugly coding - but the
+    // positive effect on consistency is even more valuable :)
     final ICommonsSet <String> aPossibleVersions = new CommonsLinkedHashSet <> ();
+    // Check different separators
     for (final char c : "-.".toCharArray ())
       for (final boolean bEnforceAllNumbers : new boolean [] { true, false })
         for (final boolean bEnforceMinor : new boolean [] { true, false })
