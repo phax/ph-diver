@@ -24,7 +24,9 @@ import org.junit.Test;
 
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsHashSet;
+import com.helger.commons.collection.impl.CommonsLinkedHashSet;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsOrderedSet;
 import com.helger.commons.collection.impl.ICommonsSet;
 import com.helger.commons.collection.impl.ICommonsSortedSet;
 import com.helger.commons.io.resource.ClassPathResource;
@@ -52,36 +54,100 @@ public final class RepoTopTocTest
     assertNotNull (aToC);
 
     // Check top level groups
-    final ICommonsSortedSet <String> aTLGroups = aToC.getAllTopLevelGroupNames ();
-    assertNotNull (aTLGroups);
-    assertEquals (2, aTLGroups.size ());
-    assertTrue (aTLGroups.contains ("com"));
-    assertTrue (aTLGroups.contains ("org"));
+    {
+      final ICommonsSortedSet <String> aTLGroups = aToC.getAllTopLevelGroupNames ();
+      assertNotNull (aTLGroups);
+      assertEquals (2, aTLGroups.size ());
+      assertTrue (aTLGroups.contains ("com"));
+      assertTrue (aTLGroups.contains ("org"));
+    }
+
+    {
+      final ICommonsOrderedSet <String> aTLGroups = new CommonsLinkedHashSet <> ();
+      aToC.iterateAllTopLevelGroupNames (aTLGroups::add);
+      assertNotNull (aTLGroups);
+      assertEquals (2, aTLGroups.size ());
+      assertTrue (aTLGroups.contains ("com"));
+      assertTrue (aTLGroups.contains ("org"));
+    }
 
     // Check all subgroups from a specific start
-    final ICommonsList <String> aAllRelSubgroups = new CommonsArrayList <> ();
-    final ICommonsSet <String> aAllAbsSubgroups = new CommonsHashSet <> ();
-    aToC.iterateAllSubGroups ("com", (relgn, absgn) -> {
-      aAllRelSubgroups.add (relgn);
-      aAllAbsSubgroups.add (absgn);
-    });
-    assertEquals (6, aAllAbsSubgroups.size ());
-    assertTrue (aAllAbsSubgroups.contains ("com.ecosio"));
-    assertTrue (aAllAbsSubgroups.contains ("com.helger"));
-    assertTrue (aAllAbsSubgroups.contains ("com.rest"));
-    assertTrue (aAllAbsSubgroups.contains ("com.rest.of"));
-    assertTrue (aAllAbsSubgroups.contains ("com.rest.of.the"));
-    assertTrue (aAllAbsSubgroups.contains ("com.rest.of.the.fest"));
+    {
+      final ICommonsList <String> aAllRelSubgroups = new CommonsArrayList <> ();
+      final ICommonsSet <String> aAllAbsSubgroups = new CommonsHashSet <> ();
+      aToC.iterateAllSubGroups ("com", (relGroupName, absGroupName) -> {
+        aAllRelSubgroups.add (relGroupName);
+        aAllAbsSubgroups.add (absGroupName);
+      }, true);
+      assertEquals (6, aAllAbsSubgroups.size ());
+      assertTrue (aAllAbsSubgroups.contains ("com.ecosio"));
+      assertTrue (aAllAbsSubgroups.contains ("com.helger"));
+      assertTrue (aAllAbsSubgroups.contains ("com.rest"));
+      assertTrue (aAllAbsSubgroups.contains ("com.rest.of"));
+      assertTrue (aAllAbsSubgroups.contains ("com.rest.of.the"));
+      assertTrue (aAllAbsSubgroups.contains ("com.rest.of.the.fest"));
 
-    assertEquals (6, aAllRelSubgroups.size ());
-    assertEquals ("ecosio", aAllRelSubgroups.get (0));
-    assertEquals ("helger", aAllRelSubgroups.get (1));
-    assertEquals ("rest", aAllRelSubgroups.get (2));
-    assertEquals ("of", aAllRelSubgroups.get (3));
-    assertEquals ("the", aAllRelSubgroups.get (4));
-    assertEquals ("fest", aAllRelSubgroups.get (5));
+      assertEquals (6, aAllRelSubgroups.size ());
+      assertEquals ("ecosio", aAllRelSubgroups.get (0));
+      assertEquals ("helger", aAllRelSubgroups.get (1));
+      assertEquals ("rest", aAllRelSubgroups.get (2));
+      assertEquals ("of", aAllRelSubgroups.get (3));
+      assertEquals ("the", aAllRelSubgroups.get (4));
+      assertEquals ("fest", aAllRelSubgroups.get (5));
+    }
 
-    final ICommonsSet <String> aAllArtifacts = new CommonsHashSet <> ();
-    aToC.iterateAllArtifacts ("com", artifactID -> { aAllArtifacts.add (artifactID); });
+    // Check all subgroups from a specific start
+    {
+      final ICommonsList <String> aAllRelSubgroups = new CommonsArrayList <> ();
+      final ICommonsSet <String> aAllAbsSubgroups = new CommonsHashSet <> ();
+      aToC.iterateAllSubGroups ("com", (relGroupName, absGroupName) -> {
+        aAllRelSubgroups.add (relGroupName);
+        aAllAbsSubgroups.add (absGroupName);
+      }, false);
+      assertEquals (3, aAllAbsSubgroups.size ());
+      assertTrue (aAllAbsSubgroups.contains ("com.ecosio"));
+      assertTrue (aAllAbsSubgroups.contains ("com.helger"));
+      assertTrue (aAllAbsSubgroups.contains ("com.rest"));
+
+      assertEquals (3, aAllRelSubgroups.size ());
+      assertEquals ("ecosio", aAllRelSubgroups.get (0));
+      assertEquals ("helger", aAllRelSubgroups.get (1));
+      assertEquals ("rest", aAllRelSubgroups.get (2));
+    }
+
+    // Check all artifacts of a group
+    {
+      final ICommonsList <String> aAllArtifacts = new CommonsArrayList <> ();
+      aToC.iterateAllArtifacts ("com", artifactID -> { aAllArtifacts.add (artifactID); });
+      assertEquals (0, aAllArtifacts.size ());
+    }
+
+    {
+      final ICommonsList <String> aAllArtifacts = new CommonsArrayList <> ();
+      aToC.iterateAllArtifacts ("com.ecosio", artifactID -> { aAllArtifacts.add (artifactID); });
+      assertEquals (2, aAllArtifacts.size ());
+      assertEquals ("artifact1", aAllArtifacts.get (0));
+      assertEquals ("artifact2", aAllArtifacts.get (1));
+    }
+
+    {
+      final ICommonsList <String> aAllArtifacts = new CommonsArrayList <> ();
+      aToC.iterateAllArtifacts ("com.helger", artifactID -> { aAllArtifacts.add (artifactID); });
+      assertEquals (1, aAllArtifacts.size ());
+      assertEquals ("artifact3", aAllArtifacts.get (0));
+    }
+
+    {
+      final ICommonsList <String> aAllArtifacts = new CommonsArrayList <> ();
+      aToC.iterateAllArtifacts ("org", artifactID -> { aAllArtifacts.add (artifactID); });
+      assertEquals (0, aAllArtifacts.size ());
+    }
+
+    {
+      final ICommonsList <String> aAllArtifacts = new CommonsArrayList <> ();
+      aToC.iterateAllArtifacts ("org.example", artifactID -> { aAllArtifacts.add (artifactID); });
+      assertEquals (1, aAllArtifacts.size ());
+      assertEquals ("artifact4", aAllArtifacts.get (0));
+    }
   }
 }

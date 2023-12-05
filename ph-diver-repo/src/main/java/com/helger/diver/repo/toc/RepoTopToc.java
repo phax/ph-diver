@@ -1,7 +1,6 @@
 package com.helger.diver.repo.toc;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
@@ -10,11 +9,14 @@ import javax.annotation.Nullable;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.impl.CommonsLinkedHashSet;
 import com.helger.commons.collection.impl.CommonsTreeMap;
 import com.helger.commons.collection.impl.CommonsTreeSet;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsOrderedSet;
 import com.helger.commons.collection.impl.ICommonsSortedMap;
 import com.helger.commons.collection.impl.ICommonsSortedSet;
+import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.RepoStorageKey;
@@ -57,10 +59,31 @@ public class RepoTopToc
     }
   }
 
+  @FunctionalInterface
+  public interface IGroupNameConsumer
+  {
+    /**
+     * Consumer callback
+     *
+     * @param sRelativeGroupName
+     *        Relative group name. Neither <code>null</code> nor empty.
+     * @param aAbsoluteGroupName
+     *        Absolute group name. Neither <code>null</code> nor empty.
+     */
+    void accept (@Nonnull @Nonempty String sRelativeGroupName, @Nonnull @Nonempty String aAbsoluteGroupName);
+  }
+
   private final ICommonsSortedMap <String, Group> m_aTopLevelGroups = new CommonsTreeMap <> ();
 
   public RepoTopToc ()
   {}
+
+  public void iterateAllTopLevelGroupNames (@Nonnull final Consumer <String> aGroupNameConsumer)
+  {
+    ValueEnforcer.notNull (aGroupNameConsumer, "GroupNameConsumer");
+
+    m_aTopLevelGroups.keySet ().forEach (aGroupNameConsumer);
+  }
 
   @Nonnull
   @ReturnsMutableCopy
@@ -84,21 +107,24 @@ public class RepoTopToc
 
   private void _recursiveIterateExistingSubGroups (@Nonnull @Nonempty final String sAbsoluteGroupID,
                                                    @Nonnull final Group aCurGroup,
-                                                   @Nonnull final BiConsumer <String, String> aGroupNameConsumer)
+                                                   @Nonnull final IGroupNameConsumer aGroupNameConsumer,
+                                                   final boolean bRecursive)
   {
     for (final Map.Entry <String, Group> aEntry : aCurGroup.m_aSubGroups.entrySet ())
     {
       final String sSubGroupName = aEntry.getKey ();
-      final String sSubAbsName = sAbsoluteGroupID + RepoStorageKey.GROUP_LEVEL_SEPARATOR + sSubGroupName;
-      aGroupNameConsumer.accept (sSubGroupName, sSubAbsName);
+      final String sSubGroupAbsoluteName = sAbsoluteGroupID + RepoStorageKey.GROUP_LEVEL_SEPARATOR + sSubGroupName;
+      aGroupNameConsumer.accept (sSubGroupName, sSubGroupAbsoluteName);
 
-      // Descend
-      _recursiveIterateExistingSubGroups (sSubAbsName, aEntry.getValue (), aGroupNameConsumer);
+      // Descend always or never
+      if (bRecursive)
+        _recursiveIterateExistingSubGroups (sSubGroupAbsoluteName, aEntry.getValue (), aGroupNameConsumer, true);
     }
   }
 
   public void iterateAllSubGroups (@Nonnull @Nonempty final String sGroupID,
-                                   @Nonnull final BiConsumer <String, String> aGroupNameConsumer)
+                                   @Nonnull final IGroupNameConsumer aGroupNameConsumer,
+                                   final boolean bRecursive)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
     ValueEnforcer.notNull (aGroupNameConsumer, "GroupNameConsumer");
@@ -106,9 +132,27 @@ public class RepoTopToc
     final Group aGroup = _getGroup (sGroupID);
     if (aGroup != null)
     {
-      _recursiveIterateExistingSubGroups (sGroupID, aGroup, aGroupNameConsumer);
+      _recursiveIterateExistingSubGroups (sGroupID, aGroup, aGroupNameConsumer, bRecursive);
     }
     // else: no group, no callback
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public ICommonsOrderedSet <String> getAllAbsoluteSubGroupNamesRecursive (@Nonnull @Nonempty final String sGroupID)
+  {
+    final ICommonsOrderedSet <String> ret = new CommonsLinkedHashSet <> ();
+    iterateAllSubGroups (sGroupID, (rgn, agn) -> ret.add (agn), true);
+    return ret;
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public ICommonsOrderedSet <String> getAllAbsoluteSubGroupNames (@Nonnull @Nonempty final String sGroupID)
+  {
+    final ICommonsOrderedSet <String> ret = new CommonsLinkedHashSet <> ();
+    iterateAllSubGroups (sGroupID, (rgn, agn) -> ret.add (agn), false);
+    return ret;
   }
 
   public void iterateAllArtifacts (@Nonnull @Nonempty final String sGroupID,
@@ -127,6 +171,15 @@ public class RepoTopToc
   }
 
   @Nonnull
+  @ReturnsMutableCopy
+  public ICommonsOrderedSet <String> getAllArtefacts (@Nonnull @Nonempty final String sGroupID)
+  {
+    final ICommonsOrderedSet <String> ret = new CommonsLinkedHashSet <> ();
+    iterateAllArtifacts (sGroupID, ret::add);
+    return ret;
+  }
+
+  @Nonnull
   private Group _getOrCreateGroup (@Nonnull @Nonempty final String sGroupID)
   {
     final ICommonsList <String> aGroupPart = StringHelper.getExploded (RepoStorageKey.GROUP_LEVEL_SEPARATOR, sGroupID);
@@ -139,15 +192,18 @@ public class RepoTopToc
     return aGroup;
   }
 
-  public void registerGroupAndArtifact (@Nonnull @Nonempty final String sGroupID,
-                                        @Nonnull @Nonempty final String sArtifactID)
+  @Nonnull
+  public ESuccess registerGroupAndArtifact (@Nonnull @Nonempty final String sGroupID,
+                                            @Nonnull @Nonempty final String sArtifactID)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
 
     final Group aGroup = _getOrCreateGroup (sGroupID);
     // Add to artifact list of latest subgroup
-    aGroup.m_aArtifacts.add (sArtifactID);
+    final boolean bAdded = aGroup.m_aArtifacts.add (sArtifactID);
+
+    return ESuccess.valueOf (bAdded);
   }
 
   public boolean deepEquals (@Nonnull final RepoTopToc aOther)
