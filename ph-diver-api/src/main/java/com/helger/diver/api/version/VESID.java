@@ -115,10 +115,23 @@ public final class VESID implements Comparable <VESID>
     this (sGroupID, sArtifactID, VESVersion.parseOrThrow (sVersion), sClassifier);
   }
 
-  protected VESID (@Nonnull @Nonempty final String sGroupID,
-                   @Nonnull @Nonempty final String sArtifactID,
-                   @Nonnull final VESVersion aVersion,
-                   @Nullable final String sClassifier)
+  /**
+   * Constructor. All parameters must match the constraints from
+   * {@link #isValidPart(String)}.
+   *
+   * @param sGroupID
+   *        Group ID. May neither be <code>null</code> nor empty.
+   * @param sArtifactID
+   *        Artifact ID. May neither be <code>null</code> nor empty.
+   * @param aVersion
+   *        Version object. May not be <code>null</code>.
+   * @param sClassifier
+   *        Classifier. May be <code>null</code>.
+   */
+  public VESID (@Nonnull @Nonempty final String sGroupID,
+                @Nonnull @Nonempty final String sArtifactID,
+                @Nonnull final VESVersion aVersion,
+                @Nullable final String sClassifier)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
     ValueEnforcer.isTrue (isValidPart (sGroupID), () -> "GroupID '" + sGroupID + "' is invalid");
