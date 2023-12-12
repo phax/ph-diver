@@ -108,7 +108,7 @@ public final class VESIDSettings
     ValueEnforcer.isGT0 (nMaxLen, "MaxLen");
     if (nMaxLen != s_nMaxClassifierLen)
     {
-      LOGGER.warn ("Changed the maximum group ID length of VESID from " + s_nMaxClassifierLen + " to " + nMaxLen);
+      LOGGER.warn ("Changed the maximum classifier length of VESID from " + s_nMaxClassifierLen + " to " + nMaxLen);
       s_nMaxClassifierLen = nMaxLen;
     }
   }

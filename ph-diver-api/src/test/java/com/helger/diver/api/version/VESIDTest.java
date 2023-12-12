@@ -18,6 +18,7 @@ package com.helger.diver.api.version;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -108,5 +109,81 @@ public final class VESIDTest
     assertNull (VESID.parseIDOrNull ("::"));
     assertNull (VESID.parseIDOrNull (":::"));
     assertNull (VESID.parseIDOrNull ("a:b:"));
+  }
+
+  @Test
+  public void testMaxGroupIDLen ()
+  {
+    assertNotNull (VESID.parseIDOrNull ("group:artifact:1.0:classifier"));
+    final int nOld = VESIDSettings.getMaxGroupIDLen ();
+    VESIDSettings.setMaxGroupIDLen (1);
+    try
+    {
+      // Too long
+      assertNull (VESID.parseIDOrNull ("group:artifact:1.0:classifier"));
+      // Valid
+      assertNotNull (VESID.parseIDOrNull ("g:artifact:1.0:classifier"));
+    }
+    finally
+    {
+      VESIDSettings.setMaxGroupIDLen (nOld);
+    }
+  }
+
+  @Test
+  public void testMaxArtifactIDLen ()
+  {
+    assertNotNull (VESID.parseIDOrNull ("group:artifact:1.0:classifier"));
+    final int nOld = VESIDSettings.getMaxArtifactIDLen ();
+    VESIDSettings.setMaxArtifactIDLen (1);
+    try
+    {
+      // Too long
+      assertNull (VESID.parseIDOrNull ("group:artifact:1.0:classifier"));
+      // Valid
+      assertNotNull (VESID.parseIDOrNull ("group:a:1.0:classifier"));
+    }
+    finally
+    {
+      VESIDSettings.setMaxArtifactIDLen (nOld);
+    }
+  }
+
+  @Test
+  public void testMaxVersionLen ()
+  {
+    assertNotNull (VESID.parseIDOrNull ("group:artifact:1.0:classifier"));
+    final int nOld = VESIDSettings.getMaxVersionLen ();
+    VESIDSettings.setMaxVersionLen (1);
+    try
+    {
+      // Too long
+      assertNull (VESID.parseIDOrNull ("group:artifact:1.0:classifier"));
+      // Valid
+      assertNotNull (VESID.parseIDOrNull ("group:artifact:1:classifier"));
+    }
+    finally
+    {
+      VESIDSettings.setMaxVersionLen (nOld);
+    }
+  }
+
+  @Test
+  public void testMaxClassifierLen ()
+  {
+    assertNotNull (VESID.parseIDOrNull ("group:artifact:1.0:classifier"));
+    final int nOld = VESIDSettings.getMaxClassifierLen ();
+    VESIDSettings.setMaxClassifierLen (1);
+    try
+    {
+      // Too long
+      assertNull (VESID.parseIDOrNull ("group:artifact:1.0:classifier"));
+      // Valid
+      assertNotNull (VESID.parseIDOrNull ("group:artifact:1.0:c"));
+    }
+    finally
+    {
+      VESIDSettings.setMaxClassifierLen (nOld);
+    }
   }
 }
