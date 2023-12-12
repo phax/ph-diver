@@ -16,9 +16,9 @@
  */
 package com.helger.diver.api.version;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.RegEx;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.ValueEnforcer;
@@ -46,12 +46,6 @@ import com.helger.commons.string.ToStringGenerator;
 @MustImplementEqualsAndHashcode
 public final class VESID implements Comparable <VESID>
 {
-  public static final int PART_MAX_LEN = 64;
-
-  /** The regular expression to which each part must conform */
-  @RegEx
-  public static final String REGEX_PART = "[a-zA-Z0-9_\\-\\.]{1," + PART_MAX_LEN + "}";
-
   /** The separator char between ID elements */
   public static final char ID_SEPARATOR = ':';
 
@@ -62,18 +56,54 @@ public final class VESID implements Comparable <VESID>
   // status vars
   private int m_nHashCode = IHashCodeGenerator.ILLEGAL_HASHCODE;
 
+  private static boolean _isValidPart (@Nonnull final String sPart, @Nonnegative final int nMaxLen)
+  {
+    return RegExHelper.stringMatchesPattern ("[a-zA-Z0-9_\\-\\.]{1," + nMaxLen + "}", sPart);
+  }
+
   /**
-   * Check if the provided part matches the regular expression
-   * {@value #REGEX_PART}.
+   * Check if the provided part matches the necessary regular expression.
    *
    * @param sPart
    *        The part to be checked. May be <code>null</code>.
    * @return <code>true</code> if the value matches the regular expression,
    *         <code>false</code> otherwise.
    */
+  @Deprecated (forRemoval = true, since = "1.0.2")
   public static boolean isValidPart (@Nullable final String sPart)
   {
-    return StringHelper.hasText (sPart) && RegExHelper.stringMatchesPattern (REGEX_PART, sPart);
+    if (StringHelper.hasNoText (sPart))
+      return false;
+    return _isValidPart (sPart, 256);
+  }
+
+  public static boolean isValidGroupID (@Nullable final String sPart)
+  {
+    if (StringHelper.hasNoText (sPart))
+      return false;
+    return _isValidPart (sPart, VESIDSettings.getMaxGroupIDLen ());
+  }
+
+  public static boolean isValidArtifactID (@Nullable final String sPart)
+  {
+    if (StringHelper.hasNoText (sPart))
+      return false;
+    return _isValidPart (sPart, VESIDSettings.getMaxArtifactIDLen ());
+  }
+
+  public static boolean isValidVersion (@Nullable final String sPart)
+  {
+    if (StringHelper.hasNoText (sPart))
+      return false;
+    return _isValidPart (sPart, VESIDSettings.getMaxVersionLen ());
+  }
+
+  public static boolean isValidClassifier (@Nullable final String sPart)
+  {
+    // Classifier is optional
+    if (StringHelper.hasNoText (sPart))
+      return true;
+    return _isValidPart (sPart, VESIDSettings.getMaxClassifierLen ());
   }
 
   /**
@@ -134,13 +164,12 @@ public final class VESID implements Comparable <VESID>
                 @Nullable final String sClassifier)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
-    ValueEnforcer.isTrue (isValidPart (sGroupID), () -> "GroupID '" + sGroupID + "' is invalid");
+    ValueEnforcer.isTrue (isValidGroupID (sGroupID), () -> "GroupID '" + sGroupID + "' is invalid");
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
-    ValueEnforcer.isTrue (isValidPart (sArtifactID), () -> "ArtifactID '" + sArtifactID + "' is invalid");
+    ValueEnforcer.isTrue (isValidArtifactID (sArtifactID), () -> "ArtifactID '" + sArtifactID + "' is invalid");
     ValueEnforcer.notNull (aVersion, "Version");
-    ValueEnforcer.isTrue (isValidPart (aVersion.getAsString ()), () -> "Version '" + aVersion + "' is invalid");
-    if (StringHelper.hasText (sClassifier))
-      ValueEnforcer.isTrue (isValidPart (sClassifier), () -> "Classifier '" + sClassifier + "' is invalid");
+    ValueEnforcer.isTrue (isValidVersion (aVersion.getAsString ()), () -> "Version '" + aVersion + "' is invalid");
+    ValueEnforcer.isTrue (isValidClassifier (sClassifier), () -> "Classifier '" + sClassifier + "' is invalid");
     m_sGroupID = sGroupID;
     m_sArtifactID = sArtifactID;
     m_aVersion = aVersion;

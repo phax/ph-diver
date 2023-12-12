@@ -97,8 +97,8 @@ Alternate usage as a Maven BOM:
   
 # News and Noteworthy
 
-* v1.0.2 - work in progress
-    * Restricted VESID part maximum length to 64
+* v1.0.2 - 2023-12-12
+    * Restricted VESID part maximum lengths - defaults to 64 but customizable via `VESIDSettings`.
 * v1.0.1 - 2023-11-07
     * Added support for a "Table of contents" per Group ID and Artefact ID.
 * v1.0.0 - 2023-09-13

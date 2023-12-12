@@ -359,7 +359,7 @@ public final class VESVersion implements Comparable <VESVersion>
       return false;
 
     // Must follow the VESID constraints
-    if (!VESID.isValidPart (sVersion))
+    if (!VESID.isValidVersion (sVersion))
       return false;
 
     // Parse to Version object

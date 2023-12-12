@@ -36,21 +36,21 @@ public final class VESIDTest
   @Test
   public void testIsValid ()
   {
-    assertTrue (VESID.isValidPart ("com"));
-    assertTrue (VESID.isValidPart ("com.helger"));
-    assertTrue (VESID.isValidPart ("01234"));
-    assertTrue (VESID.isValidPart ("1.2.3.4.5"));
-    assertTrue (VESID.isValidPart ("ph-as4"));
-    assertTrue (VESID.isValidPart ("-.___"));
+    assertTrue (VESID.isValidGroupID ("com"));
+    assertTrue (VESID.isValidGroupID ("com.helger"));
+    assertTrue (VESID.isValidGroupID ("01234"));
+    assertTrue (VESID.isValidGroupID ("1.2.3.4.5"));
+    assertTrue (VESID.isValidGroupID ("ph-as4"));
+    assertTrue (VESID.isValidGroupID ("-.___"));
 
-    assertFalse (VESID.isValidPart (null));
-    assertFalse (VESID.isValidPart (""));
-    assertFalse (VESID.isValidPart ("ä"));
-    assertFalse (VESID.isValidPart ("a:b"));
+    assertFalse (VESID.isValidGroupID (null));
+    assertFalse (VESID.isValidGroupID (""));
+    assertFalse (VESID.isValidGroupID ("ä"));
+    assertFalse (VESID.isValidGroupID ("a:b"));
 
     // Max length
-    assertTrue (VESID.isValidPart (StringHelper.getRepeated ('a', VESID.PART_MAX_LEN)));
-    assertFalse (VESID.isValidPart (StringHelper.getRepeated ('a', VESID.PART_MAX_LEN + 1)));
+    assertTrue (VESID.isValidGroupID (StringHelper.getRepeated ('a', VESIDSettings.DEFAULT_MAX_GROUP_ID_LEN)));
+    assertFalse (VESID.isValidGroupID (StringHelper.getRepeated ('a', VESIDSettings.DEFAULT_MAX_GROUP_ID_LEN + 1)));
   }
 
   @Test
