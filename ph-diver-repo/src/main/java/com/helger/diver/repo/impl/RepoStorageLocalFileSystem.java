@@ -35,8 +35,8 @@ import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.RepoStorageKey;
-import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
+import com.helger.diver.repo.toc.IRepoTopTocService;
 
 /**
  * Base implementation of {@link IRepoStorage} on a local file system.
@@ -52,9 +52,10 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
   public RepoStorageLocalFileSystem (@Nonnull final File aBaseDir,
                                      @Nonnull @Nonempty final String sID,
                                      @Nonnull final ERepoWritable eWriteEnabled,
-                                     @Nonnull final ERepoDeletable eDeleteEnabled)
+                                     @Nonnull final ERepoDeletable eDeleteEnabled,
+                                     @Nonnull final IRepoTopTocService aTopTocService)
   {
-    super (RepoStorageType.LOCAL_FILE_SYSTEM, sID, eWriteEnabled, eDeleteEnabled);
+    super (RepoStorageType.LOCAL_FILE_SYSTEM, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
     ValueEnforcer.notNull (aBaseDir, "BaseDir");
     ValueEnforcer.isFalse (aBaseDir.isFile (), "Base Directory may not be an existing file");
     FileOperationManager.INSTANCE.createDirRecursiveIfNotExisting (aBaseDir.getAbsoluteFile ());
@@ -120,7 +121,7 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
 
   @Override
   @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKeyOfArtefact aKey, @Nonnull final byte [] aPayload)
+  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
   {
     final File fTarget = getRelativeFile (aKey);
     if (LOGGER.isDebugEnabled ())
@@ -140,7 +141,7 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
 
   @Override
   @Nonnull
-  protected ESuccess deleteObject (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  protected ESuccess deleteObject (@Nonnull final RepoStorageKey aKey)
   {
     final File fTarget = getRelativeFile (aKey);
     LOGGER.info ("Deleting from local file system '" + fTarget.getAbsolutePath () + "'");

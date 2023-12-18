@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.impl.RepoStorageLocalFileSystem;
+import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 
 public final class MockRepoStorageLocalFileSystem extends RepoStorageLocalFileSystem
 {
@@ -31,6 +32,6 @@ public final class MockRepoStorageLocalFileSystem extends RepoStorageLocalFileSy
   public MockRepoStorageLocalFileSystem (@Nonnull final ERepoWritable eWriteEnabled,
                                          @Nonnull final ERepoDeletable eDeleteEnabled)
   {
-    super (TEST_REPO_DIR, "unittest-fs", eWriteEnabled, eDeleteEnabled);
+    super (TEST_REPO_DIR, "unittest-fs", eWriteEnabled, eDeleteEnabled, new RepoTopTocServiceRepoBasedXML ());
   }
 }

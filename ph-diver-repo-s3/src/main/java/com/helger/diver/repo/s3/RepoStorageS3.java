@@ -31,9 +31,9 @@ import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.RepoStorageKey;
-import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
+import com.helger.diver.repo.toc.IRepoTopTocService;
 
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -64,9 +64,10 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
                         @Nonnull @Nonempty final String sBucketName,
                         @Nonnull @Nonempty final String sID,
                         @Nonnull final ERepoWritable eWriteEnabled,
-                        @Nonnull final ERepoDeletable eDeleteEnabled)
+                        @Nonnull final ERepoDeletable eDeleteEnabled,
+                        @Nonnull final IRepoTopTocService aTopTocService)
   {
-    super (AWS_S3, sID, eWriteEnabled, eDeleteEnabled);
+    super (AWS_S3, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
     ValueEnforcer.notNull (aS3Client, "S3Client");
     ValueEnforcer.notEmpty (sBucketName, "BucketName");
     ValueEnforcer.isEqual (sBucketName, sBucketName.trim (), "BucketName must be trimmed");
@@ -132,7 +133,7 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
 
   @Override
   @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKeyOfArtefact aKey, @Nonnull final byte [] aPayload)
+  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
   {
     final String sRealKey = aKey.getPath ();
 
@@ -160,7 +161,7 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
 
   @Override
   @Nonnull
-  protected ESuccess deleteObject (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  protected ESuccess deleteObject (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 

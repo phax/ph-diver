@@ -39,6 +39,7 @@ import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.mock.MockRepoStorageLocalFileSystem;
+import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 
 /**
  * Test class for class {@link RepoStorageLocalFileSystem}.
@@ -115,6 +116,15 @@ public final class RepoStorageLocalFileSystemTest
                     "com/ecosio/test/fs-written/" +
                                                                   RepoStorageKeyOfArtefact.FILENAME_TOC_DIVER_XML +
                                                                   RepoStorageKey.SUFFIX_SHA256);
+      FileOperationManager.INSTANCE.deleteFile (f);
+
+      // Delete Top-ToC as well
+      f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
+                    RepoTopTocServiceRepoBasedXML.FILENAME_TOP_TOC_DIVER_XML);
+      FileOperationManager.INSTANCE.deleteFile (f);
+
+      f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
+                    RepoTopTocServiceRepoBasedXML.FILENAME_TOP_TOC_DIVER_XML + RepoStorageKey.SUFFIX_SHA256);
       FileOperationManager.INSTANCE.deleteFile (f);
     }
   }

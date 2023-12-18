@@ -76,7 +76,7 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    * @return {@link ESuccess}
    */
   @Nonnull
-  default ESuccess write (@Nonnull final RepoStorageKeyOfArtefact aKey, @Nonnull final RepoStorageItem aItem)
+  default ESuccess write (@Nonnull final RepoStorageKey aKey, @Nonnull final RepoStorageItem aItem)
   {
     return write (aKey, aItem, (OffsetDateTime) null);
   }
@@ -95,7 +95,7 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    * @return {@link ESuccess}
    */
   @Nonnull
-  ESuccess write (@Nonnull RepoStorageKeyOfArtefact aKey,
+  ESuccess write (@Nonnull RepoStorageKey aKey,
                   @Nonnull RepoStorageItem aItem,
                   @Nullable OffsetDateTime aPublicationDT);
 
@@ -114,5 +114,5 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    *         {@link ESuccess#FAILURE} if not.
    */
   @Nonnull
-  ESuccess delete (@Nonnull RepoStorageKeyOfArtefact aKey);
+  ESuccess delete (@Nonnull RepoStorageKey aKey);
 }

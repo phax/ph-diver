@@ -23,6 +23,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
@@ -39,6 +40,9 @@ import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
+import com.helger.diver.repo.toc.IRepoStorageWithToc;
+import com.helger.diver.repo.toc.IRepoTopTocGroupNameConsumer;
+import com.helger.diver.repo.toc.IRepoTopTocService;
 
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.core.exception.SdkClientException;
@@ -79,7 +83,31 @@ public final class RepoStorageS3Test
                               "bucket",
                               "unittest.s3",
                               ERepoWritable.WITH_WRITE,
-                              ERepoDeletable.WITH_DELETE);
+                              ERepoDeletable.WITH_DELETE,
+                              new IRepoTopTocService ()
+                              {
+                                @Nonnull
+                                public ESuccess registerGroupAndArtifact (final String sGroupID,
+                                                                          final String sArtifactID)
+                                {
+                                  return ESuccess.SUCCESS;
+                                }
+
+                                public void iterateAllTopLevelGroupNames (final Consumer <String> aGroupNameConsumer)
+                                {}
+
+                                public void iterateAllSubGroups (final String sGroupID,
+                                                                 final IRepoTopTocGroupNameConsumer aGroupNameConsumer,
+                                                                 final boolean bRecursive)
+                                {}
+
+                                public void iterateAllArtifacts (final String sGroupID,
+                                                                 final Consumer <String> aArtifactNameConsumer)
+                                {}
+
+                                public void initForRepo (final IRepoStorageWithToc aRepo)
+                                {}
+                              });
   }
 
   @Test

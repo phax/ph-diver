@@ -41,9 +41,9 @@ import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.RepoStorageKey;
-import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
+import com.helger.diver.repo.toc.IRepoTopTocService;
 import com.helger.httpclient.HttpClientManager;
 import com.helger.httpclient.response.ResponseHandlerByteArray;
 
@@ -64,9 +64,10 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
                           @Nonnull @Nonempty final String sURLPrefix,
                           @Nonnull @Nonempty final String sID,
                           @Nonnull final ERepoWritable eWriteEnabled,
-                          @Nonnull final ERepoDeletable eDeleteEnabled)
+                          @Nonnull final ERepoDeletable eDeleteEnabled,
+                          @Nonnull final IRepoTopTocService aTopTocService)
   {
-    super (RepoStorageType.HTTP, sID, eWriteEnabled, eDeleteEnabled);
+    super (RepoStorageType.HTTP, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
     ValueEnforcer.notNull (aHttpClient, "HttpClient");
     ValueEnforcer.notEmpty (sURLPrefix, "URLPrefix");
     m_aHttpClient = aHttpClient;
@@ -108,7 +109,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
 
   @Override
   @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKeyOfArtefact aKey, @Nonnull final byte [] aPayload)
+  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
     if (LOGGER.isInfoEnabled ())
@@ -139,7 +140,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
 
   @Override
   @Nonnull
-  protected ESuccess deleteObject (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  protected ESuccess deleteObject (@Nonnull final RepoStorageKey aKey)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
     if (LOGGER.isInfoEnabled ())

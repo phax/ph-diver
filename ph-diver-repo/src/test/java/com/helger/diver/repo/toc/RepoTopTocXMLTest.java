@@ -28,16 +28,15 @@ import com.helger.commons.collection.impl.CommonsLinkedHashSet;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsOrderedSet;
 import com.helger.commons.collection.impl.ICommonsSet;
-import com.helger.commons.collection.impl.ICommonsSortedSet;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
 
 /**
- * Test class for class {@link RepoTopToc}.
+ * Test class for class {@link RepoTopTocXML}.
  *
  * @author Philip Helger
  */
-public final class RepoTopTocTest
+public final class RepoTopTocXMLTest
 {
   @Test
   public void testBasic ()
@@ -50,18 +49,16 @@ public final class RepoTopTocTest
     final RepoTopTocType aRepoTopToc1 = m.read (new ClassPathResource ("repotoptoc/repotoptoc-1.xml"));
     assertNotNull (aRepoTopToc1);
 
-    final RepoTopToc aToC = RepoTopToc.createFromJaxbObject (aRepoTopToc1);
+    // Read
+    final RepoTopTocXML aToC = RepoTopTocXML.createFromJaxbObject (aRepoTopToc1);
     assertNotNull (aToC);
 
-    // Check top level groups
-    {
-      final ICommonsSortedSet <String> aTLGroups = aToC.getAllTopLevelGroupNames ();
-      assertNotNull (aTLGroups);
-      assertEquals (2, aTLGroups.size ());
-      assertTrue (aTLGroups.contains ("com"));
-      assertTrue (aTLGroups.contains ("org"));
-    }
+    // Convert to JAXB again
+    final RepoTopTocType aRepoTopToc2 = aToC.getAsJaxbObject ();
+    assertNotNull (aRepoTopToc2);
+    assertEquals (aRepoTopToc1, aRepoTopToc2);
 
+    // Check top level groups
     {
       final ICommonsOrderedSet <String> aTLGroups = new CommonsLinkedHashSet <> ();
       aToC.iterateAllTopLevelGroupNames (aTLGroups::add);

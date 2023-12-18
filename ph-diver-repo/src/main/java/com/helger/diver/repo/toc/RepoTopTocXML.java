@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2023 Philip Helger & ecosio
+ * philip[at]helger[dot]com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.helger.diver.repo.toc;
 
 import java.util.Map;
@@ -8,13 +24,12 @@ import javax.annotation.Nullable;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsTreeMap;
 import com.helger.commons.collection.impl.CommonsTreeSet;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsSortedMap;
 import com.helger.commons.collection.impl.ICommonsSortedSet;
-import com.helger.commons.state.ESuccess;
+import com.helger.commons.state.EChange;
 import com.helger.commons.string.StringHelper;
 import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
@@ -27,7 +42,7 @@ import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
  *
  * @author Philip Helger
  */
-public class RepoTopToc implements IRepoTopToc
+public class RepoTopTocXML
 {
   /**
    * Represents a single group with a name, a list of sub groups and a list of
@@ -55,25 +70,46 @@ public class RepoTopToc implements IRepoTopToc
              m_aSubGroups.equals (rhs.m_aSubGroups) &&
              m_aArtifacts.equals (rhs.m_aArtifacts);
     }
+
+    @Nonnull
+    public GroupType getAsJaxbObject ()
+    {
+      final GroupType ret = new GroupType ();
+      ret.setName (m_sName);
+
+      // Hack: Make sure the internal lists are created (important for equals)
+      ret.getArtifact ();
+      ret.getGroup ();
+
+      for (final String sArtifactID : m_aArtifacts)
+      {
+        final ArtifactType aJaxbArtifact = new ArtifactType ();
+        aJaxbArtifact.setName (sArtifactID);
+        ret.addArtifact (aJaxbArtifact);
+      }
+
+      // recursive descend
+      for (final Group aSubGroup : m_aSubGroups.values ())
+        ret.addGroup (aSubGroup.getAsJaxbObject ());
+      return ret;
+    }
   }
 
   private final ICommonsSortedMap <String, Group> m_aTopLevelGroups = new CommonsTreeMap <> ();
 
-  public RepoTopToc ()
+  public RepoTopTocXML ()
   {}
+
+  public int getTopLevelGroupCount ()
+  {
+    return m_aTopLevelGroups.size ();
+  }
 
   public void iterateAllTopLevelGroupNames (@Nonnull final Consumer <String> aGroupNameConsumer)
   {
     ValueEnforcer.notNull (aGroupNameConsumer, "GroupNameConsumer");
 
     m_aTopLevelGroups.keySet ().forEach (aGroupNameConsumer);
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public ICommonsSortedSet <String> getAllTopLevelGroupNames ()
-  {
-    return m_aTopLevelGroups.copyOfKeySet ();
   }
 
   @Nullable
@@ -92,7 +128,7 @@ public class RepoTopToc implements IRepoTopToc
 
   private void _recursiveIterateExistingSubGroups (@Nonnull @Nonempty final String sAbsoluteGroupID,
                                                    @Nonnull final Group aCurGroup,
-                                                   @Nonnull final IGroupNameConsumer aGroupNameConsumer,
+                                                   @Nonnull final IRepoTopTocGroupNameConsumer aGroupNameConsumer,
                                                    final boolean bRecursive)
   {
     for (final Map.Entry <String, Group> aEntry : aCurGroup.m_aSubGroups.entrySet ())
@@ -110,7 +146,7 @@ public class RepoTopToc implements IRepoTopToc
   }
 
   public void iterateAllSubGroups (@Nonnull @Nonempty final String sGroupID,
-                                   @Nonnull final IGroupNameConsumer aGroupNameConsumer,
+                                   @Nonnull final IRepoTopTocGroupNameConsumer aGroupNameConsumer,
                                    final boolean bRecursive)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
@@ -154,20 +190,21 @@ public class RepoTopToc implements IRepoTopToc
   }
 
   @Nonnull
-  public ESuccess registerGroupAndArtifact (@Nonnull @Nonempty final String sGroupID,
-                                            @Nonnull @Nonempty final String sArtifactID)
+  public EChange registerGroupAndArtifact (@Nonnull @Nonempty final String sGroupID,
+                                           @Nonnull @Nonempty final String sArtifactID)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
 
     final Group aGroup = _getOrCreateGroup (sGroupID);
+
     // Add to artifact list of latest subgroup
     final boolean bAdded = aGroup.m_aArtifacts.add (sArtifactID);
 
-    return ESuccess.valueOf (bAdded);
+    return EChange.valueOf (bAdded);
   }
 
-  public boolean deepEquals (@Nonnull final RepoTopToc aOther)
+  public boolean deepEquals (@Nonnull final RepoTopTocXML aOther)
   {
     ValueEnforcer.notNull (aOther, "Other");
 
@@ -192,6 +229,15 @@ public class RepoTopToc implements IRepoTopToc
       }
     }
     return true;
+  }
+
+  @Nonnull
+  public RepoTopTocType getAsJaxbObject ()
+  {
+    final RepoTopTocType ret = new RepoTopTocType ();
+    for (final Map.Entry <String, Group> aEntry : m_aTopLevelGroups.entrySet ())
+      ret.addGroup (aEntry.getValue ().getAsJaxbObject ());
+    return ret;
   }
 
   private static void _recursiveReadGroups (@Nonnull final String sAbsoluteGroupName,
@@ -230,11 +276,11 @@ public class RepoTopToc implements IRepoTopToc
   }
 
   @Nonnull
-  public static RepoTopToc createFromJaxbObject (@Nonnull final RepoTopTocType aRepoTopToc)
+  public static RepoTopTocXML createFromJaxbObject (@Nonnull final RepoTopTocType aRepoTopToc)
   {
     ValueEnforcer.notNull (aRepoTopToc, "RepoTopToc");
 
-    final RepoTopToc ret = new RepoTopToc ();
+    final RepoTopTocXML ret = new RepoTopTocXML ();
     for (final GroupType aSrcGroup : aRepoTopToc.getGroup ())
     {
       final String sGroupName = aSrcGroup.getName ();

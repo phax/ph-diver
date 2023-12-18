@@ -166,6 +166,10 @@ public class RepoStorageChain implements IRepoStorageBase
             LOGGER.debug (sMsg);
         }
 
+        // Only copy the artefact if:
+        // 1. The source repository is remote
+        // 2. Caching of content is enabled
+        // 3. It is a real artifact and not just "any" data (like TopToC)
         if (aStorage.getRepoType ().isRemote () && m_bCacheRemoteContent && aKey instanceof RepoStorageKeyOfArtefact)
         {
           // Item was read from remote
@@ -178,7 +182,7 @@ public class RepoStorageChain implements IRepoStorageBase
                             "' to " +
                             m_aWritableStorages.getAllMapped (IRepoStorage::getRepoTypeID));
             for (final IRepoStorage aWritableStorage : m_aWritableStorages)
-              aWritableStorage.write ((RepoStorageKeyOfArtefact) aKey, aItem);
+              aWritableStorage.write (aKey, aItem);
           }
         }
         return aItem;

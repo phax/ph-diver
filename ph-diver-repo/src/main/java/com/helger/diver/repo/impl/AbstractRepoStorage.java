@@ -209,11 +209,10 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   }
 
   @Nonnull
-  protected abstract ESuccess writeObject (@Nonnull final RepoStorageKeyOfArtefact aKey,
-                                           @Nonnull final byte [] aPayload);
+  protected abstract ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload);
 
   @Nonnull
-  protected final ESuccess doWriteRepoStorageItem (@Nonnull final RepoStorageKeyOfArtefact aKey,
+  protected final ESuccess doWriteRepoStorageItem (@Nonnull final RepoStorageKey aKey,
                                                    @Nonnull final RepoStorageItem aItem)
   {
     ValueEnforcer.notNull (aKey, "Key");
@@ -262,7 +261,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   }
 
   @Nonnull
-  public final ESuccess write (@Nonnull final RepoStorageKeyOfArtefact aKey,
+  public final ESuccess write (@Nonnull final RepoStorageKey aKey,
                                @Nonnull final RepoStorageItem aItem,
                                @Nullable final OffsetDateTime aPublicationDT)
   {
@@ -278,8 +277,9 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     if (doWriteRepoStorageItem (aKey, aItem).isFailure ())
       return ESuccess.FAILURE;
 
-    if (onAfterWrite (aKey, aItem, aPublicationDT).isFailure ())
-      return ESuccess.FAILURE;
+    if (aKey instanceof RepoStorageKeyOfArtefact)
+      if (onAfterWrite ((RepoStorageKeyOfArtefact) aKey, aItem, aPublicationDT).isFailure ())
+        return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;
   }
@@ -290,10 +290,10 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   }
 
   @Nonnull
-  protected abstract ESuccess deleteObject (@Nonnull final RepoStorageKeyOfArtefact aKey);
+  protected abstract ESuccess deleteObject (@Nonnull final RepoStorageKey aKey);
 
   @Nonnull
-  private ESuccess _doDeleteRepoStorageItem (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  private ESuccess _doDeleteRepoStorageItem (@Nonnull final RepoStorageKey aKey)
   {
     LOGGER.info ("Deleting item '" + aKey.getPath () + "' from RepoStorage[" + m_aType.getID () + "]");
 
@@ -323,7 +323,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   }
 
   @Nonnull
-  public final ESuccess delete (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  public final ESuccess delete (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -336,8 +336,9 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     if (_doDeleteRepoStorageItem (aKey).isFailure ())
       return ESuccess.FAILURE;
 
-    if (onAfterDelete (aKey).isFailure ())
-      return ESuccess.FAILURE;
+    if (aKey instanceof RepoStorageKeyOfArtefact)
+      if (onAfterDelete ((RepoStorageKeyOfArtefact) aKey).isFailure ())
+        return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;
   }

@@ -17,6 +17,7 @@
 package com.helger.diver.repo.impl;
 
 import java.time.OffsetDateTime;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
@@ -25,6 +26,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.datetime.PDTFactory;
@@ -37,6 +39,7 @@ import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.toc.IRepoStorageWithToc;
+import com.helger.diver.repo.toc.IRepoTopTocService;
 import com.helger.diver.repo.toc.RepoToc;
 import com.helger.diver.repo.toc.RepoToc1Marshaller;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
@@ -59,13 +62,31 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
 
   // Enable ToC updates on write and delete
   private boolean m_bEnableTocUpdates = DEFAULT_ENABLE_TOC_UPDATES;
+  private final AtomicBoolean m_aTopTocServiceInitialized = new AtomicBoolean (false);
+  private final IRepoTopTocService m_aTopTocService;
 
   protected AbstractRepoStorageWithToc (@Nonnull final RepoStorageType aType,
                                         @Nonnull @Nonempty final String sID,
                                         @Nonnull final ERepoWritable eWriteEnabled,
-                                        @Nonnull final ERepoDeletable eDeleteEnabled)
+                                        @Nonnull final ERepoDeletable eDeleteEnabled,
+                                        @Nonnull final IRepoTopTocService aTopTocService)
   {
     super (aType, sID, eWriteEnabled, eDeleteEnabled);
+    ValueEnforcer.notNull (aTopTocService, "TopTocService");
+    m_aTopTocService = aTopTocService;
+  }
+
+  @Nonnull
+  public final IRepoTopTocService getTopTocService ()
+  {
+    if (!m_aTopTocServiceInitialized.getAndSet (true))
+    {
+      LOGGER.info ("Begin initializing TopToc for repo");
+      m_aTopTocService.initForRepo (this);
+      LOGGER.info ("Done initializing TopToc for repo");
+    }
+
+    return m_aTopTocService;
   }
 
   public final boolean isEnableTocUpdates ()
@@ -160,6 +181,9 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
         {
           LOGGER.info ("Successfully added version '" + aVESID.getAsSingleID () + "' to ToC");
         }
+
+        // Update top-level ToC
+        getTopTocService ().registerGroupAndArtifact (aVESID.getGroupID (), aVESID.getArtifactID ());
       });
     }
 

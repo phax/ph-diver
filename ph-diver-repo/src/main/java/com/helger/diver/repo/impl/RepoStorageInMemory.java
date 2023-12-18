@@ -37,8 +37,9 @@ import com.helger.commons.state.ESuccess;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.RepoStorageKey;
-import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
+import com.helger.diver.repo.toc.IRepoTopTocService;
+import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 
 /**
  * This class implements an in-memory repository storage. That is used for extra
@@ -81,9 +82,10 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
                               @Nonnull @Nonempty final String sID,
                               @Nonnull final ERepoWritable eWriteEnabled,
                               @Nonnull final ERepoDeletable eDeleteEnabled,
+                              @Nonnull final IRepoTopTocService aTopTocService,
                               final boolean bAllowOverwrite)
   {
-    super (RepoStorageType.IN_MEMORY, sID, eWriteEnabled, eDeleteEnabled);
+    super (RepoStorageType.IN_MEMORY, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
     ValueEnforcer.isGT0 (nMaxSize, "Max size must be > 0");
     m_aCache = new MaxSizeMap (nMaxSize);
     m_bAllowOverwrite = bAllowOverwrite;
@@ -185,7 +187,7 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
 
   @Override
   @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKeyOfArtefact aKey, @Nonnull final byte [] aPayload)
+  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
   {
     return _write (aKey, aPayload, m_bAllowOverwrite);
   }
@@ -213,7 +215,7 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
 
   @Override
   @Nonnull
-  protected ESuccess deleteObject (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  protected ESuccess deleteObject (@Nonnull final RepoStorageKey aKey)
   {
     final String sRealKey = aKey.getPath ();
 
@@ -265,6 +267,11 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
                                                    @Nonnull final ERepoWritable eWriteEnabled,
                                                    @Nonnull final ERepoDeletable eDeleteEnabled)
   {
-    return new RepoStorageInMemory (DEFAULT_MAX_SIZE, sID, eWriteEnabled, eDeleteEnabled, DEFAULT_ALLOW_OVERWRITE);
+    return new RepoStorageInMemory (DEFAULT_MAX_SIZE,
+                                    sID,
+                                    eWriteEnabled,
+                                    eDeleteEnabled,
+                                    new RepoTopTocServiceRepoBasedXML (),
+                                    DEFAULT_ALLOW_OVERWRITE);
   }
 }

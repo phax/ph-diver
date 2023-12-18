@@ -43,6 +43,7 @@ import com.helger.diver.repo.http.mock.LocalJettyRunner;
 import com.helger.diver.repo.http.mock.MockRepoStorageLocalFileSystem;
 import com.helger.diver.repo.impl.RepoStorageInMemory;
 import com.helger.diver.repo.impl.RepoStorageLocalFileSystem;
+import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 import com.helger.httpclient.HttpClientManager;
 
 /**
@@ -82,7 +83,8 @@ public final class RepoStorageChainFuncTest
                                                            LocalJettyRunner.DEFAULT_ACCESS_URL,
                                                            "unittest-http",
                                                            ERepoWritable.WITHOUT_WRITE,
-                                                           ERepoDeletable.WITHOUT_DELETE);
+                                                           ERepoDeletable.WITHOUT_DELETE,
+                                                           new RepoTopTocServiceRepoBasedXML ());
 
     final RepoStorageChain aRepoChain = RepoStorageChain.of (new CommonsArrayList <> (aRepoInMemory,
                                                                                       aRepoLocalFS,
@@ -119,23 +121,30 @@ public final class RepoStorageChainFuncTest
     }
     finally
     {
+      final File fBase = MockRepoStorageLocalFileSystem.TEST_REPO_DIR;
+
       // Cleanup from local FS
-      File f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR, "com/ecosio/http-only/1/http-only-1.txt");
+      File f = new File (fBase, "com/ecosio/http-only/1/http-only-1.txt");
       FileOperationManager.INSTANCE.deleteFile (f);
 
-      f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
-                    "com/ecosio/http-only/1/http-only-1.txt" + RepoStorageKey.SUFFIX_SHA256);
+      f = new File (fBase, "com/ecosio/http-only/1/http-only-1.txt" + RepoStorageKey.SUFFIX_SHA256);
       FileOperationManager.INSTANCE.deleteFile (f);
 
       // Delete ToC as well
-      f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
-                    "com/ecosio/http-only/" + RepoStorageKeyOfArtefact.FILENAME_TOC_DIVER_XML);
+      f = new File (fBase, "com/ecosio/http-only/" + RepoStorageKeyOfArtefact.FILENAME_TOC_DIVER_XML);
       FileOperationManager.INSTANCE.deleteFile (f);
 
-      f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
+      f = new File (fBase,
                     "com/ecosio/http-only/" +
-                                                                  RepoStorageKeyOfArtefact.FILENAME_TOC_DIVER_XML +
-                                                                  RepoStorageKey.SUFFIX_SHA256);
+                           RepoStorageKeyOfArtefact.FILENAME_TOC_DIVER_XML +
+                           RepoStorageKey.SUFFIX_SHA256);
+      FileOperationManager.INSTANCE.deleteFile (f);
+
+      // Delete Top-ToC as well
+      f = new File (fBase, RepoTopTocServiceRepoBasedXML.FILENAME_TOP_TOC_DIVER_XML);
+      FileOperationManager.INSTANCE.deleteFile (f);
+
+      f = new File (fBase, RepoTopTocServiceRepoBasedXML.FILENAME_TOP_TOC_DIVER_XML + RepoStorageKey.SUFFIX_SHA256);
       FileOperationManager.INSTANCE.deleteFile (f);
     }
   }
@@ -155,7 +164,8 @@ public final class RepoStorageChainFuncTest
                                                        LocalJettyRunner.DEFAULT_ACCESS_URL,
                                                        "unittest-http",
                                                        ERepoWritable.WITHOUT_WRITE,
-                                                       ERepoDeletable.WITHOUT_DELETE);
+                                                       ERepoDeletable.WITHOUT_DELETE,
+                                                       new RepoTopTocServiceRepoBasedXML ());
     final RepoStorageChain aChain = RepoStorageChain.of (new CommonsArrayList <> (aInMemory, aLocalFS, aHttp),
                                                          new CommonsArrayList <> (aInMemory, aLocalFS))
                                                     .setCacheRemoteContent (false);
