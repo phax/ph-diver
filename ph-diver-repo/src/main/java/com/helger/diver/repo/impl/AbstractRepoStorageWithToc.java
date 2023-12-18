@@ -60,8 +60,6 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
   // Enable ToC updates on write and delete
   private boolean m_bEnableTocUpdates = DEFAULT_ENABLE_TOC_UPDATES;
 
-  // private RepoTopToc m_aTopToc;
-
   protected AbstractRepoStorageWithToc (@Nonnull final RepoStorageType aType,
                                         @Nonnull @Nonempty final String sID,
                                         @Nonnull final ERepoWritable eWriteEnabled,

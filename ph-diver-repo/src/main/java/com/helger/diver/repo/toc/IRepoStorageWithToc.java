@@ -26,6 +26,7 @@ import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
+import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
 
 /**
  * Extended {@link IRepoStorage} with support for table of contents.
@@ -37,10 +38,50 @@ public interface IRepoStorageWithToc extends IRepoStorage
 {
   // Top level Table of Contents:
 
+  /**
+   * Test if the top-level ToC is present or not.
+   *
+   * @return <code>true</code> if it exists, <code>false</code> if not.
+   */
+  default boolean existsTopToc ()
+  {
+    return exists (RepoStorageKey.ofTopToc ());
+  }
+
+  /**
+   * Read the top-level ToC bytes for the provided Group ID and Artefact ID
+   *
+   * @return <code>null</code> if either group or artifact do not exist, or if
+   *         no ToC is present.
+   */
   @Nullable
   default RepoStorageItem readTopToc ()
   {
     return read (RepoStorageKey.ofTopToc ());
+  }
+
+  /**
+   * Read the top-level ToC and return the parsed data.
+   *
+   * @return <code>null</code> if the top-toc does not exist,
+   *         non-<code>null</code> otherwise.
+   */
+  @Nullable
+  default RepoTopToc readTopTocModel ()
+  {
+    // Read bytes
+    final RepoStorageItem aItem = readTopToc ();
+    if (aItem != null)
+    {
+      // Parse to XML
+      final RepoTopTocType aJaxbObject = new RepoTopToc1Marshaller ().read (aItem.data ().bytes ());
+      if (aJaxbObject != null)
+      {
+        // Convert to domain model
+        return RepoTopToc.createFromJaxbObject (aJaxbObject);
+      }
+    }
+    return null;
   }
 
   // Table of Contents per Group ID and Artifact ID:
