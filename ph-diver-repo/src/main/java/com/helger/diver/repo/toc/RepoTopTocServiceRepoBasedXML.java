@@ -16,15 +16,19 @@
  */
 package com.helger.diver.repo.toc;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.state.ESuccess;
 import com.helger.diver.repo.RepoStorageItem;
@@ -37,6 +41,7 @@ import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
  *
  * @author Philip Helger
  */
+@ThreadSafe
 public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
 {
   /** The default filename for the top-level table of contents. */
@@ -46,8 +51,10 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
 
   private static final RepoStorageKey RSK = new RepoStorageKey (FILENAME_TOP_TOC_DIVER_XML);
 
-  private boolean m_bInitialized = false;
+  private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
+  private final AtomicBoolean m_aInitialized = new AtomicBoolean (false);
   private IRepoStorageWithToc m_aRepo;
+  @GuardedBy ("m_aRWLock")
   private RepoTopTocXML m_aTopToc;
 
   public RepoTopTocServiceRepoBasedXML ()
@@ -110,18 +117,18 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
   {
     ValueEnforcer.notNull (aRepo, "Repo");
 
-    if (m_bInitialized)
+    if (m_aInitialized.getAndSet (true))
       throw new IllegalStateException ("This service is already initialized - can't do it again, sorry.");
-    m_bInitialized = true;
     m_aRepo = aRepo;
 
     // Initial read
-    m_aTopToc = _readTopToc (true);
+    final RepoTopTocXML aTmpTopToc = _readTopToc (true);
+    m_aRWLock.writeLocked ( () -> m_aTopToc = aTmpTopToc);
   }
 
   private void _checkInited ()
   {
-    if (!m_bInitialized)
+    if (!m_aInitialized.get ())
       throw new IllegalStateException ("This service was not properly initialized");
   }
 
@@ -130,7 +137,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     ValueEnforcer.notNull (aGroupNameConsumer, "GroupNameConsumer");
     _checkInited ();
 
-    m_aTopToc.iterateAllTopLevelGroupNames (aGroupNameConsumer);
+    m_aRWLock.readLocked ( () -> m_aTopToc.iterateAllTopLevelGroupNames (aGroupNameConsumer));
   }
 
   public void iterateAllSubGroups (@Nonnull @Nonempty final String sGroupID,
@@ -141,7 +148,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     ValueEnforcer.notNull (aGroupNameConsumer, "GroupNameConsumer");
     _checkInited ();
 
-    m_aTopToc.iterateAllSubGroups (sGroupID, aGroupNameConsumer, bRecursive);
+    m_aRWLock.readLocked ( () -> m_aTopToc.iterateAllSubGroups (sGroupID, aGroupNameConsumer, bRecursive));
   }
 
   public void iterateAllArtifacts (@Nonnull @Nonempty final String sGroupID,
@@ -151,7 +158,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     ValueEnforcer.notNull (aArtifactNameConsumer, "ArtifactNameConsumer");
     _checkInited ();
 
-    m_aTopToc.iterateAllArtifacts (sGroupID, aArtifactNameConsumer);
+    m_aRWLock.readLocked ( () -> m_aTopToc.iterateAllArtifacts (sGroupID, aArtifactNameConsumer));
   }
 
   @Nonnull
@@ -162,28 +169,30 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
     _checkInited ();
 
-    if (m_aTopToc.registerGroupAndArtifact (sGroupID, sArtifactID).isChanged ())
-    {
-      try
+    return m_aRWLock.writeLockedGet ( () -> {
+      if (m_aTopToc.registerGroupAndArtifact (sGroupID, sArtifactID).isChanged ())
       {
-        // Read the data again, to make sure to have the latest version
-        m_aTopToc = _readTopToc (false);
+        try
+        {
+          // Read the data again, to make sure to have the latest version
+          m_aTopToc = _readTopToc (false);
+        }
+        catch (final RuntimeException ex)
+        {
+          LOGGER.error ("Failed to read Top-ToC", ex);
+          return ESuccess.FAILURE;
+        }
+
+        // Register again, because data structure changed
+        m_aTopToc.registerGroupAndArtifact (sGroupID, sArtifactID);
+
+        // Write updated version on server
+        // Pass instance to avoid it changes while writing
+        if (_writeTopToc (m_aTopToc).isFailure ())
+          return ESuccess.FAILURE;
       }
-      catch (final RuntimeException ex)
-      {
-        LOGGER.error ("Failed to read Top-ToC", ex);
-        return ESuccess.FAILURE;
-      }
 
-      // Register again, because data structure changed
-      m_aTopToc.registerGroupAndArtifact (sGroupID, sArtifactID);
-
-      // Write updated version on server
-      // Pass instance to avoid it changes while writing
-      if (_writeTopToc (m_aTopToc).isFailure ())
-        return ESuccess.FAILURE;
-    }
-
-    return ESuccess.SUCCESS;
+      return ESuccess.SUCCESS;
+    });
   }
 }
