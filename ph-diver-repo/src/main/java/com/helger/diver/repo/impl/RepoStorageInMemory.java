@@ -37,6 +37,7 @@ import com.helger.commons.state.ESuccess;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.RepoStorageKey;
+import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
 
 /**
@@ -88,7 +89,7 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
     m_bAllowOverwrite = bAllowOverwrite;
   }
 
-  public boolean exists (@Nonnull final RepoStorageKey aKey)
+  public boolean exists (@Nonnull final RepoStorageKeyOfArtefact aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -184,7 +185,7 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
 
   @Override
   @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
+  protected ESuccess writeObject (@Nonnull final RepoStorageKeyOfArtefact aKey, @Nonnull final byte [] aPayload)
   {
     return _write (aKey, aPayload, m_bAllowOverwrite);
   }
@@ -212,7 +213,7 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
 
   @Override
   @Nonnull
-  protected ESuccess deleteObject (@Nonnull final RepoStorageKey aKey)
+  protected ESuccess deleteObject (@Nonnull final RepoStorageKeyOfArtefact aKey)
   {
     final String sRealKey = aKey.getPath ();
 

@@ -103,7 +103,7 @@ public class RepoStorageChain implements IRepoStorageBase
     return this;
   }
 
-  public boolean exists (@Nonnull final RepoStorageKey aKey)
+  public boolean exists (@Nonnull final RepoStorageKeyOfArtefact aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -135,7 +135,7 @@ public class RepoStorageChain implements IRepoStorageBase
   }
 
   @Nullable
-  public RepoStorageItem read (@Nonnull final RepoStorageKey aKey)
+  public RepoStorageItem read (@Nonnull final RepoStorageKeyOfArtefact aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 

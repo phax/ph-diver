@@ -41,6 +41,7 @@ import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.RepoStorageKey;
+import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
 import com.helger.httpclient.HttpClientManager;
@@ -72,7 +73,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     m_sURLPrefix = sURLPrefix;
   }
 
-  public boolean exists (@Nonnull final RepoStorageKey aKey)
+  public boolean exists (@Nonnull final RepoStorageKeyOfArtefact aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -107,7 +108,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
 
   @Override
   @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
+  protected ESuccess writeObject (@Nonnull final RepoStorageKeyOfArtefact aKey, @Nonnull final byte [] aPayload)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
     if (LOGGER.isInfoEnabled ())
@@ -138,7 +139,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
 
   @Override
   @Nonnull
-  protected ESuccess deleteObject (@Nonnull final RepoStorageKey aKey)
+  protected ESuccess deleteObject (@Nonnull final RepoStorageKeyOfArtefact aKey)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
     if (LOGGER.isInfoEnabled ())

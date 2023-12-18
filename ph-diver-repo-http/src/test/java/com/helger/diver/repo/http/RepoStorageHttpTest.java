@@ -40,6 +40,7 @@ import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
+import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.http.mock.LocalJettyRunner;
 import com.helger.httpclient.HttpClientManager;
 
@@ -82,11 +83,11 @@ public final class RepoStorageHttpTest
     assertFalse (aRepo.canWrite ());
 
     // Existing only in "local fs" repo but not in http repo
-    RepoStorageItem aItem = aRepo.read (RepoStorageKey.of (new VESID ("com.ecosio", "local", "1"), ".txt"));
+    RepoStorageItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"), ".txt"));
     assertNull (aItem);
 
     // This one exists
-    aItem = aRepo.read (RepoStorageKey.of (new VESID ("com.ecosio", "http-only", "1"), ".txt"));
+    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "http-only", "1"), ".txt"));
     assertNotNull (aItem);
     assertEquals ("This file is on HTTP native", aItem.getDataAsUtf8String ());
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
@@ -108,13 +109,14 @@ public final class RepoStorageHttpTest
     final RepoStorageHttp aRepo = _createRepoWritable ();
     assertTrue (aRepo.canWrite ());
 
-    RepoStorageItem aItem = aRepo.read (RepoStorageKey.of (new VESID ("com.ecosio", "http-only", "1"), ".txt"));
+    RepoStorageItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "http-only", "1"),
+                                                                     ".txt"));
     assertNotNull (aItem);
     assertEquals ("This file is on HTTP native", aItem.getDataAsUtf8String ());
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
     // Ensure the one written below, is not existing
-    aItem = aRepo.read (RepoStorageKey.of (new VESID ("com.ecosio", "http-written", "1"), ".txt"));
+    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "http-written", "1"), ".txt"));
     assertNull (aItem);
   }
 
@@ -124,7 +126,8 @@ public final class RepoStorageHttpTest
     final RepoStorageHttp aRepoHttp = _createRepoWritable ();
     assertTrue (aRepoHttp.canWrite ());
 
-    final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio", "http-written", "1"), ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "http-written", "1"),
+                                                                       ".txt");
 
     try
     {
@@ -155,11 +158,13 @@ public final class RepoStorageHttpTest
 
       // Delete ToC as well
       f = new File (LocalJettyRunner.DEFAULT_TEST_RESOURCE_BASE,
-                    "com/ecosio/http-written/" + RepoStorageKey.FILENAME_TOC_DIVER_XML);
+                    "com/ecosio/http-written/" + RepoStorageKeyOfArtefact.FILENAME_TOC_DIVER_XML);
       FileOperationManager.INSTANCE.deleteFile (f);
 
       f = new File (LocalJettyRunner.DEFAULT_TEST_RESOURCE_BASE,
-                    "com/ecosio/http-written/" + RepoStorageKey.FILENAME_TOC_DIVER_XML + RepoStorageKey.SUFFIX_SHA256);
+                    "com/ecosio/http-written/" +
+                                                                 RepoStorageKeyOfArtefact.FILENAME_TOC_DIVER_XML +
+                                                                 RepoStorageKey.SUFFIX_SHA256);
       FileOperationManager.INSTANCE.deleteFile (f);
     }
   }

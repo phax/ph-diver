@@ -23,7 +23,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.RepoStorageItem;
-import com.helger.diver.repo.RepoStorageKey;
+import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 
 /**
@@ -46,7 +46,7 @@ public interface IRepoStorageWithToc extends IRepoStorage
    */
   default boolean existsToc (@Nonnull @Nonempty final String sGroupID, @Nonnull @Nonempty final String sArtifactID)
   {
-    return exists (RepoStorageKey.ofToc (sGroupID, sArtifactID));
+    return exists (RepoStorageKeyOfArtefact.ofToc (sGroupID, sArtifactID));
   }
 
   /**
@@ -63,7 +63,7 @@ public interface IRepoStorageWithToc extends IRepoStorage
   default RepoStorageItem readToc (@Nonnull @Nonempty final String sGroupID,
                                    @Nonnull @Nonempty final String sArtifactID)
   {
-    return read (RepoStorageKey.ofToc (sGroupID, sArtifactID));
+    return read (RepoStorageKeyOfArtefact.ofToc (sGroupID, sArtifactID));
   }
 
   /**

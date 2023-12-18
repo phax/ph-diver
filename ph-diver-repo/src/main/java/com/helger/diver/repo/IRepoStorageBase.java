@@ -33,7 +33,7 @@ public interface IRepoStorageBase
    *        The key to check for existence. May not be <code>null</code>.
    * @return <code>true</code> if it exists, <code>false</code> if not.
    */
-  boolean exists (@Nonnull RepoStorageKey aKey);
+  boolean exists (@Nonnull RepoStorageKeyOfArtefact aKey);
 
   /**
    * Read the provided key from the underlying storage.
@@ -43,5 +43,5 @@ public interface IRepoStorageBase
    * @return <code>null</code> if the provided key does not exist.
    */
   @Nullable
-  RepoStorageItem read (@Nonnull RepoStorageKey aKey);
+  RepoStorageItem read (@Nonnull RepoStorageKeyOfArtefact aKey);
 }

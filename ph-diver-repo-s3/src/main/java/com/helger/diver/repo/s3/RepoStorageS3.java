@@ -31,6 +31,7 @@ import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.RepoStorageKey;
+import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
 
@@ -73,7 +74,7 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
     m_sBucketName = sBucketName;
   }
 
-  public boolean exists (@Nonnull final RepoStorageKey aKey)
+  public boolean exists (@Nonnull final RepoStorageKeyOfArtefact aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -131,7 +132,7 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
 
   @Override
   @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
+  protected ESuccess writeObject (@Nonnull final RepoStorageKeyOfArtefact aKey, @Nonnull final byte [] aPayload)
   {
     final String sRealKey = aKey.getPath ();
 
@@ -159,7 +160,7 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
 
   @Override
   @Nonnull
-  protected ESuccess deleteObject (@Nonnull final RepoStorageKey aKey)
+  protected ESuccess deleteObject (@Nonnull final RepoStorageKeyOfArtefact aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 

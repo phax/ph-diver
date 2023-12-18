@@ -64,7 +64,7 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    *        The key to check for existence. May not be <code>null</code>.
    * @return <code>true</code> if it exists, <code>false</code> if not.
    */
-  boolean exists (@Nonnull RepoStorageKey aKey);
+  boolean exists (@Nonnull RepoStorageKeyOfArtefact aKey);
 
   /**
    * Read the item identified with the provided key.
@@ -74,7 +74,7 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    * @return <code>null</code> if not found
    */
   @Nullable
-  RepoStorageItem read (@Nonnull RepoStorageKey aKey);
+  RepoStorageItem read (@Nonnull RepoStorageKeyOfArtefact aKey);
 
   /**
    * @return <code>true</code> if this storage can also write.
@@ -93,7 +93,7 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    * @return {@link ESuccess}
    */
   @Nonnull
-  default ESuccess write (@Nonnull final RepoStorageKey aKey, @Nonnull final RepoStorageItem aItem)
+  default ESuccess write (@Nonnull final RepoStorageKeyOfArtefact aKey, @Nonnull final RepoStorageItem aItem)
   {
     return write (aKey, aItem, (OffsetDateTime) null);
   }
@@ -112,7 +112,7 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    * @return {@link ESuccess}
    */
   @Nonnull
-  ESuccess write (@Nonnull RepoStorageKey aKey,
+  ESuccess write (@Nonnull RepoStorageKeyOfArtefact aKey,
                   @Nonnull RepoStorageItem aItem,
                   @Nullable OffsetDateTime aPublicationDT);
 
@@ -131,5 +131,5 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    *         {@link ESuccess#FAILURE} if not.
    */
   @Nonnull
-  ESuccess delete (@Nonnull RepoStorageKey aKey);
+  ESuccess delete (@Nonnull RepoStorageKeyOfArtefact aKey);
 }

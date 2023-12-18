@@ -37,6 +37,7 @@ import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
+import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.mock.MockRepoStorageLocalFileSystem;
 
 /**
@@ -57,17 +58,17 @@ public final class RepoStorageLocalFileSystemTest
   {
     final RepoStorageLocalFileSystem aRepo = _createRepo ();
 
-    RepoStorageItem aItem = aRepo.read (RepoStorageKey.of (new VESID ("com.ecosio.test", "a", "1"), ".txt"));
+    RepoStorageItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio.test", "a", "1"), ".txt"));
     assertNotNull (aItem);
     assertEquals ("A", aItem.getDataAsUtf8String ());
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
-    aItem = aRepo.read (RepoStorageKey.of (new VESID ("com.ecosio.test", "b", "1"), ".txt"));
+    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio.test", "b", "1"), ".txt"));
     assertNotNull (aItem);
     assertEquals ("B", aItem.getDataAsUtf8String ());
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
-    aItem = aRepo.read (RepoStorageKey.of (new VESID ("com.ecosio.test", "c", "1"), ".txt"));
+    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio.test", "c", "1"), ".txt"));
     assertNull (aItem);
   }
 
@@ -76,7 +77,8 @@ public final class RepoStorageLocalFileSystemTest
   {
     final RepoStorageLocalFileSystem aRepo = _createRepo ();
 
-    final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio.test", "fs-written", "1"), ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio.test", "fs-written", "1"),
+                                                                       ".txt");
     // Ensure not existing
     assertNull (aRepo.read (aKey));
 
@@ -106,12 +108,12 @@ public final class RepoStorageLocalFileSystemTest
 
       // Delete ToC as well
       f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
-                    "com/ecosio/test/fs-written/" + RepoStorageKey.FILENAME_TOC_DIVER_XML);
+                    "com/ecosio/test/fs-written/" + RepoStorageKeyOfArtefact.FILENAME_TOC_DIVER_XML);
       FileOperationManager.INSTANCE.deleteFile (f);
 
       f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
                     "com/ecosio/test/fs-written/" +
-                                                                  RepoStorageKey.FILENAME_TOC_DIVER_XML +
+                                                                  RepoStorageKeyOfArtefact.FILENAME_TOC_DIVER_XML +
                                                                   RepoStorageKey.SUFFIX_SHA256);
       FileOperationManager.INSTANCE.deleteFile (f);
     }

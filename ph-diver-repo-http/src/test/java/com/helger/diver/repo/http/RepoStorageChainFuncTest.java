@@ -38,6 +38,7 @@ import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.RepoStorageChain;
 import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
+import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.http.mock.LocalJettyRunner;
 import com.helger.diver.repo.http.mock.MockRepoStorageLocalFileSystem;
 import com.helger.diver.repo.impl.RepoStorageInMemory;
@@ -69,7 +70,8 @@ public final class RepoStorageChainFuncTest
   @Test
   public void testReadAndCacheAndRead ()
   {
-    final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio", "http-only", "1"), ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "http-only", "1"),
+                                                                       ".txt");
 
     final RepoStorageInMemory aRepoInMemory = RepoStorageInMemory.createDefault ("unittest-local",
                                                                                  ERepoWritable.WITH_WRITE,
@@ -127,11 +129,13 @@ public final class RepoStorageChainFuncTest
 
       // Delete ToC as well
       f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
-                    "com/ecosio/http-only/" + RepoStorageKey.FILENAME_TOC_DIVER_XML);
+                    "com/ecosio/http-only/" + RepoStorageKeyOfArtefact.FILENAME_TOC_DIVER_XML);
       FileOperationManager.INSTANCE.deleteFile (f);
 
       f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
-                    "com/ecosio/http-only/" + RepoStorageKey.FILENAME_TOC_DIVER_XML + RepoStorageKey.SUFFIX_SHA256);
+                    "com/ecosio/http-only/" +
+                                                                  RepoStorageKeyOfArtefact.FILENAME_TOC_DIVER_XML +
+                                                                  RepoStorageKey.SUFFIX_SHA256);
       FileOperationManager.INSTANCE.deleteFile (f);
     }
   }
@@ -139,7 +143,8 @@ public final class RepoStorageChainFuncTest
   @Test
   public void testReadNoCacheAndRead ()
   {
-    final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio", "http-only", "1"), ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "http-only", "1"),
+                                                                       ".txt");
 
     final RepoStorageInMemory aInMemory = RepoStorageInMemory.createDefault ("unittest-local",
                                                                              ERepoWritable.WITH_WRITE,

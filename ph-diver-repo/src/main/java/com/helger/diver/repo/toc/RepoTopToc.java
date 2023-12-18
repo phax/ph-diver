@@ -19,7 +19,7 @@ import com.helger.commons.collection.impl.ICommonsSortedSet;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.diver.api.version.VESID;
-import com.helger.diver.repo.RepoStorageKey;
+import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toptoc.jaxb.v10.ArtifactType;
 import com.helger.diver.repo.toptoc.jaxb.v10.GroupType;
 import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
@@ -46,7 +46,7 @@ public class RepoTopToc
     public Group (@Nonnull @Nonempty final String sName)
     {
       ValueEnforcer.notEmpty (sName, "Name");
-      ValueEnforcer.isTrue ( () -> VESID.isValidPart (sName), "Name is not a valid group part");
+      ValueEnforcer.isTrue ( () -> VESID.isValidGroupID (sName), "Name is not a valid group part");
       m_sName = sName;
     }
 
@@ -95,7 +95,8 @@ public class RepoTopToc
   @Nullable
   private Group _getGroup (@Nonnull @Nonempty final String sGroupID)
   {
-    final ICommonsList <String> aGroupPart = StringHelper.getExploded (RepoStorageKey.GROUP_LEVEL_SEPARATOR, sGroupID);
+    final ICommonsList <String> aGroupPart = StringHelper.getExploded (RepoStorageKeyOfArtefact.GROUP_LEVEL_SEPARATOR,
+                                                                       sGroupID);
     // Resolve all recursive subgroups
     Group aGroup = m_aTopLevelGroups.get (aGroupPart.removeFirst ());
     while (aGroup != null && aGroupPart.isNotEmpty ())
@@ -113,7 +114,9 @@ public class RepoTopToc
     for (final Map.Entry <String, Group> aEntry : aCurGroup.m_aSubGroups.entrySet ())
     {
       final String sSubGroupName = aEntry.getKey ();
-      final String sSubGroupAbsoluteName = sAbsoluteGroupID + RepoStorageKey.GROUP_LEVEL_SEPARATOR + sSubGroupName;
+      final String sSubGroupAbsoluteName = sAbsoluteGroupID +
+                                           RepoStorageKeyOfArtefact.GROUP_LEVEL_SEPARATOR +
+                                           sSubGroupName;
       aGroupNameConsumer.accept (sSubGroupName, sSubGroupAbsoluteName);
 
       // Descend always or never
@@ -182,7 +185,8 @@ public class RepoTopToc
   @Nonnull
   private Group _getOrCreateGroup (@Nonnull @Nonempty final String sGroupID)
   {
-    final ICommonsList <String> aGroupPart = StringHelper.getExploded (RepoStorageKey.GROUP_LEVEL_SEPARATOR, sGroupID);
+    final ICommonsList <String> aGroupPart = StringHelper.getExploded (RepoStorageKeyOfArtefact.GROUP_LEVEL_SEPARATOR,
+                                                                       sGroupID);
     // Resolve all recursive subgroups
     Group aGroup = m_aTopLevelGroups.computeIfAbsent (aGroupPart.removeFirst (), Group::new);
     while (aGroupPart.isNotEmpty ())
@@ -257,12 +261,12 @@ public class RepoTopToc
       if (aDstGroup.m_aSubGroups.put (sSubGroupName, aDstSubGroup) != null)
         throw new IllegalArgumentException ("Another group with name '" +
                                             sAbsoluteGroupName +
-                                            RepoStorageKey.GROUP_LEVEL_SEPARATOR +
+                                            RepoStorageKeyOfArtefact.GROUP_LEVEL_SEPARATOR +
                                             sSubGroupName +
                                             "' is already contained");
 
       // Descend recursively
-      _recursiveReadGroups (sAbsoluteGroupName + RepoStorageKey.GROUP_LEVEL_SEPARATOR + sSubGroupName,
+      _recursiveReadGroups (sAbsoluteGroupName + RepoStorageKeyOfArtefact.GROUP_LEVEL_SEPARATOR + sSubGroupName,
                             aSrcSubGroup,
                             aDstSubGroup);
     }

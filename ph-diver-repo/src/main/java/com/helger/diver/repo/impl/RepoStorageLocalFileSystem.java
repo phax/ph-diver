@@ -35,6 +35,7 @@ import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.RepoStorageKey;
+import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
 
 /**
@@ -76,7 +77,7 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
     return new File (m_aBaseDir, aKey.getPath ());
   }
 
-  public boolean exists (@Nonnull final RepoStorageKey aKey)
+  public boolean exists (@Nonnull final RepoStorageKeyOfArtefact aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -119,7 +120,7 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
 
   @Override
   @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
+  protected ESuccess writeObject (@Nonnull final RepoStorageKeyOfArtefact aKey, @Nonnull final byte [] aPayload)
   {
     final File fTarget = getRelativeFile (aKey);
     if (LOGGER.isDebugEnabled ())
@@ -139,7 +140,7 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
 
   @Override
   @Nonnull
-  protected ESuccess deleteObject (@Nonnull final RepoStorageKey aKey)
+  protected ESuccess deleteObject (@Nonnull final RepoStorageKeyOfArtefact aKey)
   {
     final File fTarget = getRelativeFile (aKey);
     LOGGER.info ("Deleting from local file system '" + fTarget.getAbsolutePath () + "'");

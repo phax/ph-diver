@@ -34,7 +34,7 @@ import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.RepoStorageItem;
-import com.helger.diver.repo.RepoStorageKey;
+import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.toc.IRepoStorageWithToc;
 import com.helger.diver.repo.toc.RepoToc;
@@ -60,6 +60,8 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
   // Enable ToC updates on write and delete
   private boolean m_bEnableTocUpdates = DEFAULT_ENABLE_TOC_UPDATES;
 
+  // private RepoTopToc m_aTopToc;
+
   protected AbstractRepoStorageWithToc (@Nonnull final RepoStorageType aType,
                                         @Nonnull @Nonempty final String sID,
                                         @Nonnull final ERepoWritable eWriteEnabled,
@@ -82,7 +84,9 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
   }
 
   /**
-   * Update the table of contents for a specific group ID and artifact ID.
+   * Update the table of contents for a specific group ID and artifact ID. This
+   * method may only be called if {@link #isEnableTocUpdates()} returned
+   * <code>true</code>.
    *
    * @param aKeyToc
    *        The ToC key with group ID and artifact ID. Never <code>null</code>.
@@ -94,7 +98,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
    */
   @Nonnull
   @OverrideOnDemand
-  protected ESuccess updateToc (@Nonnull final RepoStorageKey aKeyToc,
+  protected ESuccess updateToc (@Nonnull final RepoStorageKeyOfArtefact aKeyToc,
                                 @Nonnull final Consumer <? super RepoToc> aTocConsumer)
   {
     // Read existing ToC
@@ -134,7 +138,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
   @Override
   @OverrideOnDemand
   @Nonnull
-  protected final ESuccess onAfterWrite (@Nonnull final RepoStorageKey aKey,
+  protected final ESuccess onAfterWrite (@Nonnull final RepoStorageKeyOfArtefact aKey,
                                          @Nonnull final RepoStorageItem aItem,
                                          @Nullable final OffsetDateTime aPublicationDT)
   {
@@ -166,7 +170,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
 
   @Override
   @Nonnull
-  protected final ESuccess onAfterDelete (@Nonnull final RepoStorageKey aKey)
+  protected final ESuccess onAfterDelete (@Nonnull final RepoStorageKeyOfArtefact aKey)
   {
     if (isEnableTocUpdates ())
     {

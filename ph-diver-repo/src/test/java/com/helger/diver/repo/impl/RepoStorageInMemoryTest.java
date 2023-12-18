@@ -34,7 +34,7 @@ import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.RepoStorageItem;
-import com.helger.diver.repo.RepoStorageKey;
+import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.RepoToc;
 
 /**
@@ -54,7 +54,7 @@ public final class RepoStorageInMemoryTest
     assertTrue (aRepo.canDelete ());
     assertTrue (aRepo.isEnableTocUpdates ());
 
-    final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio", "local", "1"), ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"), ".txt");
     // Ensure not existing
     assertNull (aRepo.read (aKey));
 
@@ -109,7 +109,7 @@ public final class RepoStorageInMemoryTest
     assertFalse (aRepo.canDelete ());
     assertTrue (aRepo.isAllowOverwrite ());
 
-    final RepoStorageKey aKey = RepoStorageKey.of (new VESID ("com.ecosio", "local", "1"), ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"), ".txt");
     final String sUploadedPayload = "bla-" + ThreadLocalRandom.current ().nextInt ();
 
     // Register only payload, but no hash

@@ -94,9 +94,11 @@ Alternate usage as a Maven BOM:
   <scope>import</scope>
 </dependency>
 ```
-  
+
 # News and Noteworthy
 
+* v1.1.0 - 2023-12-18
+    * Extracted `RepoStorageKeyOfArtefact` from `RepoStorageKey` [backwards incompatible change]
 * v1.0.2 - 2023-12-12
     * Restricted VESID part maximum lengths - defaults to 64 but customizable via `VESIDSettings`.
 * v1.0.1 - 2023-11-07
