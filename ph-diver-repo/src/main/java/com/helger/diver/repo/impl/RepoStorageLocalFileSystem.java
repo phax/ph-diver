@@ -77,7 +77,7 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
     return new File (m_aBaseDir, aKey.getPath ());
   }
 
-  public boolean exists (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  public boolean exists (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 

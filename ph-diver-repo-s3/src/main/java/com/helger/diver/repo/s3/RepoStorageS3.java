@@ -74,7 +74,7 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
     m_sBucketName = sBucketName;
   }
 
-  public boolean exists (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  public boolean exists (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 

@@ -125,7 +125,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   protected abstract InputStream getInputStream (@Nonnull final RepoStorageKey aKey);
 
   @Nullable
-  public final RepoStorageItem read (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  public final RepoStorageItem read (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 

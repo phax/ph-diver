@@ -23,6 +23,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.RepoStorageItem;
+import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 
@@ -34,6 +35,16 @@ import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
  */
 public interface IRepoStorageWithToc extends IRepoStorage
 {
+  // Top level Table of Contents:
+
+  @Nullable
+  default RepoStorageItem readTopToc ()
+  {
+    return read (RepoStorageKey.ofTopToc ());
+  }
+
+  // Table of Contents per Group ID and Artifact ID:
+
   /**
    * Test if the table of contents for the provided Group ID and Artefact ID is
    * present or not.

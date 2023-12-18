@@ -89,7 +89,7 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
     m_bAllowOverwrite = bAllowOverwrite;
   }
 
-  public boolean exists (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  public boolean exists (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 

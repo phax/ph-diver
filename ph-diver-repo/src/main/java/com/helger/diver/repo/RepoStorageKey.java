@@ -42,6 +42,9 @@ public class RepoStorageKey
    */
   public static final String SUFFIX_SHA256 = ".sha256";
 
+  /** The default filename for the top-level table of contents. */
+  public static final String FILENAME_TOP_TOC_DIVER_XML = "toptoc-diver.xml";
+
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageKey.class);
 
   private final String m_sPath;
@@ -98,5 +101,15 @@ public class RepoStorageKey
   public String toString ()
   {
     return new ToStringGenerator (null).append ("Path", m_sPath).getToString ();
+  }
+
+  /**
+   * @return The {@link RepoStorageKey} associated with the top-level table of
+   *         contents. Never <code>null</code>.
+   */
+  @Nonnull
+  public static RepoStorageKey ofTopToc ()
+  {
+    return new RepoStorageKey (FILENAME_TOP_TOC_DIVER_XML);
   }
 }

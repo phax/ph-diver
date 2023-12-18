@@ -103,7 +103,7 @@ public class RepoStorageChain implements IRepoStorageBase
     return this;
   }
 
-  public boolean exists (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  public boolean exists (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -135,7 +135,7 @@ public class RepoStorageChain implements IRepoStorageBase
   }
 
   @Nullable
-  public RepoStorageItem read (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  public RepoStorageItem read (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -166,7 +166,7 @@ public class RepoStorageChain implements IRepoStorageBase
             LOGGER.debug (sMsg);
         }
 
-        if (aStorage.getRepoType ().isRemote () && m_bCacheRemoteContent)
+        if (aStorage.getRepoType ().isRemote () && m_bCacheRemoteContent && aKey instanceof RepoStorageKeyOfArtefact)
         {
           // Item was read from remote
           if (m_aWritableStorages.isNotEmpty ())
@@ -178,7 +178,7 @@ public class RepoStorageChain implements IRepoStorageBase
                             "' to " +
                             m_aWritableStorages.getAllMapped (IRepoStorage::getRepoTypeID));
             for (final IRepoStorage aWritableStorage : m_aWritableStorages)
-              aWritableStorage.write (aKey, aItem);
+              aWritableStorage.write ((RepoStorageKeyOfArtefact) aKey, aItem);
           }
         }
         return aItem;

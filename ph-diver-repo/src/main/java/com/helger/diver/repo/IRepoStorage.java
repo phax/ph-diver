@@ -57,24 +57,7 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
     return getRepoType ().getID ();
   }
 
-  /**
-   * Test if the provided repo storage element is present or not.
-   *
-   * @param aKey
-   *        The key to check for existence. May not be <code>null</code>.
-   * @return <code>true</code> if it exists, <code>false</code> if not.
-   */
-  boolean exists (@Nonnull RepoStorageKeyOfArtefact aKey);
-
-  /**
-   * Read the item identified with the provided key.
-   *
-   * @param aKey
-   *        The key to read. May not be <code>null</code>.
-   * @return <code>null</code> if not found
-   */
-  @Nullable
-  RepoStorageItem read (@Nonnull RepoStorageKeyOfArtefact aKey);
+  // exists and read are inherited
 
   /**
    * @return <code>true</code> if this storage can also write.
