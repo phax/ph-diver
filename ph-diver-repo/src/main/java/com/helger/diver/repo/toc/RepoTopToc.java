@@ -9,11 +9,9 @@ import javax.annotation.Nullable;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.CommonsLinkedHashSet;
 import com.helger.commons.collection.impl.CommonsTreeMap;
 import com.helger.commons.collection.impl.CommonsTreeSet;
 import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.collection.impl.ICommonsOrderedSet;
 import com.helger.commons.collection.impl.ICommonsSortedMap;
 import com.helger.commons.collection.impl.ICommonsSortedSet;
 import com.helger.commons.state.ESuccess;
@@ -29,7 +27,7 @@ import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
  *
  * @author Philip Helger
  */
-public class RepoTopToc
+public class RepoTopToc implements IRepoTopToc
 {
   /**
    * Represents a single group with a name, a list of sub groups and a list of
@@ -57,20 +55,6 @@ public class RepoTopToc
              m_aSubGroups.equals (rhs.m_aSubGroups) &&
              m_aArtifacts.equals (rhs.m_aArtifacts);
     }
-  }
-
-  @FunctionalInterface
-  public interface IGroupNameConsumer
-  {
-    /**
-     * Consumer callback
-     *
-     * @param sRelativeGroupName
-     *        Relative group name. Neither <code>null</code> nor empty.
-     * @param aAbsoluteGroupName
-     *        Absolute group name. Neither <code>null</code> nor empty.
-     */
-    void accept (@Nonnull @Nonempty String sRelativeGroupName, @Nonnull @Nonempty String aAbsoluteGroupName);
   }
 
   private final ICommonsSortedMap <String, Group> m_aTopLevelGroups = new CommonsTreeMap <> ();
@@ -140,24 +124,6 @@ public class RepoTopToc
     // else: no group, no callback
   }
 
-  @Nonnull
-  @ReturnsMutableCopy
-  public ICommonsOrderedSet <String> getAllAbsoluteSubGroupNamesRecursive (@Nonnull @Nonempty final String sGroupID)
-  {
-    final ICommonsOrderedSet <String> ret = new CommonsLinkedHashSet <> ();
-    iterateAllSubGroups (sGroupID, (rgn, agn) -> ret.add (agn), true);
-    return ret;
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public ICommonsOrderedSet <String> getAllAbsoluteSubGroupNames (@Nonnull @Nonempty final String sGroupID)
-  {
-    final ICommonsOrderedSet <String> ret = new CommonsLinkedHashSet <> ();
-    iterateAllSubGroups (sGroupID, (rgn, agn) -> ret.add (agn), false);
-    return ret;
-  }
-
   public void iterateAllArtifacts (@Nonnull @Nonempty final String sGroupID,
                                    @Nonnull final Consumer <String> aArtifactNameConsumer)
   {
@@ -171,15 +137,6 @@ public class RepoTopToc
         aArtifactNameConsumer.accept (sArtifactID);
     }
     // else: no group, no callback
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public ICommonsOrderedSet <String> getAllArtefacts (@Nonnull @Nonempty final String sGroupID)
-  {
-    final ICommonsOrderedSet <String> ret = new CommonsLinkedHashSet <> ();
-    iterateAllArtifacts (sGroupID, ret::add);
-    return ret;
   }
 
   @Nonnull
