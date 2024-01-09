@@ -36,6 +36,7 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsTreeMap;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsSortedMap;
+import com.helger.commons.collection.impl.ICommonsSortedSet;
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.datetime.XMLOffsetDateTime;
 import com.helger.commons.hashcode.HashCodeGenerator;
@@ -140,6 +141,18 @@ public class RepoToc
   public final ICommonsSortedMap <VESVersion, OffsetDateTime> getAllVersions ()
   {
     return m_aVersions.getClone ();
+  }
+
+  /**
+   * @return A copy of all contained versions as a sorted set. Never
+   *         <code>null</code>.
+   * @since 1.1.0
+   */
+  @Nonnull
+  @ReturnsMutableCopy
+  public final ICommonsSortedSet <VESVersion> getAllVersionsOnly ()
+  {
+    return m_aVersions.copyOfKeySet ();
   }
 
   /**
