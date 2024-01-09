@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -31,6 +32,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.state.ESuccess;
+import com.helger.commons.string.StringHelper;
 import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
@@ -130,6 +132,18 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
   {
     if (!m_aInitialized.get ())
       throw new IllegalStateException ("This service was not properly initialized");
+  }
+
+  public boolean containsGroupAndArtifact (@Nullable final String sGroupID, @Nullable final String sArtifactID)
+  {
+    _checkInited ();
+
+    if (StringHelper.hasNoText (sGroupID))
+      return false;
+    if (StringHelper.hasNoText (sArtifactID))
+      return false;
+
+    return m_aRWLock.readLockedBoolean ( () -> m_aTopToc.containsGroupAndArtifact (sGroupID, sArtifactID));
   }
 
   public void iterateAllTopLevelGroupNames (@Nonnull final Consumer <String> aGroupNameConsumer)

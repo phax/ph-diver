@@ -107,6 +107,12 @@ public final class RepoStorageS3Test
 
                                 public void initForRepo (final IRepoStorageWithToc aRepo)
                                 {}
+
+                                public boolean containsGroupAndArtifact (final String sGroupID,
+                                                                         final String sArtifactID)
+                                {
+                                  return false;
+                                }
                               });
   }
 

@@ -105,13 +105,6 @@ public class RepoTopTocXML
     return m_aTopLevelGroups.size ();
   }
 
-  public void iterateAllTopLevelGroupNames (@Nonnull final Consumer <String> aGroupNameConsumer)
-  {
-    ValueEnforcer.notNull (aGroupNameConsumer, "GroupNameConsumer");
-
-    m_aTopLevelGroups.keySet ().forEach (aGroupNameConsumer);
-  }
-
   @Nullable
   private Group _getGroup (@Nonnull @Nonempty final String sGroupID)
   {
@@ -124,6 +117,26 @@ public class RepoTopTocXML
       aGroup = aGroup.m_aSubGroups.get (aGroupPart.removeFirst ());
     }
     return aGroup;
+  }
+
+  public boolean containsGroupAndArtifact (@Nonnull @Nonempty final String sGroupID,
+                                           @Nonnull @Nonempty final String sArtifactID)
+  {
+    ValueEnforcer.notEmpty (sGroupID, "GroupID");
+    ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
+
+    final Group aGroup = _getGroup (sGroupID);
+    if (aGroup == null)
+      return false;
+
+    return aGroup.m_aArtifacts.contains (sArtifactID);
+  }
+
+  public void iterateAllTopLevelGroupNames (@Nonnull final Consumer <String> aGroupNameConsumer)
+  {
+    ValueEnforcer.notNull (aGroupNameConsumer, "GroupNameConsumer");
+
+    m_aTopLevelGroups.keySet ().forEach (aGroupNameConsumer);
   }
 
   private void _recursiveIterateExistingSubGroups (@Nonnull @Nonempty final String sAbsoluteGroupID,

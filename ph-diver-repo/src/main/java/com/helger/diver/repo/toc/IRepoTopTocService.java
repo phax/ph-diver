@@ -19,6 +19,7 @@ package com.helger.diver.repo.toc;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -44,6 +45,8 @@ public interface IRepoTopTocService
    *        The repository that uses this service.
    */
   void initForRepo (@Nonnull IRepoStorageWithToc aRepo);
+
+  boolean containsGroupAndArtifact (@Nullable String sGroupID, @Nullable String sArtifactID);
 
   void iterateAllTopLevelGroupNames (@Nonnull Consumer <String> aGroupNameConsumer);
 
