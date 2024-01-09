@@ -222,6 +222,20 @@ public class RepoToc
     return m_aLatestReleaseVersionPubDT;
   }
 
+  /**
+   * Check if the provided version is contained or not.
+   *
+   * @param aVersion
+   *        The version to check. May be <code>null</code>.
+   * @return <code>true</code> if the version is contained, <code>false</code>
+   *         if not.
+   * @since 1.1.0
+   */
+  public boolean containsVersion (@Nullable final VESVersion aVersion)
+  {
+    return aVersion != null && m_aVersions.containsKey (aVersion);
+  }
+
   @Nonnull
   private EChange _addVersion (@Nonnull final VESVersion aVersion,
                                @Nonnull final OffsetDateTime aPublishDT,

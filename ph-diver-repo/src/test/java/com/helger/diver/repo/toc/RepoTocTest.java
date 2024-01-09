@@ -17,6 +17,7 @@
 package com.helger.diver.repo.toc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -62,7 +63,11 @@ public final class RepoTocTest
     assertNull (aToC.getLatestReleaseVersionAsString ());
 
     // 1 release version
+    assertFalse (aToC.containsVersion (null));
+    assertFalse (aToC.containsVersion (VESVersion.parseOrThrow ("1.0")));
     assertTrue (aToC.addVersion (VESVersion.parseOrThrow ("1.0"), PDTFactory.getCurrentOffsetDateTime ()).isChanged ());
+    assertFalse (aToC.containsVersion (null));
+    assertTrue (aToC.containsVersion (VESVersion.parseOrThrow ("1.0")));
 
     aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
