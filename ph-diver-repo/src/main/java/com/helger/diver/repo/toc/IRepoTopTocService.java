@@ -46,10 +46,32 @@ public interface IRepoTopTocService
    */
   void initForRepo (@Nonnull IRepoStorageWithToc aRepo);
 
+  /**
+   * Check if the provided group ID and artifact ID are contained or not.
+   *
+   * @param sGroupID
+   *        Group ID to check. May be <code>null</code>.
+   * @param sArtifactID
+   *        Artifact ID to check. May be <code>null</code>.
+   * @return <code>true</code> if it is contained, <code>false</code> if not
+   */
   boolean containsGroupAndArtifact (@Nullable String sGroupID, @Nullable String sArtifactID);
 
+  /**
+   * Iterate all top-level group names.
+   *
+   * @param aGroupNameConsumer
+   *        The consumer to be invoked for all top-level group names. Must not
+   *        be <code>null</code>.
+   * @see #getAllTopLevelGroupNames()
+   */
   void iterateAllTopLevelGroupNames (@Nonnull Consumer <String> aGroupNameConsumer);
 
+  /**
+   * @return A set of all contained top-level group names. Never
+   *         <code>null</code> but maybe empty.
+   * @see #iterateAllTopLevelGroupNames(Consumer)
+   */
   @Nonnull
   @ReturnsMutableCopy
   default ICommonsSortedSet <String> getAllTopLevelGroupNames ()
@@ -59,6 +81,21 @@ public interface IRepoTopTocService
     return ret;
   }
 
+  /**
+   * Iterate all sub groups of the provided group ID.
+   *
+   * @param sGroupID
+   *        The top-level or absolute group ID to start at. May neither be
+   *        <code>null</code> nor empty.
+   * @param aGroupNameConsumer
+   *        The consumer to be invoked for each match. May not be
+   *        <code>null</code>.
+   * @param bRecursive
+   *        <code>true</code> to iterate recursively, <code>false</code> to
+   *        iterate just one level.
+   * @see #getAllAbsoluteSubGroupNames(String)
+   * @see #getAllAbsoluteSubGroupNamesRecursive(String)
+   */
   void iterateAllSubGroups (@Nonnull @Nonempty String sGroupID,
                             @Nonnull IRepoTopTocGroupNameConsumer aGroupNameConsumer,
                             boolean bRecursive);
@@ -81,6 +118,17 @@ public interface IRepoTopTocService
     return ret;
   }
 
+  /**
+   * Iterate all artifacts in the provided group ID.
+   *
+   * @param sGroupID
+   *        The top-level or absolute group ID to iterate. May neither be
+   *        <code>null</code> nor empty.
+   * @param aArtifactNameConsumer
+   *        The consumer to be invoked for each artifact. May not be
+   *        <code>null</code>.
+   * @see #getAllArtefacts(String)
+   */
   void iterateAllArtifacts (@Nonnull @Nonempty String sGroupID, @Nonnull Consumer <String> aArtifactNameConsumer);
 
   @Nonnull
@@ -92,6 +140,19 @@ public interface IRepoTopTocService
     return ret;
   }
 
+  /**
+   * Register a new combination of group ID and artifact ID into the top-level
+   * ToC. If the provided combination is already present, nothing happens and
+   * success is to be returned.
+   *
+   * @param sGroupID
+   *        Absolute Group ID to register. May neither be <code>null</code> nor
+   *        empty.
+   * @param sArtifactID
+   *        The artifact ID to register. May neither be <code>null</code> nor
+   *        empty.
+   * @return {@link ESuccess} and never <code>null</code>.
+   */
   @Nonnull
   ESuccess registerGroupAndArtifact (@Nonnull @Nonempty String sGroupID, @Nonnull @Nonempty String sArtifactID);
 }
