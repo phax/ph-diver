@@ -19,6 +19,7 @@ package com.helger.diver.repo.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,6 +38,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.state.ESuccess;
+import com.helger.commons.string.ToStringGenerator;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
@@ -60,6 +62,10 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
   protected final HttpClientManager m_aHttpClient;
   protected final String m_sURLPrefix;
 
+  private Consumer <? super HttpGet> m_aReadCustomizer;
+  private Consumer <? super HttpPut> m_aWriteCustomizer;
+  private Consumer <? super HttpDelete> m_aDeleteCustomizer;
+
   public RepoStorageHttp (@Nonnull @WillNotClose final HttpClientManager aHttpClient,
                           @Nonnull @Nonempty final String sURLPrefix,
                           @Nonnull @Nonempty final String sID,
@@ -72,6 +78,45 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     ValueEnforcer.notEmpty (sURLPrefix, "URLPrefix");
     m_aHttpClient = aHttpClient;
     m_sURLPrefix = sURLPrefix;
+  }
+
+  @Nullable
+  public final Consumer <? super HttpGet> getReadCusomizer ()
+  {
+    return m_aReadCustomizer;
+  }
+
+  @Nonnull
+  public final RepoStorageHttp setReadCusomizer (@Nullable final Consumer <? super HttpGet> aReadCustomizer)
+  {
+    m_aReadCustomizer = aReadCustomizer;
+    return this;
+  }
+
+  @Nullable
+  public final Consumer <? super HttpPut> getWriteCusomizer ()
+  {
+    return m_aWriteCustomizer;
+  }
+
+  @Nonnull
+  public final RepoStorageHttp setWriteCusomizer (@Nullable final Consumer <? super HttpPut> aWriteCustomizer)
+  {
+    m_aWriteCustomizer = aWriteCustomizer;
+    return this;
+  }
+
+  @Nullable
+  public final Consumer <? super HttpDelete> getDeleteCusomizer ()
+  {
+    return m_aDeleteCustomizer;
+  }
+
+  @Nonnull
+  public final RepoStorageHttp setDeleteCusomizer (@Nullable final Consumer <? super HttpDelete> aDeleteCustomizer)
+  {
+    m_aDeleteCustomizer = aDeleteCustomizer;
+    return this;
   }
 
   public boolean exists (@Nonnull final RepoStorageKey aKey)
@@ -93,6 +138,13 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     try
     {
       final HttpGet aGet = new HttpGet (sURL);
+      if (m_aReadCustomizer != null)
+      {
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Now customizing HttpGet");
+        m_aReadCustomizer.accept (aGet);
+      }
+
       final byte [] aResponse = m_aHttpClient.execute (aGet, new ResponseHandlerByteArray ());
 
       if (LOGGER.isDebugEnabled ())
@@ -119,6 +171,12 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     {
       final HttpPut aPut = new HttpPut (sURL);
       aPut.setEntity (new ByteArrayEntity (aPayload, ContentType.APPLICATION_OCTET_STREAM));
+      if (m_aWriteCustomizer != null)
+      {
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Now customizing HttpPut");
+        m_aWriteCustomizer.accept (aPut);
+      }
 
       final byte [] aResponse = m_aHttpClient.execute (aPut, new ResponseHandlerByteArray ());
       if (LOGGER.isDebugEnabled ())
@@ -149,6 +207,13 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     try
     {
       final HttpDelete aDelete = new HttpDelete (sURL);
+      if (m_aDeleteCustomizer != null)
+      {
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Now customizing HttpDelete");
+        m_aDeleteCustomizer.accept (aDelete);
+      }
+
       final byte [] aResponse = m_aHttpClient.execute (aDelete, new ResponseHandlerByteArray ());
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("HTTP DELETE result: " +
@@ -165,5 +230,17 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Successfully deleted from HTTP '" + sURL + "'");
     return ESuccess.SUCCESS;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return ToStringGenerator.getDerived (super.toString ())
+                            .append ("HttpClient", m_aHttpClient)
+                            .append ("UrlPrefix", m_sURLPrefix)
+                            .append ("ReadCustomizer", m_aReadCustomizer)
+                            .append ("WriteCustomizer", m_aWriteCustomizer)
+                            .append ("DeleteCustomizer", m_aDeleteCustomizer)
+                            .getToString ();
   }
 }
