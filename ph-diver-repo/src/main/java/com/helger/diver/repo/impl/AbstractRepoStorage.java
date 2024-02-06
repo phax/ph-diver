@@ -70,7 +70,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   private final ERepoWritable m_eWriteEnabled;
   private final ERepoDeletable m_eDeleteEnabled;
   // Verify hash value on read
-  private boolean m_bVerifyHash = DEFAULT_VERIFY_HASH_VALUE;
+  private boolean m_bVerifyHashOnRead = DEFAULT_VERIFY_HASH_VALUE;
 
   protected AbstractRepoStorage (@Nonnull final RepoStorageType aType,
                                  @Nonnull @Nonempty final String sID,
@@ -100,16 +100,19 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     return m_sID;
   }
 
-  public final boolean isVerifyHash ()
+  public final boolean isVerifyHashOnRead ()
   {
-    return m_bVerifyHash;
+    return m_bVerifyHashOnRead;
   }
 
   @Nonnull
-  public final IMPLTYPE setVerifyHash (final boolean b)
+  public final IMPLTYPE setVerifyHashOnRead (final boolean b)
   {
-    m_bVerifyHash = b;
-    LOGGER.info ("RepoStorage[" + m_aType.getID () + "]: hash verification is now: " + (b ? "enabled" : "disabled"));
+    m_bVerifyHashOnRead = b;
+    LOGGER.info ("RepoStorage[" +
+                 m_aType.getID () +
+                 "]: hash verification on read is now: " +
+                 (b ? "enabled" : "disabled"));
     return thisAsT ();
   }
 
@@ -131,7 +134,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
 
     try
     {
-      if (isVerifyHash ())
+      if (isVerifyHashOnRead ())
       {
         // Read the expected hash digest
         final byte [] aExpectedDigest = StreamHelper.getAllBytes (getInputStream (aKey.getKeyHashSha256 ()));
@@ -351,7 +354,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
                                        .append ("MDAlgo", m_eMDAlgo)
                                        .append ("WriteEnabled", m_eWriteEnabled)
                                        .append ("DeleteEnabled", m_eDeleteEnabled)
-                                       .append ("VerifyHash", m_bVerifyHash)
+                                       .append ("VerifyHashOnRead", m_bVerifyHashOnRead)
                                        .getToString ();
   }
 }
