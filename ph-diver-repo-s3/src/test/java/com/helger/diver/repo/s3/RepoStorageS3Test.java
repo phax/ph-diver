@@ -164,7 +164,7 @@ public final class RepoStorageS3Test
         s3.deleteObject (DeleteObjectRequest.builder ()
                                             .bucket (TEST_BUCKET_NAME)
                                             .key ("com/ecosio/s3-written/1/s3-written-1.txt" +
-                                                  RepoStorageKey.SUFFIX_SHA256)
+                                                  RepoStorageKey.FILE_EXT_SHA256)
                                             .build ());
       }
     }

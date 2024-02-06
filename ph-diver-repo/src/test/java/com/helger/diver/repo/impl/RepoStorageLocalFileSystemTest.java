@@ -104,7 +104,7 @@ public final class RepoStorageLocalFileSystemTest
       FileOperationManager.INSTANCE.deleteFile (f);
 
       f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
-                    "com/ecosio/test/fs-written/1/fs-written-1.txt" + RepoStorageKey.SUFFIX_SHA256);
+                    "com/ecosio/test/fs-written/1/fs-written-1.txt" + RepoStorageKey.FILE_EXT_SHA256);
       FileOperationManager.INSTANCE.deleteFile (f);
 
       // Delete ToC as well
@@ -115,7 +115,7 @@ public final class RepoStorageLocalFileSystemTest
       f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
                     "com/ecosio/test/fs-written/" +
                                                                   RepoStorageKeyOfArtefact.FILENAME_TOC_DIVER_XML +
-                                                                  RepoStorageKey.SUFFIX_SHA256);
+                                                                  RepoStorageKey.FILE_EXT_SHA256);
       FileOperationManager.INSTANCE.deleteFile (f);
 
       // Delete Top-ToC as well
@@ -124,7 +124,7 @@ public final class RepoStorageLocalFileSystemTest
       FileOperationManager.INSTANCE.deleteFile (f);
 
       f = new File (MockRepoStorageLocalFileSystem.TEST_REPO_DIR,
-                    RepoTopTocServiceRepoBasedXML.FILENAME_TOP_TOC_DIVER_XML + RepoStorageKey.SUFFIX_SHA256);
+                    RepoTopTocServiceRepoBasedXML.FILENAME_TOP_TOC_DIVER_XML + RepoStorageKey.FILE_EXT_SHA256);
       FileOperationManager.INSTANCE.deleteFile (f);
     }
   }

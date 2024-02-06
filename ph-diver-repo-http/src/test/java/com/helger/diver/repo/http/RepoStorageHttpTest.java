@@ -157,7 +157,7 @@ public final class RepoStorageHttpTest
       File f = new File (fBase, "com/ecosio/http-written/1/http-written-1.txt");
       FileOperationManager.INSTANCE.deleteFile (f);
 
-      f = new File (fBase, "com/ecosio/http-written/1/http-written-1.txt" + RepoStorageKey.SUFFIX_SHA256);
+      f = new File (fBase, "com/ecosio/http-written/1/http-written-1.txt" + RepoStorageKey.FILE_EXT_SHA256);
       FileOperationManager.INSTANCE.deleteFile (f);
 
       // Delete ToC as well
@@ -167,14 +167,14 @@ public final class RepoStorageHttpTest
       f = new File (fBase,
                     "com/ecosio/http-written/" +
                            RepoStorageKeyOfArtefact.FILENAME_TOC_DIVER_XML +
-                           RepoStorageKey.SUFFIX_SHA256);
+                           RepoStorageKey.FILE_EXT_SHA256);
       FileOperationManager.INSTANCE.deleteFile (f);
 
       // Delete Top-ToC as well
       f = new File (fBase, RepoTopTocServiceRepoBasedXML.FILENAME_TOP_TOC_DIVER_XML);
       FileOperationManager.INSTANCE.deleteFile (f);
 
-      f = new File (fBase, RepoTopTocServiceRepoBasedXML.FILENAME_TOP_TOC_DIVER_XML + RepoStorageKey.SUFFIX_SHA256);
+      f = new File (fBase, RepoTopTocServiceRepoBasedXML.FILENAME_TOP_TOC_DIVER_XML + RepoStorageKey.FILE_EXT_SHA256);
       FileOperationManager.INSTANCE.deleteFile (f);
     }
   }

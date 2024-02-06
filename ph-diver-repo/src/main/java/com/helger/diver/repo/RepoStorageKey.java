@@ -40,7 +40,7 @@ public class RepoStorageKey
   /**
    * The filename suffix for the hash values of uploaded content.
    */
-  public static final String SUFFIX_SHA256 = ".sha256";
+  public static final String FILE_EXT_SHA256 = ".sha256";
 
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageKey.class);
 
@@ -67,14 +67,14 @@ public class RepoStorageKey
   public RepoStorageKey getKeyHashSha256 ()
   {
     final String sPath = getPath ();
-    if (sPath.endsWith (SUFFIX_SHA256))
+    if (sPath.endsWith (FILE_EXT_SHA256))
     {
       // Seems like a doubled hash key
       LOGGER.warn ("You are trying to create a RepoStorageKey SHA-256 of something that already seems to be a SHA-256 key: '" +
                    sPath +
                    "'");
     }
-    return new RepoStorageKey (sPath + SUFFIX_SHA256);
+    return new RepoStorageKey (sPath + FILE_EXT_SHA256);
   }
 
   @Override

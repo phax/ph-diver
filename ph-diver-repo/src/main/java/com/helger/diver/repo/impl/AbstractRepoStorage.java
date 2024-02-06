@@ -39,6 +39,7 @@ import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
+import com.helger.diver.repo.IRepoStorageAuditor;
 import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
@@ -71,6 +72,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   private final ERepoDeletable m_eDeleteEnabled;
   // Verify hash value on read
   private boolean m_bVerifyHashOnRead = DEFAULT_VERIFY_HASH_VALUE;
+  private IRepoStorageAuditor m_aAuditor = IRepoStorageAuditor.DO_NOTHING_AUDITOR;
 
   protected AbstractRepoStorage (@Nonnull final RepoStorageType aType,
                                  @Nonnull @Nonempty final String sID,
@@ -116,6 +118,20 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     return thisAsT ();
   }
 
+  @Nonnull
+  public final IRepoStorageAuditor getAuditor ()
+  {
+    return m_aAuditor;
+  }
+
+  @Nonnull
+  public final IMPLTYPE setAuditor (@Nonnull final IRepoStorageAuditor aAuditor)
+  {
+    ValueEnforcer.notNull (aAuditor, "Auditor");
+    m_aAuditor = aAuditor;
+    return thisAsT ();
+  }
+
   /**
    * Get the input stream (locally or remote) to the provided key. Any failure
    * to open, should be logged inside.
@@ -128,6 +144,14 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   protected abstract InputStream getInputStream (@Nonnull final RepoStorageKey aKey);
 
   @Nullable
+  private InputStream _getInputStreamWithAudit (@Nonnull final RepoStorageKey aKey)
+  {
+    final InputStream ret = getInputStream (aKey);
+    m_aAuditor.onRead (thisAsT (), aKey, ESuccess.valueOf (ret != null));
+    return ret;
+  }
+
+  @Nullable
   public final RepoStorageItem read (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
@@ -137,7 +161,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
       if (isVerifyHashOnRead ())
       {
         // Read the expected hash digest
-        final byte [] aExpectedDigest = StreamHelper.getAllBytes (getInputStream (aKey.getKeyHashSha256 ()));
+        final byte [] aExpectedDigest = StreamHelper.getAllBytes (_getInputStreamWithAudit (aKey.getKeyHashSha256 ()));
         if (aExpectedDigest == null)
         {
           // Should already be logged in getInputStream
@@ -147,7 +171,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
 
         // The message digest to be calculated while reading
         final MessageDigest aMD = m_eMDAlgo.createMessageDigest ();
-        try (final InputStream aIS = getInputStream (aKey))
+        try (final InputStream aIS = _getInputStreamWithAudit (aKey))
         {
           if (aIS != null)
             try (final MessageDigestInputStream aMDIS = new MessageDigestInputStream (aIS, aMD))
@@ -188,7 +212,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
       else
       {
         // No verify
-        try (final InputStream aIS = getInputStream (aKey))
+        try (final InputStream aIS = _getInputStreamWithAudit (aKey))
         {
           if (aIS != null)
           {
@@ -214,6 +238,14 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   @Nonnull
   protected abstract ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload);
 
+  @Nullable
+  private ESuccess _writeObjectWithAudit (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
+  {
+    final ESuccess ret = writeObject (aKey, aPayload);
+    m_aAuditor.onWrite (thisAsT (), aKey, ret);
+    return ret;
+  }
+
   @Nonnull
   protected final ESuccess doWriteRepoStorageItem (@Nonnull final RepoStorageKey aKey,
                                                    @Nonnull final RepoStorageItem aItem)
@@ -233,11 +265,11 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     final byte [] aDigest = MessageDigestValue.create (aItem.data ().bytes (), m_eMDAlgo).bytes ();
 
     // Store the main data
-    if (writeObject (aKey, aItem.data ().bytes ()).isFailure ())
+    if (_writeObjectWithAudit (aKey, aItem.data ().bytes ()).isFailure ())
       return ESuccess.FAILURE;
 
     // Store the hash value
-    if (writeObject (aKey.getKeyHashSha256 (), aDigest).isFailure ())
+    if (_writeObjectWithAudit (aKey.getKeyHashSha256 (), aDigest).isFailure ())
       return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;
@@ -295,17 +327,25 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   @Nonnull
   protected abstract ESuccess deleteObject (@Nonnull final RepoStorageKey aKey);
 
+  @Nullable
+  private ESuccess _deleteObjectWithAudit (@Nonnull final RepoStorageKey aKey)
+  {
+    final ESuccess ret = deleteObject (aKey);
+    m_aAuditor.onDelete (thisAsT (), aKey, ret);
+    return ret;
+  }
+
   @Nonnull
   private ESuccess _doDeleteRepoStorageItem (@Nonnull final RepoStorageKey aKey)
   {
     LOGGER.info ("Deleting item '" + aKey.getPath () + "' from RepoStorage[" + m_aType.getID () + "]");
 
     // Delete the main data
-    if (deleteObject (aKey).isFailure ())
+    if (_deleteObjectWithAudit (aKey).isFailure ())
       return ESuccess.FAILURE;
 
     // Delete the hash value
-    if (deleteObject (aKey.getKeyHashSha256 ()).isFailure ())
+    if (_deleteObjectWithAudit (aKey.getKeyHashSha256 ()).isFailure ())
       return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;

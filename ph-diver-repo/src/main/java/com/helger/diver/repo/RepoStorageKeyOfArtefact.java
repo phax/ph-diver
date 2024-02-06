@@ -73,14 +73,14 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
   public RepoStorageKeyOfArtefact getKeyHashSha256 ()
   {
     final String sPath = getPath ();
-    if (sPath.endsWith (SUFFIX_SHA256))
+    if (sPath.endsWith (FILE_EXT_SHA256))
     {
       // Seems like a doubled hash key
       LOGGER.warn ("You are trying to create a RepoStorageKey SHA-256 of something that already seems to be a SHA-256 key: '" +
                    sPath +
                    "'");
     }
-    return new RepoStorageKeyOfArtefact (m_aVESID, sPath + SUFFIX_SHA256);
+    return new RepoStorageKeyOfArtefact (m_aVESID, sPath + FILE_EXT_SHA256);
   }
 
   @Nonnull
