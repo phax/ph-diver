@@ -221,6 +221,8 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
   {
     return ToStringGenerator.getDerived (super.toString ())
                             .append ("EnableTocUpdates", m_bEnableTocUpdates)
+                            .append ("TopTocServiceInited", m_aTopTocServiceInitialized.get ())
+                            .append ("TopTocService", m_aTopTocService)
                             .getToString ();
   }
 }
