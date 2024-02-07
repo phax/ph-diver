@@ -44,22 +44,6 @@ public interface IRepoStorageWithToc extends IRepoStorage
    */
   @Nullable
   IRepoTopTocService getTopTocService ();
-  // {
-  // // Read bytes
-  // final RepoStorageItem aItem = readTopToc ();
-  // if (aItem != null)
-  // {
-  // // Parse to XML
-  // final RepoTopTocType aJaxbObject = new RepoTopToc1Marshaller ().read
-  // (aItem.data ().bytes ());
-  // if (aJaxbObject != null)
-  // {
-  // // Convert to domain model
-  // return RepoTopTocServiceFileBased.createFromJaxbObject (aJaxbObject);
-  // }
-  // }
-  // return null;
-  // }
 
   // Table of Contents per Group ID and Artifact ID:
 
