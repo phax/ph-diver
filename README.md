@@ -1,6 +1,6 @@
 # ph-diver
 
-[![javadoc](https://javadoc.io/badge2/com.helger.diver/ddd/javadoc.svg)](https://javadoc.io/doc/com.helger.diver/ph-diver-api)
+[![javadoc](https://javadoc.io/badge2/com.helger.diver/ph-diver-api/javadoc.svg)](https://javadoc.io/doc/com.helger.diver/ph-diver-api)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.helger.diver/ph-diver-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.helger.diver/ph-diver-api) 
 
 ph-diver - PH Digitally Versioned Resources - in collaboration with [![ecosio Logo](https://raw.githubusercontent.com/phax/ph-diver/main/docs/ecosio-logo-rgb_black_blue_xs.jpg)](https://www.ecosio.com)
