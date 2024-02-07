@@ -1,5 +1,8 @@
 # ph-diver
 
+[![javadoc](https://javadoc.io/badge2/com.helger.diver/ddd/javadoc.svg)](https://javadoc.io/doc/com.helger.diver/ph-diver-api)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.helger.diver/ph-diver-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.helger.diver/ph-diver-api) 
+
 ph-diver - PH Digitally Versioned Resources - in collaboration with [![ecosio Logo](https://raw.githubusercontent.com/phax/ph-diver/main/docs/ecosio-logo-rgb_black_blue_xs.jpg)](https://www.ecosio.com)
 
 The modules contained in this repository provide access to versioned resources that reside on several 
@@ -97,8 +100,13 @@ Alternate usage as a Maven BOM:
 
 # News and Noteworthy
 
-* v1.1.0 - 2023-12-18
+* v1.1.0 - work in progress
     * Extracted `RepoStorageKeyOfArtefact` from `RepoStorageKey` [backwards incompatible change]
+    * Class `RepoStorageHttp` got an API extension, so that the used HTTP requests can be customized
+    * Added a top-level table of contents (ToC) service that contains all groups and the artefacts of all groups (via `IRepoTopTocService`) and an XML based implementation (class `RepoTopTocServiceRepoBasedXML`)
+    * Added a new interface `IRepoStorageAuditor` to be able to handle accesses to the repository 
+    * Extended `RepoToc` API
+    * Renamed `RepoTopToc` to `RepoTopTocXML`
 * v1.0.2 - 2023-12-12
     * Restricted VESID part maximum lengths - defaults to 64 but customizable via `VESIDSettings`.
 * v1.0.1 - 2023-11-07
