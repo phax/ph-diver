@@ -54,7 +54,7 @@
   </developers>
   
   <properties>
-    <awssdk-version>2.22.12</awssdk-version>
+    <awssdk-version>2.24.3</awssdk-version>
   </properties>
   
   <dependencies>
