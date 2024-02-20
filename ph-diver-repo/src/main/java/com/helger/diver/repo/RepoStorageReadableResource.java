@@ -31,21 +31,21 @@ import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Implementation of {@link IReadableResource} for {@link RepoStorageKey} and
- * {@link IRepoStorageItem}.
+ * {@link IRepoStorageContent}.
  *
  * @author Philip Helger
  */
 public class RepoStorageReadableResource implements IReadableResource
 {
   private final RepoStorageKey m_aKey;
-  private final IRepoStorageItem m_aItem;
+  private final IRepoStorageContent m_aContent;
 
-  public RepoStorageReadableResource (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageItem aItem)
+  public RepoStorageReadableResource (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
   {
     ValueEnforcer.notNull (aKey, "Key");
-    ValueEnforcer.notNull (aItem, "Item");
+    ValueEnforcer.notNull (aContent, "Content");
     m_aKey = aKey;
-    m_aItem = aItem;
+    m_aContent = aContent;
   }
 
   @Nonnull
@@ -55,20 +55,27 @@ public class RepoStorageReadableResource implements IReadableResource
   }
 
   @Nonnull
-  public final IRepoStorageItem getRepoStorageItem ()
+  public final IRepoStorageContent getRepoStorageContent ()
   {
-    return m_aItem;
+    return m_aContent;
   }
 
   @Nonnull
   public InputStream getInputStream ()
   {
-    return m_aItem.getContent ().getBufferedInputStream ();
+    return m_aContent.getInputStream ();
+  }
+
+  @Nonnull
+  @Override
+  public InputStream getBufferedInputStream ()
+  {
+    return m_aContent.getBufferedInputStream ();
   }
 
   public boolean isReadMultiple ()
   {
-    return m_aItem.getContent ().isReadMultiple ();
+    return m_aContent.isReadMultiple ();
   }
 
   @Nonnull
@@ -113,6 +120,6 @@ public class RepoStorageReadableResource implements IReadableResource
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (null).append ("Key", m_aKey).append ("Item", m_aItem).getToString ();
+    return new ToStringGenerator (null).append ("Key", m_aKey).append ("Content", m_aContent).getToString ();
   }
 }

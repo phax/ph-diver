@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.IRepoStorage;
-import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.IRepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 
@@ -73,7 +73,7 @@ public interface IRepoStorageWithToc extends IRepoStorage
    *         no ToC is present.
    */
   @Nullable
-  default IRepoStorageItem readToc (@Nonnull @Nonempty final String sGroupID,
+  default IRepoStorageReadItem readToc (@Nonnull @Nonempty final String sGroupID,
                                     @Nonnull @Nonempty final String sArtifactID)
   {
     return read (RepoStorageKeyOfArtefact.ofToc (sGroupID, sArtifactID));
@@ -110,7 +110,7 @@ public interface IRepoStorageWithToc extends IRepoStorage
   default RepoToc readTocModel (@Nonnull @Nonempty final String sGroupID, @Nonnull @Nonempty final String sArtifactID)
   {
     // Read bytes
-    final IRepoStorageItem aItem = readToc (sGroupID, sArtifactID);
+    final IRepoStorageReadItem aItem = readToc (sGroupID, sArtifactID);
     if (aItem != null)
     {
       // Parse to XML

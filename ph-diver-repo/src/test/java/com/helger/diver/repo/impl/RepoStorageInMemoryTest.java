@@ -32,8 +32,9 @@ import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
-import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.IRepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageContentByteArray;
+import com.helger.diver.repo.RepoStorageContentHelper;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.RepoToc;
 
@@ -73,9 +74,9 @@ public final class RepoStorageInMemoryTest
       }
 
       // Read again
-      IRepoStorageItem aItem = aRepo.read (aKey);
+      IRepoStorageReadItem aItem = aRepo.read (aKey);
       assertNotNull (aItem);
-      assertEquals (sUploadedPayload, aItem.getContent ().getAsUtf8String ());
+      assertEquals (sUploadedPayload, RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
       assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
 
       // Delete
@@ -116,9 +117,9 @@ public final class RepoStorageInMemoryTest
     aRepo.registerObject (aKey, RepoStorageContentByteArray.ofUtf8 (sUploadedPayload));
 
     // Read again
-    final IRepoStorageItem aItem = aRepo.read (aKey);
+    final IRepoStorageReadItem aItem = aRepo.read (aKey);
     assertNotNull (aItem);
-    assertEquals (sUploadedPayload, aItem.getContent ().getAsUtf8String ());
+    assertEquals (sUploadedPayload, RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
     // Throws exception

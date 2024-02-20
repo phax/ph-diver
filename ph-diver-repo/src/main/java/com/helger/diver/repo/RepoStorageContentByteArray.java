@@ -71,17 +71,6 @@ public class RepoStorageContentByteArray implements IRepoStorageContent
     return m_aBytes.size ();
   }
 
-  @Deprecated
-  @Nonnegative
-  public byte [] getAllBytesNoCopy ()
-  {
-    // TODO use "isPartialArray" in ph-commons from 11.1.5
-    if (m_aBytes.getOffset () == 0 && m_aBytes.size () == m_aBytes.bytes ().length)
-      return m_aBytes.bytes ();
-    // Explicit copy needed
-    return m_aBytes.getAllBytes ();
-  }
-
   @Nonnull
   public String getAsUtf8String ()
   {

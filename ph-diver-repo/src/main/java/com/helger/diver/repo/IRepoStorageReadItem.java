@@ -19,11 +19,12 @@ package com.helger.diver.repo;
 import javax.annotation.Nonnull;
 
 /**
- * Base interface for a {@link RepoStorageItem}.
+ * Base interface for the data of an item in a repository as retrieved by
+ * reading.
  *
  * @author Philip Helger
  */
-public interface IRepoStorageItem
+public interface IRepoStorageReadItem
 {
   /**
    * @return The main content of the item. Never <code>null</code>.

@@ -35,8 +35,9 @@ import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
-import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.IRepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageContentByteArray;
+import com.helger.diver.repo.RepoStorageContentHelper;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.mock.MockRepoStorageLocalFileSystem;
@@ -60,14 +61,15 @@ public final class RepoStorageLocalFileSystemTest
   {
     final RepoStorageLocalFileSystem aRepo = _createRepo ();
 
-    IRepoStorageItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio.test", "a", "1"), ".txt"));
+    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio.test", "a", "1"),
+                                                                          ".txt"));
     assertNotNull (aItem);
-    assertEquals ("A", aItem.getContent ().getAsUtf8String ());
+    assertEquals ("A", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
     aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio.test", "b", "1"), ".txt"));
     assertNotNull (aItem);
-    assertEquals ("B", aItem.getContent ().getAsUtf8String ());
+    assertEquals ("B", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
     aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio.test", "c", "1"), ".txt"));
@@ -93,9 +95,9 @@ public final class RepoStorageLocalFileSystemTest
       assertTrue (eSuccess.isSuccess ());
 
       // Read again
-      final IRepoStorageItem aItem = aRepo.read (aKey);
+      final IRepoStorageReadItem aItem = aRepo.read (aKey);
       assertNotNull (aItem);
-      assertEquals (sUploadedPayload, aItem.getContent ().getAsUtf8String ());
+      assertEquals (sUploadedPayload, RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
       assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
     }
     finally

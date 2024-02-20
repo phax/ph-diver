@@ -42,9 +42,9 @@ import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.IRepoStorageAuditor;
 import com.helger.diver.repo.IRepoStorageContent;
-import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.IRepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageContentByteArray;
-import com.helger.diver.repo.RepoStorageItem;
+import com.helger.diver.repo.RepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
@@ -154,7 +154,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   }
 
   @Nullable
-  public final IRepoStorageItem read (@Nonnull final RepoStorageKey aKey)
+  public final IRepoStorageReadItem read (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -207,7 +207,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
               }
 
               // We're good to go
-              return new RepoStorageItem (RepoStorageContentByteArray.of (aContentBytes), eHashState);
+              return new RepoStorageReadItem (RepoStorageContentByteArray.of (aContentBytes), eHashState);
             }
         }
       }
@@ -219,7 +219,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
           if (aIS != null)
           {
             final byte [] aContentBytes = StreamHelper.getAllBytes (aIS);
-            return new RepoStorageItem (RepoStorageContentByteArray.of (aContentBytes), ERepoHashState.NOT_VERIFIED);
+            return new RepoStorageReadItem (RepoStorageContentByteArray.of (aContentBytes), ERepoHashState.NOT_VERIFIED);
           }
         }
       }
@@ -281,11 +281,6 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
       public long getLength ()
       {
         return aContent.getLength ();
-      }
-
-      public String getAsUtf8String ()
-      {
-        return aContent.getAsUtf8String ();
       }
     };
 

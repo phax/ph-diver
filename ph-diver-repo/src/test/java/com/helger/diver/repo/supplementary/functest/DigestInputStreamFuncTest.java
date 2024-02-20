@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.diver.repo.util;
+package com.helger.diver.repo.supplementary.functest;
 
 import static com.helger.diver.repo.IRepoStorage.DEFAULT_MD_ALGORITHM;
 import static org.junit.Assert.assertEquals;

@@ -35,8 +35,9 @@ import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
-import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.IRepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageChain;
+import com.helger.diver.repo.RepoStorageContentHelper;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.http.mock.LocalJettyRunner;
@@ -102,21 +103,21 @@ public final class RepoStorageChainFuncTest
     {
       // Read from chain, ending up with the item from HTTP
       // This should implicitly copy the item to in-memory and local FS repo
-      IRepoStorageItem aItem = aRepoChain.read (aKey);
+      IRepoStorageReadItem aItem = aRepoChain.read (aKey);
       assertNotNull (aItem);
-      assertEquals ("This file is on HTTP native", aItem.getContent ().getAsUtf8String ());
+      assertEquals ("This file is on HTTP native", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
       assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
       // Now it should be present in memory as well
       aItem = aRepoInMemory.read (aKey);
       assertNotNull (aItem);
-      assertEquals ("This file is on HTTP native", aItem.getContent ().getAsUtf8String ());
+      assertEquals ("This file is on HTTP native", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
       assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
 
       // Now it should be present locally as well
       aItem = aRepoLocalFS.read (aKey);
       assertNotNull (aItem);
-      assertEquals ("This file is on HTTP native", aItem.getContent ().getAsUtf8String ());
+      assertEquals ("This file is on HTTP native", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
       assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
     }
     finally
@@ -178,9 +179,9 @@ public final class RepoStorageChainFuncTest
     assertNull (aLocalFS.read (aKey));
 
     // Read from chain, ending up with the item from HTTP
-    IRepoStorageItem aItem = aChain.read (aKey);
+    IRepoStorageReadItem aItem = aChain.read (aKey);
     assertNotNull (aItem);
-    assertEquals ("This file is on HTTP native", aItem.getContent ().getAsUtf8String ());
+    assertEquals ("This file is on HTTP native", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
     // Now it should be present in memory as well

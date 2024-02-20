@@ -25,20 +25,20 @@ import com.helger.commons.type.ObjectType;
 
 /**
  * This is an abstract representation of a file retrieved from a repository. It
- * contains the data and a hashing status. It does not contain information of a
- * folder or filename - that may be taken from {@link RepoStorageKey}.
+ * contains the content and a hashing status. It does not contain information of
+ * a folder or filename - that may be taken from {@link RepoStorageKey}.
  *
  * @author Philip Helger
  */
 @NotThreadSafe
-public class RepoStorageItem implements IRepoStorageItem
+public class RepoStorageReadItem implements IRepoStorageReadItem
 {
-  public static final ObjectType OT_REPO_STORAGE_ITEM = new ObjectType ("repo.storage.item");
+  public static final ObjectType OT_REPO_STORAGE_READ_ITEM = new ObjectType ("repo.storage.read.item");
 
   private final IRepoStorageContent m_aContent;
   private final ERepoHashState m_eHashState;
 
-  public RepoStorageItem (@Nonnull final IRepoStorageContent aContent, @Nonnull final ERepoHashState eHashState)
+  public RepoStorageReadItem (@Nonnull final IRepoStorageContent aContent, @Nonnull final ERepoHashState eHashState)
   {
     ValueEnforcer.notNull (aContent, "Content");
     ValueEnforcer.notNull (eHashState, "HashState");

@@ -37,7 +37,7 @@ import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorageContent;
-import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.IRepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageContentByteArray;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
@@ -124,7 +124,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
                                 @Nonnull final Consumer <? super RepoToc> aTocConsumer)
   {
     // Read existing ToC
-    final IRepoStorageItem aTocItem = read (aKeyToc);
+    final IRepoStorageReadItem aTocItem = read (aKeyToc);
     final RepoToc aToc;
     if (aTocItem == null)
     {

@@ -38,8 +38,9 @@ import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
-import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.IRepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageContentByteArray;
+import com.helger.diver.repo.RepoStorageContentHelper;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.http.mock.LocalJettyRunner;
@@ -86,13 +87,14 @@ public final class RepoStorageHttpTest
     assertFalse (aRepo.canWrite ());
 
     // Existing only in "local fs" repo but not in http repo
-    IRepoStorageItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"), ".txt"));
+    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"),
+                                                                          ".txt"));
     assertNull (aItem);
 
     // This one exists
     aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "http-only", "1"), ".txt"));
     assertNotNull (aItem);
-    assertEquals ("This file is on HTTP native", aItem.getContent ().getAsUtf8String ());
+    assertEquals ("This file is on HTTP native", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
   }
 
@@ -113,10 +115,10 @@ public final class RepoStorageHttpTest
     final RepoStorageHttp aRepo = _createRepoWritable ();
     assertTrue (aRepo.canWrite ());
 
-    IRepoStorageItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "http-only", "1"),
-                                                                      ".txt"));
+    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "http-only", "1"),
+                                                                          ".txt"));
     assertNotNull (aItem);
-    assertEquals ("This file is on HTTP native", aItem.getContent ().getAsUtf8String ());
+    assertEquals ("This file is on HTTP native", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
     // Ensure the one written below, is not existing
@@ -145,9 +147,9 @@ public final class RepoStorageHttpTest
       assertTrue (eSuccess.isSuccess ());
 
       // Read again
-      final IRepoStorageItem aItem = aRepoHttp.read (aKey);
+      final IRepoStorageReadItem aItem = aRepoHttp.read (aKey);
       assertNotNull (aItem);
-      assertEquals (sUploadedPayload, aItem.getContent ().getAsUtf8String ());
+      assertEquals (sUploadedPayload, RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
       assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
     }
     finally

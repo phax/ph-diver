@@ -17,12 +17,11 @@
 package com.helger.diver.repo;
 
 import javax.annotation.Nonnegative;
-import javax.annotation.Nullable;
 
 import com.helger.commons.io.IHasInputStreamAndReader;
 
 /**
- * The main content of an {@link IRepoStorageItem}.
+ * The main content of an {@link IRepoStorageReadItem}.
  *
  * @author Philip Helger
  */
@@ -42,11 +41,4 @@ public interface IRepoStorageContent extends IHasInputStreamAndReader
   {
     return getLength () <= Integer.MAX_VALUE;
   }
-
-  /**
-   * @return The whole content as an UTF-8 String. This is primarily available
-   *         for testing purposes. May be <code>null</code>.
-   */
-  @Nullable
-  String getAsUtf8String ();
 }

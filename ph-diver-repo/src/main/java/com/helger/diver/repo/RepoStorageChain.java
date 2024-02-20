@@ -135,7 +135,7 @@ public class RepoStorageChain implements IRepoStorageBase
   }
 
   @Nullable
-  public IRepoStorageItem read (@Nonnull final RepoStorageKey aKey)
+  public IRepoStorageReadItem read (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -148,7 +148,7 @@ public class RepoStorageChain implements IRepoStorageBase
     for (final IRepoStorage aStorage : m_aStorages)
     {
       // Try to read item
-      final IRepoStorageItem aItem = aStorage.read (aKey);
+      final IRepoStorageReadItem aItem = aStorage.read (aKey);
       if (aItem != null)
       {
         final String sMsg = "Successfully read '" +

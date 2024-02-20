@@ -33,7 +33,7 @@ import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
-import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.IRepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageContentByteArray;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
@@ -69,7 +69,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     final RepoTopTocXML ret;
 
     // Read existing Top ToC from repository
-    final IRepoStorageItem aItem = m_aRepo.read (RSK_TOP_TOC);
+    final IRepoStorageReadItem aItem = m_aRepo.read (RSK_TOP_TOC);
     if (aItem != null)
     {
       final ErrorList aErrorList = new ErrorList ();

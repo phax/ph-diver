@@ -37,8 +37,9 @@ import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
-import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.IRepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageContentByteArray;
+import com.helger.diver.repo.RepoStorageContentHelper;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.IRepoStorageWithToc;
@@ -124,7 +125,8 @@ public final class RepoStorageS3Test
     assertTrue (aRepo.canWrite ());
 
     // Existing only in "local fs" repo but not in S3
-    IRepoStorageItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"), ".txt"));
+    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"),
+                                                                          ".txt"));
     assertNull (aItem);
 
     final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "s3-written", "1"),
@@ -144,7 +146,7 @@ public final class RepoStorageS3Test
       // Read again
       aItem = aRepo.read (aKey);
       assertNotNull (aItem);
-      assertEquals (sUploadedPayload, aItem.getContent ().getAsUtf8String ());
+      assertEquals (sUploadedPayload, RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
       assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
     }
     catch (final SdkClientException ex)
