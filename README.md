@@ -41,6 +41,7 @@ Each VESID consists of:
     * The version classifier `SNAPSHOT` is a special case and identifies "work in progress" artefacts that are not final yet
     * The Version Number MUST be treated case sensitive
 * an optional *Classifier* - it MAY be empty and follow the regular expression `[a-zA-Z0-9_\-\.]{0,64}`
+    * The Classifier MUST be treated case sensitive
 
 The limitations in the allowed characters for the different parts are meant to allow an easy representation on file systems. 
 
