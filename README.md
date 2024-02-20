@@ -111,6 +111,8 @@ Alternate usage as a Maven BOM:
     * Added a new interface `IRepoStorageAuditor` to be able to handle accesses to the repository 
     * Extended `RepoToc` API
     * Renamed `RepoTopToc` to `RepoTopTocXML`
+    * Extracted `RepoStorageContent` from `RepoStorageItem` and extracted interfaces for both of them
+    * Changed the writable repo API to use `IRepoStorageContent` instead of `RepoStorageItem`
 * v1.0.2 - 2023-12-12
     * Restricted VESID part maximum lengths - defaults to 64 but customizable via `VESIDSettings`.
 * v1.0.1 - 2023-11-07
