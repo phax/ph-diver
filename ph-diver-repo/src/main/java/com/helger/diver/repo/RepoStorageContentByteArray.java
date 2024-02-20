@@ -38,11 +38,11 @@ import com.helger.commons.string.ToStringGenerator;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class RepoStorageContent implements IRepoStorageContent
+public class RepoStorageContentByteArray implements IRepoStorageContent
 {
   private final ByteArrayWrapper m_aBytes;
 
-  private RepoStorageContent (@Nonnull final ByteArrayWrapper aBytes)
+  private RepoStorageContentByteArray (@Nonnull final ByteArrayWrapper aBytes)
   {
     ValueEnforcer.notNull (aBytes, "Bytes");
     m_aBytes = aBytes;
@@ -114,11 +114,11 @@ public class RepoStorageContent implements IRepoStorageContent
    * @return A new item and never <code>null</code>.
    */
   @Nonnull
-  public static RepoStorageContent of (@Nonnull final byte [] aContent)
+  public static RepoStorageContentByteArray of (@Nonnull final byte [] aContent)
   {
     ValueEnforcer.notNull (aContent, "Content");
 
-    return new RepoStorageContent (new ByteArrayWrapper (aContent, false));
+    return new RepoStorageContentByteArray (new ByteArrayWrapper (aContent, false));
   }
 
   /**
@@ -129,7 +129,7 @@ public class RepoStorageContent implements IRepoStorageContent
    * @return A new item and never <code>null</code>.
    */
   @Nonnull
-  public static RepoStorageContent ofUtf8 (@Nonnull final String sContent)
+  public static RepoStorageContentByteArray ofUtf8 (@Nonnull final String sContent)
   {
     ValueEnforcer.notNull (sContent, "String Content");
 
@@ -137,7 +137,7 @@ public class RepoStorageContent implements IRepoStorageContent
   }
 
   @Nonnull
-  public static RepoStorageContent of (@Nonnull final IReadableResource aRes)
+  public static RepoStorageContentByteArray of (@Nonnull final IReadableResource aRes)
   {
     ValueEnforcer.notNull (aRes, "Resource");
 

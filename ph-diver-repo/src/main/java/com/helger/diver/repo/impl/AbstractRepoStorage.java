@@ -42,7 +42,7 @@ import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.IRepoStorageAuditor;
 import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.IRepoStorageItem;
-import com.helger.diver.repo.RepoStorageContent;
+import com.helger.diver.repo.RepoStorageContentByteArray;
 import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
@@ -208,7 +208,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
               }
 
               // We're good to go
-              return new RepoStorageItem (RepoStorageContent.of (aContentBytes), eHashState);
+              return new RepoStorageItem (RepoStorageContentByteArray.of (aContentBytes), eHashState);
             }
         }
       }
@@ -220,7 +220,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
           if (aIS != null)
           {
             final byte [] aContentBytes = StreamHelper.getAllBytes (aIS);
-            return new RepoStorageItem (RepoStorageContent.of (aContentBytes), ERepoHashState.NOT_VERIFIED);
+            return new RepoStorageItem (RepoStorageContentByteArray.of (aContentBytes), ERepoHashState.NOT_VERIFIED);
           }
         }
       }

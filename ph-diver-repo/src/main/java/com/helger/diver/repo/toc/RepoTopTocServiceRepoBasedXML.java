@@ -34,7 +34,7 @@ import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.diver.repo.IRepoStorageItem;
-import com.helger.diver.repo.RepoStorageContent;
+import com.helger.diver.repo.RepoStorageContentByteArray;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
 
@@ -114,7 +114,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     if (aTopTocBytes == null)
       throw new IllegalStateException ("Failed to serialize XML Top-ToC. Details: " + aErrorList);
 
-    return m_aRepo.write (RSK_TOP_TOC, RepoStorageContent.of (aTopTocBytes));
+    return m_aRepo.write (RSK_TOP_TOC, RepoStorageContentByteArray.of (aTopTocBytes));
   }
 
   public void initForRepo (@Nonnull final IRepoStorageWithToc aRepo)

@@ -34,7 +34,7 @@ import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorageItem;
-import com.helger.diver.repo.RepoStorageContent;
+import com.helger.diver.repo.RepoStorageContentByteArray;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.RepoToc;
 
@@ -64,7 +64,7 @@ public final class RepoStorageInMemoryTest
     try
     {
       // Write
-      ESuccess eSuccess = aRepo.write (aKey, RepoStorageContent.ofUtf8 (sUploadedPayload));
+      ESuccess eSuccess = aRepo.write (aKey, RepoStorageContentByteArray.ofUtf8 (sUploadedPayload));
       assertTrue (eSuccess.isSuccess ());
 
       {
@@ -123,6 +123,6 @@ public final class RepoStorageInMemoryTest
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
     // Throws exception
-    aRepo.write (aKey, RepoStorageContent.ofUtf8 ("something else"));
+    aRepo.write (aKey, RepoStorageContentByteArray.ofUtf8 ("something else"));
   }
 }

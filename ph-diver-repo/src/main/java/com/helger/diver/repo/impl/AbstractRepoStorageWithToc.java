@@ -38,7 +38,7 @@ import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.IRepoStorageItem;
-import com.helger.diver.repo.RepoStorageContent;
+import com.helger.diver.repo.RepoStorageContentByteArray;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.toc.IRepoStorageWithToc;
@@ -160,7 +160,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
 
     // Write ToC again
     // Don't check if enabled or not
-    return doWriteRepoStorageItem (aKeyToc, RepoStorageContent.of (aMarshalledTocBytes));
+    return doWriteRepoStorageItem (aKeyToc, RepoStorageContentByteArray.of (aMarshalledTocBytes));
   }
 
   @Override

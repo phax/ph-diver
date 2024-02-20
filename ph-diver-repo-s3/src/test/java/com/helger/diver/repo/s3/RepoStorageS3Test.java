@@ -38,7 +38,7 @@ import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorageItem;
-import com.helger.diver.repo.RepoStorageContent;
+import com.helger.diver.repo.RepoStorageContentByteArray;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.IRepoStorageWithToc;
@@ -138,7 +138,7 @@ public final class RepoStorageS3Test
 
       final String sUploadedPayload = "bla-" + ThreadLocalRandom.current ().nextInt ();
       // Write
-      final ESuccess eSuccess = aRepo.write (aKey, RepoStorageContent.ofUtf8 (sUploadedPayload));
+      final ESuccess eSuccess = aRepo.write (aKey, RepoStorageContentByteArray.ofUtf8 (sUploadedPayload));
       assertTrue (eSuccess.isSuccess ());
 
       // Read again
