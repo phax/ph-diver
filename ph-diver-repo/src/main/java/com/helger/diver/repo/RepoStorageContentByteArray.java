@@ -17,7 +17,6 @@
 package com.helger.diver.repo;
 
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import javax.annotation.Nonnegative;
@@ -25,7 +24,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.io.ByteArrayWrapper;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.stream.StreamHelper;
@@ -42,7 +40,7 @@ public class RepoStorageContentByteArray implements IRepoStorageContent
 {
   private final ByteArrayWrapper m_aBytes;
 
-  private RepoStorageContentByteArray (@Nonnull final ByteArrayWrapper aBytes)
+  public RepoStorageContentByteArray (@Nonnull final ByteArrayWrapper aBytes)
   {
     ValueEnforcer.notNull (aBytes, "Bytes");
     m_aBytes = aBytes;
@@ -59,7 +57,7 @@ public class RepoStorageContentByteArray implements IRepoStorageContent
   public InputStream getBufferedInputStream ()
   {
     // No need to buffer further
-    return m_aBytes.getInputStream ();
+    return getInputStream ();
   }
 
   public boolean isReadMultiple ()
@@ -77,26 +75,17 @@ public class RepoStorageContentByteArray implements IRepoStorageContent
   @Nonnegative
   public byte [] getAllBytesNoCopy ()
   {
-    return m_aBytes.bytes ();
-  }
-
-  @Nonnull
-  @ReturnsMutableObject
-  public ByteArrayWrapper data ()
-  {
-    return m_aBytes;
-  }
-
-  @Nonnull
-  public String getAsString (@Nonnull final Charset aCharset)
-  {
-    return m_aBytes.getBytesAsString (aCharset);
+    // TODO use "isPartialArray" in ph-commons from 11.1.5
+    if (m_aBytes.getOffset () == 0 && m_aBytes.size () == m_aBytes.bytes ().length)
+      return m_aBytes.bytes ();
+    // Explicit copy needed
+    return m_aBytes.getAllBytes ();
   }
 
   @Nonnull
   public String getAsUtf8String ()
   {
-    return getAsString (StandardCharsets.UTF_8);
+    return m_aBytes.getBytesAsString (StandardCharsets.UTF_8);
   }
 
   @Override

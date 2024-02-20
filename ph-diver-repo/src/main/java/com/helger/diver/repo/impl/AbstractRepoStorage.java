@@ -18,6 +18,7 @@ package com.helger.diver.repo.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.time.OffsetDateTime;
 
@@ -47,7 +48,6 @@ import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
-import com.helger.diver.repo.util.MessageDigestInputStream;
 import com.helger.security.messagedigest.EMessageDigestAlgorithm;
 import com.helger.security.messagedigest.MessageDigestValue;
 
@@ -177,7 +177,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
         try (final InputStream aContentIS = _getInputStreamWithAudit (aKey))
         {
           if (aContentIS != null)
-            try (final MessageDigestInputStream aMDIS = new MessageDigestInputStream (aContentIS, aMD))
+            try (final DigestInputStream aMDIS = new DigestInputStream (aContentIS, aMD))
             {
               final byte [] aContentBytes = StreamHelper.getAllBytes (aMDIS);
 
@@ -268,14 +268,14 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     final byte [] aContentBytes = aContent.getAllBytesNoCopy ();
 
     // Create the message digest up front
-    final byte [] aDigest = MessageDigestValue.create (aContentBytes, m_eMDAlgo).bytes ();
+    final byte [] aDigestBytes = MessageDigestValue.create (aContentBytes, m_eMDAlgo).bytes ();
 
     // Store the main data
     if (_writeObjectWithAudit (aKey, aContentBytes).isFailure ())
       return ESuccess.FAILURE;
 
     // Store the hash value
-    if (_writeObjectWithAudit (aKey.getKeyHashSha256 (), aDigest).isFailure ())
+    if (_writeObjectWithAudit (aKey.getKeyHashSha256 (), aDigestBytes).isFailure ())
       return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;

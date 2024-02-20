@@ -19,35 +19,37 @@ package com.helger.diver.repo.util;
 import static com.helger.diver.repo.IRepoStorage.DEFAULT_MD_ALGORITHM;
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
 
 import javax.annotation.Nonnull;
 
 import org.junit.Test;
 
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+
 /**
- * Test class for class {@link MessageDigestInputStream}.
+ * Test class for digest streams
  *
  * @author Philip Helger
  */
-public final class MessageDigestInputStreamTest
+public final class DigestInputStreamFuncTest
 {
   @Nonnull
-  private MessageDigestInputStream _createMDIS ()
+  private DigestInputStream _createMDIS ()
   {
-    final InputStream aIS = new ByteArrayInputStream ("bla".getBytes (StandardCharsets.ISO_8859_1));
+    final InputStream aIS = new NonBlockingByteArrayInputStream ("bla".getBytes (StandardCharsets.ISO_8859_1));
     final MessageDigest aMD = DEFAULT_MD_ALGORITHM.createMessageDigest ();
-    return new MessageDigestInputStream (aIS, aMD);
+    return new DigestInputStream (aIS, aMD);
   }
 
   @Test
   public void testRead () throws IOException
   {
-    try (final MessageDigestInputStream aMDIS = _createMDIS ())
+    try (final DigestInputStream aMDIS = _createMDIS ())
     {
       final int nextByte = aMDIS.read ();
       assertEquals (98, nextByte);
@@ -57,7 +59,7 @@ public final class MessageDigestInputStreamTest
   @Test
   public void testReadWithParams () throws IOException
   {
-    try (final MessageDigestInputStream aMDIS = _createMDIS ())
+    try (final DigestInputStream aMDIS = _createMDIS ())
     {
       final int bytesRead = aMDIS.read (new byte [1], 0, 1);
       assertEquals (1, bytesRead);
