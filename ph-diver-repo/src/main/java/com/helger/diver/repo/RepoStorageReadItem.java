@@ -17,9 +17,12 @@
 package com.helger.diver.repo;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.type.ObjectType;
 
@@ -36,13 +39,20 @@ public class RepoStorageReadItem implements IRepoStorageReadItem
   public static final ObjectType OT_REPO_STORAGE_READ_ITEM = new ObjectType ("repo.storage.read.item");
 
   private final IRepoStorageContent m_aContent;
+  private final byte [] m_aExpectedDigest;
+  private final byte [] m_aCalculatedDigest;
   private final ERepoHashState m_eHashState;
 
-  public RepoStorageReadItem (@Nonnull final IRepoStorageContent aContent, @Nonnull final ERepoHashState eHashState)
+  public RepoStorageReadItem (@Nonnull final IRepoStorageContent aContent,
+                              @Nullable final byte [] aExpectedDigest,
+                              @Nullable final byte [] aCalculatedDigest,
+                              @Nonnull final ERepoHashState eHashState)
   {
     ValueEnforcer.notNull (aContent, "Content");
     ValueEnforcer.notNull (eHashState, "HashState");
     m_aContent = aContent;
+    m_aExpectedDigest = ArrayHelper.getCopy (aExpectedDigest);
+    m_aCalculatedDigest = ArrayHelper.getCopy (aCalculatedDigest);
     m_eHashState = eHashState;
   }
 
@@ -50,6 +60,30 @@ public class RepoStorageReadItem implements IRepoStorageReadItem
   public final IRepoStorageContent getContent ()
   {
     return m_aContent;
+  }
+
+  public final boolean hasExpectedDigest ()
+  {
+    return m_aExpectedDigest != null && m_aExpectedDigest.length > 0;
+  }
+
+  @Nullable
+  @ReturnsMutableCopy
+  public final byte [] getExpectedDigest ()
+  {
+    return ArrayHelper.getCopy (m_aExpectedDigest);
+  }
+
+  public final boolean hasCalculatedDigest ()
+  {
+    return m_aCalculatedDigest != null && m_aCalculatedDigest.length > 0;
+  }
+
+  @Nullable
+  @ReturnsMutableCopy
+  public final byte [] getCalculatedDigest ()
+  {
+    return ArrayHelper.getCopy (m_aCalculatedDigest);
   }
 
   @Nonnull
@@ -62,6 +96,8 @@ public class RepoStorageReadItem implements IRepoStorageReadItem
   public String toString ()
   {
     return new ToStringGenerator (null).append ("Content", m_aContent)
+                                       .append ("ExpectedDigest", m_aExpectedDigest)
+                                       .append ("CalculatedDigest", m_aCalculatedDigest)
                                        .append ("HashState", m_eHashState)
                                        .getToString ();
   }

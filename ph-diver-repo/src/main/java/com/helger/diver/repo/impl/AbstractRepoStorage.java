@@ -66,7 +66,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractRepoStorage.class);
 
-  private final IRepoStorageType m_aType;
+  private final IRepoStorageType m_aRepoStorageType;
   private final String m_sID;
   // Currently constant
   private final EMessageDigestAlgorithm m_eMDAlgo = DEFAULT_MD_ALGORITHM;
@@ -76,16 +76,16 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   private boolean m_bVerifyHashOnRead = DEFAULT_VERIFY_HASH_VALUE;
   private IRepoStorageAuditor m_aAuditor = IRepoStorageAuditor.DO_NOTHING_AUDITOR;
 
-  protected AbstractRepoStorage (@Nonnull final IRepoStorageType aType,
+  protected AbstractRepoStorage (@Nonnull final IRepoStorageType aRepoStorageType,
                                  @Nonnull @Nonempty final String sID,
                                  @Nonnull final ERepoWritable eWriteEnabled,
                                  @Nonnull final ERepoDeletable eDeleteEnabled)
   {
-    ValueEnforcer.notNull (aType, "Type");
+    ValueEnforcer.notNull (aRepoStorageType, "RepoStorageType");
     ValueEnforcer.notEmpty (sID, "ID");
     ValueEnforcer.notNull (eWriteEnabled, "WriteEnabled");
     ValueEnforcer.notNull (eDeleteEnabled, "DeleteEnabled");
-    m_aType = aType;
+    m_aRepoStorageType = aRepoStorageType;
     m_sID = sID;
     m_eWriteEnabled = eWriteEnabled;
     m_eDeleteEnabled = eDeleteEnabled;
@@ -94,7 +94,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   @Nonnull
   public final IRepoStorageType getRepoType ()
   {
-    return m_aType;
+    return m_aRepoStorageType;
   }
 
   @Nonnull
@@ -114,7 +114,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   {
     m_bVerifyHashOnRead = b;
     LOGGER.info ("RepoStorage[" +
-                 m_aType.getID () +
+                 m_aRepoStorageType.getID () +
                  "]: hash verification on read is now: " +
                  (b ? "enabled" : "disabled"));
     return thisAsT ();
@@ -160,11 +160,16 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
 
     try
     {
+      IRepoStorageContent aRepoContent = null;
+      byte [] aRepoDigest = null;
+      byte [] aCalculatedDigest = null;
+      ERepoHashState eHashState = ERepoHashState.NOT_VERIFIED;
+
       if (isVerifyHashOnRead ())
       {
         // Read the expected hash digest
-        final byte [] aExpectedDigest = StreamHelper.getAllBytes (_getInputStreamWithAudit (aKey.getKeyHashSha256 ()));
-        if (aExpectedDigest == null)
+        aRepoDigest = StreamHelper.getAllBytes (_getInputStreamWithAudit (aKey.getKeyHashSha256 ()));
+        if (aRepoDigest == null)
         {
           // Should already be logged in getInputStream
           if (LOGGER.isDebugEnabled ())
@@ -178,19 +183,17 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
           if (aContentIS != null)
             try (final DigestInputStream aMDIS = new DigestInputStream (aContentIS, aMD))
             {
+              // read data and calculate digest
               final byte [] aContentBytes = StreamHelper.getAllBytes (aMDIS);
-
-              final ERepoHashState eHashState;
-              if (aExpectedDigest == null)
+              if (aRepoDigest == null)
               {
                 // Error in reading
-                eHashState = ERepoHashState.NOT_VERIFIED;
               }
               else
               {
                 // We have read a digest value
-                final byte [] aDigest = aMD.digest ();
-                if (ArrayHelper.isArrayEquals (aExpectedDigest, aDigest))
+                aCalculatedDigest = aMD.digest ();
+                if (ArrayHelper.isArrayEquals (aRepoDigest, aCalculatedDigest))
                 {
                   // Digest match
                   eHashState = ERepoHashState.VERIFIED_MATCHING;
@@ -207,7 +210,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
               }
 
               // We're good to go
-              return new RepoStorageReadItem (RepoStorageContentByteArray.of (aContentBytes), eHashState);
+              aRepoContent = RepoStorageContentByteArray.of (aContentBytes);
             }
         }
       }
@@ -219,15 +222,17 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
           if (aIS != null)
           {
             final byte [] aContentBytes = StreamHelper.getAllBytes (aIS);
-            return new RepoStorageReadItem (RepoStorageContentByteArray.of (aContentBytes),
-                                            ERepoHashState.NOT_VERIFIED);
+            aRepoContent = RepoStorageContentByteArray.of (aContentBytes);
           }
         }
       }
+
+      return new RepoStorageReadItem (aRepoContent, aRepoDigest, aCalculatedDigest, eHashState);
     }
     catch (final IOException ex)
     {
-      LOGGER.error ("Failed to read RepoStorage[" + m_aType.getID () + "] item '" + aKey.getPath () + "'", ex);
+      LOGGER.error ("Failed to read RepoStorage[" + m_aRepoStorageType.getID () + "] item '" + aKey.getPath () + "'",
+                    ex);
     }
 
     return null;
@@ -263,7 +268,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
                  "' with " +
                  aContent.getLength () +
                  " bytes to RepoStorage[" +
-                 m_aType.getID () +
+                 m_aRepoStorageType.getID () +
                  "]");
 
     final MessageDigest aMD = m_eMDAlgo.createMessageDigest ();
@@ -329,7 +334,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
 
     if (!canWrite ())
     {
-      LOGGER.error ("Trying to write on a RepoStorage[" + m_aType.getID () + "] with write disabled");
+      LOGGER.error ("Trying to write on a RepoStorage[" + m_aRepoStorageType.getID () + "] with write disabled");
       throw new UnsupportedOperationException ("write is not enabled");
     }
 
@@ -362,7 +367,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   @Nonnull
   private ESuccess _doDeleteRepoStorageItem (@Nonnull final RepoStorageKey aKey)
   {
-    LOGGER.info ("Deleting item '" + aKey.getPath () + "' from RepoStorage[" + m_aType.getID () + "]");
+    LOGGER.info ("Deleting item '" + aKey.getPath () + "' from RepoStorage[" + m_aRepoStorageType.getID () + "]");
 
     // Delete the main data
     if (_deleteObjectWithAudit (aKey).isFailure ())
@@ -396,7 +401,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
 
     if (!canDelete ())
     {
-      LOGGER.error ("Trying to delete on a RepoStorage[" + m_aType.getID () + "] with delete disabled");
+      LOGGER.error ("Trying to delete on a RepoStorage[" + m_aRepoStorageType.getID () + "] with delete disabled");
       throw new UnsupportedOperationException ("delete is not enabled");
     }
 
@@ -413,7 +418,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (null).append ("Type", m_aType)
+    return new ToStringGenerator (null).append ("Type", m_aRepoStorageType)
                                        .append ("ID", m_sID)
                                        .append ("MDAlgo", m_eMDAlgo)
                                        .append ("WriteEnabled", m_eWriteEnabled)

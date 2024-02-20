@@ -17,6 +17,9 @@
 package com.helger.diver.repo;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.helger.commons.annotation.ReturnsMutableCopy;
 
 /**
  * Base interface for the data of an item in a repository as retrieved by
@@ -31,6 +34,18 @@ public interface IRepoStorageReadItem
    */
   @Nonnull
   IRepoStorageContent getContent ();
+
+  boolean hasExpectedDigest ();
+
+  @Nullable
+  @ReturnsMutableCopy
+  byte [] getExpectedDigest ();
+
+  boolean hasCalculatedDigest ();
+
+  @Nullable
+  @ReturnsMutableCopy
+  byte [] getCalculatedDigest ();
 
   /**
    * @return The verification state of this item. Never <code>null</code>.
