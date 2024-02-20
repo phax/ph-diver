@@ -227,7 +227,8 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
         }
       }
 
-      return new RepoStorageReadItem (aRepoContent, aRepoDigest, aCalculatedDigest, eHashState);
+      if (aRepoContent != null)
+        return new RepoStorageReadItem (aRepoContent, aRepoDigest, aCalculatedDigest, eHashState);
     }
     catch (final IOException ex)
     {
