@@ -43,5 +43,5 @@ public interface IRepoStorageBase
    * @return <code>null</code> if the provided key does not exist.
    */
   @Nullable
-  RepoStorageItem read (@Nonnull RepoStorageKey aKey);
+  IRepoStorageItem read (@Nonnull RepoStorageKey aKey);
 }

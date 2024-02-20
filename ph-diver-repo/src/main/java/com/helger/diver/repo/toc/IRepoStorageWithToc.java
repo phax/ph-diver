@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.IRepoStorage;
-import com.helger.diver.repo.RepoStorageItem;
+import com.helger.diver.repo.IRepoStorageItem;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 
@@ -73,8 +73,8 @@ public interface IRepoStorageWithToc extends IRepoStorage
    *         no ToC is present.
    */
   @Nullable
-  default RepoStorageItem readToc (@Nonnull @Nonempty final String sGroupID,
-                                   @Nonnull @Nonempty final String sArtifactID)
+  default IRepoStorageItem readToc (@Nonnull @Nonempty final String sGroupID,
+                                    @Nonnull @Nonempty final String sArtifactID)
   {
     return read (RepoStorageKeyOfArtefact.ofToc (sGroupID, sArtifactID));
   }
@@ -110,11 +110,11 @@ public interface IRepoStorageWithToc extends IRepoStorage
   default RepoToc readTocModel (@Nonnull @Nonempty final String sGroupID, @Nonnull @Nonempty final String sArtifactID)
   {
     // Read bytes
-    final RepoStorageItem aItem = readToc (sGroupID, sArtifactID);
+    final IRepoStorageItem aItem = readToc (sGroupID, sArtifactID);
     if (aItem != null)
     {
       // Parse to XML
-      final RepoTocType aJaxbObject = new RepoToc1Marshaller ().read (aItem.data ().bytes ());
+      final RepoTocType aJaxbObject = new RepoToc1Marshaller ().read (aItem.getContent ().getBufferedInputStream ());
       if (aJaxbObject != null)
       {
         // Convert to domain model

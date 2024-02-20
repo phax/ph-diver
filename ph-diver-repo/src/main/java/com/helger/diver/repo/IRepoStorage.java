@@ -71,14 +71,14 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    *
    * @param aKey
    *        The key to write. May not be <code>null</code>.
-   * @param aItem
-   *        The main item to write. May not be <code>null</code>.
+   * @param aContent
+   *        The main content to write. May not be <code>null</code>.
    * @return {@link ESuccess}
    */
   @Nonnull
-  default ESuccess write (@Nonnull final RepoStorageKey aKey, @Nonnull final RepoStorageItem aItem)
+  default ESuccess write (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
   {
-    return write (aKey, aItem, (OffsetDateTime) null);
+    return write (aKey, aContent, (OffsetDateTime) null);
   }
 
   /**
@@ -87,8 +87,8 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    *
    * @param aKey
    *        The key to write. May not be <code>null</code>.
-   * @param aItem
-   *        The main item to write. May not be <code>null</code>.
+   * @param aContent
+   *        The main content to write. May not be <code>null</code>.
    * @param aPublicationDT
    *        Publication date and time. If <code>null</code> the current date
    *        time is used.
@@ -96,7 +96,7 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    */
   @Nonnull
   ESuccess write (@Nonnull RepoStorageKey aKey,
-                  @Nonnull RepoStorageItem aItem,
+                  @Nonnull IRepoStorageContent aContent,
                   @Nullable OffsetDateTime aPublicationDT);
 
   /**

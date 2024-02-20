@@ -33,7 +33,8 @@ import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
-import com.helger.diver.repo.RepoStorageItem;
+import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.RepoStorageContent;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.RepoToc;
 
@@ -63,7 +64,7 @@ public final class RepoStorageInMemoryTest
     try
     {
       // Write
-      ESuccess eSuccess = aRepo.write (aKey, RepoStorageItem.ofUtf8 (sUploadedPayload));
+      ESuccess eSuccess = aRepo.write (aKey, RepoStorageContent.ofUtf8 (sUploadedPayload));
       assertTrue (eSuccess.isSuccess ());
 
       {
@@ -73,9 +74,9 @@ public final class RepoStorageInMemoryTest
       }
 
       // Read again
-      RepoStorageItem aItem = aRepo.read (aKey);
+      IRepoStorageItem aItem = aRepo.read (aKey);
       assertNotNull (aItem);
-      assertEquals (sUploadedPayload, aItem.getDataAsUtf8String ());
+      assertEquals (sUploadedPayload, aItem.getContent ().getAsUtf8String ());
       assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
 
       // Delete
@@ -116,12 +117,12 @@ public final class RepoStorageInMemoryTest
     aRepo.registerObject (aKey, sUploadedPayload.getBytes (StandardCharsets.UTF_8));
 
     // Read again
-    final RepoStorageItem aItem = aRepo.read (aKey);
+    final IRepoStorageItem aItem = aRepo.read (aKey);
     assertNotNull (aItem);
-    assertEquals (sUploadedPayload, aItem.getDataAsUtf8String ());
+    assertEquals (sUploadedPayload, aItem.getContent ().getAsUtf8String ());
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
     // Throws exception
-    aRepo.write (aKey, RepoStorageItem.ofUtf8 ("something else"));
+    aRepo.write (aKey, RepoStorageContent.ofUtf8 ("something else"));
   }
 }

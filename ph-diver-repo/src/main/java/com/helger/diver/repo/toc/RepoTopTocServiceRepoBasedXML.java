@@ -33,7 +33,8 @@ import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
-import com.helger.diver.repo.RepoStorageItem;
+import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.RepoStorageContent;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
 
@@ -51,7 +52,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
 
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoTopTocServiceRepoBasedXML.class);
 
-  private static final RepoStorageKey RSK = new RepoStorageKey (FILENAME_TOP_TOC_DIVER_XML);
+  private static final RepoStorageKey RSK_TOP_TOC = new RepoStorageKey (FILENAME_TOP_TOC_DIVER_XML);
 
   private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   private final AtomicBoolean m_aInitialized = new AtomicBoolean (false);
@@ -68,12 +69,13 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     final RepoTopTocXML ret;
 
     // Read existing Top ToC from repository
-    final RepoStorageItem aItem = m_aRepo.read (RSK);
+    final IRepoStorageItem aItem = m_aRepo.read (RSK_TOP_TOC);
     if (aItem != null)
     {
       final ErrorList aErrorList = new ErrorList ();
       final RepoTopTocType aRepoTopToc = new RepoTopToc1Marshaller ().setCollectErrors (aErrorList)
-                                                                     .read (aItem.data ().getInputStream ());
+                                                                     .read (aItem.getContent ()
+                                                                                 .getBufferedInputStream ());
       if (aRepoTopToc == null)
         throw new IllegalStateException ("Failed to parse XML Top-ToC from Repository. Details: " + aErrorList);
 
@@ -106,13 +108,13 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     ValueEnforcer.notNull (aTopToc, "TopToc");
 
     final ErrorList aErrorList = new ErrorList ();
-    final byte [] aBytes = new RepoTopToc1Marshaller ().setCollectErrors (aErrorList)
-                                                       .setFormattedOutput (true)
-                                                       .getAsBytes (aTopToc.getAsJaxbObject ());
-    if (aBytes == null)
+    final byte [] aTopTocBytes = new RepoTopToc1Marshaller ().setCollectErrors (aErrorList)
+                                                             .setFormattedOutput (true)
+                                                             .getAsBytes (aTopToc.getAsJaxbObject ());
+    if (aTopTocBytes == null)
       throw new IllegalStateException ("Failed to serialize XML Top-ToC. Details: " + aErrorList);
 
-    return m_aRepo.write (RSK, RepoStorageItem.of (aBytes));
+    return m_aRepo.write (RSK_TOP_TOC, RepoStorageContent.of (aTopTocBytes));
   }
 
   public void initForRepo (@Nonnull final IRepoStorageWithToc aRepo)

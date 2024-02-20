@@ -37,7 +37,8 @@ import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
-import com.helger.diver.repo.RepoStorageItem;
+import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.RepoStorageContent;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.IRepoStorageWithToc;
@@ -123,7 +124,7 @@ public final class RepoStorageS3Test
     assertTrue (aRepo.canWrite ());
 
     // Existing only in "local fs" repo but not in S3
-    RepoStorageItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"), ".txt"));
+    IRepoStorageItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"), ".txt"));
     assertNull (aItem);
 
     final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "s3-written", "1"),
@@ -137,13 +138,13 @@ public final class RepoStorageS3Test
 
       final String sUploadedPayload = "bla-" + ThreadLocalRandom.current ().nextInt ();
       // Write
-      final ESuccess eSuccess = aRepo.write (aKey, RepoStorageItem.ofUtf8 (sUploadedPayload));
+      final ESuccess eSuccess = aRepo.write (aKey, RepoStorageContent.ofUtf8 (sUploadedPayload));
       assertTrue (eSuccess.isSuccess ());
 
       // Read again
       aItem = aRepo.read (aKey);
       assertNotNull (aItem);
-      assertEquals (sUploadedPayload, aItem.getDataAsUtf8String ());
+      assertEquals (sUploadedPayload, aItem.getContent ().getAsUtf8String ());
       assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
     }
     catch (final SdkClientException ex)

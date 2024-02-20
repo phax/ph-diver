@@ -38,7 +38,8 @@ import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
-import com.helger.diver.repo.RepoStorageItem;
+import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.RepoStorageContent;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.http.mock.LocalJettyRunner;
@@ -85,13 +86,13 @@ public final class RepoStorageHttpTest
     assertFalse (aRepo.canWrite ());
 
     // Existing only in "local fs" repo but not in http repo
-    RepoStorageItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"), ".txt"));
+    IRepoStorageItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"), ".txt"));
     assertNull (aItem);
 
     // This one exists
     aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "http-only", "1"), ".txt"));
     assertNotNull (aItem);
-    assertEquals ("This file is on HTTP native", aItem.getDataAsUtf8String ());
+    assertEquals ("This file is on HTTP native", aItem.getContent ().getAsUtf8String ());
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
   }
 
@@ -112,10 +113,10 @@ public final class RepoStorageHttpTest
     final RepoStorageHttp aRepo = _createRepoWritable ();
     assertTrue (aRepo.canWrite ());
 
-    RepoStorageItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "http-only", "1"),
-                                                                     ".txt"));
+    IRepoStorageItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "http-only", "1"),
+                                                                      ".txt"));
     assertNotNull (aItem);
-    assertEquals ("This file is on HTTP native", aItem.getDataAsUtf8String ());
+    assertEquals ("This file is on HTTP native", aItem.getContent ().getAsUtf8String ());
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
     // Ensure the one written below, is not existing
@@ -140,13 +141,13 @@ public final class RepoStorageHttpTest
       final String sUploadedPayload = "bla-" + ThreadLocalRandom.current ().nextInt ();
 
       // Write
-      final ESuccess eSuccess = aRepoHttp.write (aKey, RepoStorageItem.ofUtf8 (sUploadedPayload));
+      final ESuccess eSuccess = aRepoHttp.write (aKey, RepoStorageContent.ofUtf8 (sUploadedPayload));
       assertTrue (eSuccess.isSuccess ());
 
       // Read again
-      final RepoStorageItem aItem = aRepoHttp.read (aKey);
+      final IRepoStorageItem aItem = aRepoHttp.read (aKey);
       assertNotNull (aItem);
-      assertEquals (sUploadedPayload, aItem.getDataAsUtf8String ());
+      assertEquals (sUploadedPayload, aItem.getContent ().getAsUtf8String ());
       assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
     }
     finally

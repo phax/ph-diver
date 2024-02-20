@@ -30,12 +30,15 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.datetime.PDTFactory;
+import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
-import com.helger.diver.repo.RepoStorageItem;
+import com.helger.diver.repo.IRepoStorageContent;
+import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.RepoStorageContent;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.toc.IRepoStorageWithToc;
@@ -121,7 +124,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
                                 @Nonnull final Consumer <? super RepoToc> aTocConsumer)
   {
     // Read existing ToC
-    final RepoStorageItem aTocItem = read (aKeyToc);
+    final IRepoStorageItem aTocItem = read (aKeyToc);
     final RepoToc aToc;
     if (aTocItem == null)
     {
@@ -130,7 +133,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
     }
     else
     {
-      final RepoTocType aJaxbToc = new RepoToc1Marshaller ().read (aTocItem.data ());
+      final RepoTocType aJaxbToc = new RepoToc1Marshaller ().read (aTocItem.getContent ().getBufferedInputStream ());
       if (aJaxbToc == null)
         throw new IllegalStateException ("Invalid TOC found in '" + aKeyToc.getPath () + "'");
       aToc = RepoToc.createFromJaxbObject (aJaxbToc);
@@ -147,18 +150,24 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
       return ESuccess.FAILURE;
     }
 
+    // Serialize updated ToC
+    final ErrorList aErrorList = new ErrorList ();
+    final byte [] aMarshalledTocBytes = new RepoToc1Marshaller ().setFormattedOutput (true)
+                                                                 .setCollectErrors (aErrorList)
+                                                                 .getAsBytes (aToc.getAsJaxbObject ());
+    if (aMarshalledTocBytes == null)
+      throw new IllegalStateException ("Failed to serialize XML ToC. Details: " + aErrorList);
+
     // Write ToC again
     // Don't check if enabled or not
-    return doWriteRepoStorageItem (aKeyToc,
-                                   RepoStorageItem.of (new RepoToc1Marshaller ().setFormattedOutput (true)
-                                                                                .getAsBytes (aToc.getAsJaxbObject ())));
+    return doWriteRepoStorageItem (aKeyToc, RepoStorageContent.of (aMarshalledTocBytes));
   }
 
   @Override
   @OverrideOnDemand
   @Nonnull
   protected final ESuccess onAfterWrite (@Nonnull final RepoStorageKeyOfArtefact aKey,
-                                         @Nonnull final RepoStorageItem aItem,
+                                         @Nonnull final IRepoStorageContent aContent,
                                          @Nullable final OffsetDateTime aPublicationDT)
   {
     if (isEnableTocUpdates ())

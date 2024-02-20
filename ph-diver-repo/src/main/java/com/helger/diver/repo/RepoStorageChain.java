@@ -135,7 +135,7 @@ public class RepoStorageChain implements IRepoStorageBase
   }
 
   @Nullable
-  public RepoStorageItem read (@Nonnull final RepoStorageKey aKey)
+  public IRepoStorageItem read (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -148,7 +148,7 @@ public class RepoStorageChain implements IRepoStorageBase
     for (final IRepoStorage aStorage : m_aStorages)
     {
       // Try to read item
-      final RepoStorageItem aItem = aStorage.read (aKey);
+      final IRepoStorageItem aItem = aStorage.read (aKey);
       if (aItem != null)
       {
         final String sMsg = "Successfully read '" +
@@ -182,7 +182,7 @@ public class RepoStorageChain implements IRepoStorageBase
                             "' to " +
                             m_aWritableStorages.getAllMapped (IRepoStorage::getRepoTypeID));
             for (final IRepoStorage aWritableStorage : m_aWritableStorages)
-              aWritableStorage.write (aKey, aItem);
+              aWritableStorage.write (aKey, aItem.getContent ());
           }
         }
         return aItem;

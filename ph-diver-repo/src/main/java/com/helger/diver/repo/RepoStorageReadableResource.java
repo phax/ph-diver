@@ -31,16 +31,16 @@ import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Implementation of {@link IReadableResource} for {@link RepoStorageKey} and
- * {@link RepoStorageItem}.,
+ * {@link IRepoStorageItem}.
  *
  * @author Philip Helger
  */
 public class RepoStorageReadableResource implements IReadableResource
 {
   private final RepoStorageKey m_aKey;
-  private final RepoStorageItem m_aItem;
+  private final IRepoStorageItem m_aItem;
 
-  public RepoStorageReadableResource (@Nonnull final RepoStorageKey aKey, @Nonnull final RepoStorageItem aItem)
+  public RepoStorageReadableResource (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageItem aItem)
   {
     ValueEnforcer.notNull (aKey, "Key");
     ValueEnforcer.notNull (aItem, "Item");
@@ -55,7 +55,7 @@ public class RepoStorageReadableResource implements IReadableResource
   }
 
   @Nonnull
-  public final RepoStorageItem getRepoStorageItem ()
+  public final IRepoStorageItem getRepoStorageItem ()
   {
     return m_aItem;
   }
@@ -63,12 +63,12 @@ public class RepoStorageReadableResource implements IReadableResource
   @Nonnull
   public InputStream getInputStream ()
   {
-    return m_aItem.data ().getBufferedInputStream ();
+    return m_aItem.getContent ().getBufferedInputStream ();
   }
 
   public boolean isReadMultiple ()
   {
-    return true;
+    return m_aItem.getContent ().isReadMultiple ();
   }
 
   @Nonnull

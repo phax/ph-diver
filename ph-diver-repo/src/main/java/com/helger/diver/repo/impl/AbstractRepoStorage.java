@@ -40,6 +40,9 @@ import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.IRepoStorageAuditor;
+import com.helger.diver.repo.IRepoStorageContent;
+import com.helger.diver.repo.IRepoStorageItem;
+import com.helger.diver.repo.RepoStorageContent;
 import com.helger.diver.repo.RepoStorageItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
@@ -152,7 +155,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   }
 
   @Nullable
-  public final RepoStorageItem read (@Nonnull final RepoStorageKey aKey)
+  public final IRepoStorageItem read (@Nonnull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -171,12 +174,12 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
 
         // The message digest to be calculated while reading
         final MessageDigest aMD = m_eMDAlgo.createMessageDigest ();
-        try (final InputStream aIS = _getInputStreamWithAudit (aKey))
+        try (final InputStream aContentIS = _getInputStreamWithAudit (aKey))
         {
-          if (aIS != null)
-            try (final MessageDigestInputStream aMDIS = new MessageDigestInputStream (aIS, aMD))
+          if (aContentIS != null)
+            try (final MessageDigestInputStream aMDIS = new MessageDigestInputStream (aContentIS, aMD))
             {
-              final byte [] aData = StreamHelper.getAllBytes (aMDIS);
+              final byte [] aContentBytes = StreamHelper.getAllBytes (aMDIS);
 
               final ERepoHashState eHashState;
               if (aExpectedDigest == null)
@@ -205,7 +208,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
               }
 
               // We're good to go
-              return RepoStorageItem.of (aData, eHashState);
+              return new RepoStorageItem (RepoStorageContent.of (aContentBytes), eHashState);
             }
         }
       }
@@ -216,8 +219,8 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
         {
           if (aIS != null)
           {
-            final byte [] aData = StreamHelper.getAllBytes (aIS);
-            return RepoStorageItem.of (aData, ERepoHashState.NOT_VERIFIED);
+            final byte [] aContentBytes = StreamHelper.getAllBytes (aIS);
+            return new RepoStorageItem (RepoStorageContent.of (aContentBytes), ERepoHashState.NOT_VERIFIED);
           }
         }
       }
@@ -248,24 +251,27 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
 
   @Nonnull
   protected final ESuccess doWriteRepoStorageItem (@Nonnull final RepoStorageKey aKey,
-                                                   @Nonnull final RepoStorageItem aItem)
+                                                   @Nonnull final IRepoStorageContent aContent)
   {
     ValueEnforcer.notNull (aKey, "Key");
-    ValueEnforcer.notNull (aItem, "Item");
+    ValueEnforcer.notNull (aContent, "Content");
 
     LOGGER.info ("Writing item '" +
                  aKey.getPath () +
                  "' with " +
-                 aItem.data ().size () +
+                 aContent.getLength () +
                  " bytes to RepoStorage[" +
                  m_aType.getID () +
                  "]");
 
+    // TODO change to stream based
+    final byte [] aContentBytes = aContent.getAllBytesNoCopy ();
+
     // Create the message digest up front
-    final byte [] aDigest = MessageDigestValue.create (aItem.data ().bytes (), m_eMDAlgo).bytes ();
+    final byte [] aDigest = MessageDigestValue.create (aContentBytes, m_eMDAlgo).bytes ();
 
     // Store the main data
-    if (_writeObjectWithAudit (aKey, aItem.data ().bytes ()).isFailure ())
+    if (_writeObjectWithAudit (aKey, aContentBytes).isFailure ())
       return ESuccess.FAILURE;
 
     // Store the hash value
@@ -280,7 +286,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
    *
    * @param aKey
    *        The key of the created repo item. Never <code>null</code>.
-   * @param aItem
+   * @param aContent
    *        The created repo item content. Never <code>null</code>.
    * @param aPublicationDT
    *        The publication date time of the item. May be <code>null</code>.
@@ -289,7 +295,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   @OverrideOnDemand
   @Nonnull
   protected ESuccess onAfterWrite (@Nonnull final RepoStorageKeyOfArtefact aKey,
-                                   @Nonnull final RepoStorageItem aItem,
+                                   @Nonnull final IRepoStorageContent aContent,
                                    @Nullable final OffsetDateTime aPublicationDT)
   {
     return ESuccess.SUCCESS;
@@ -297,11 +303,11 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
 
   @Nonnull
   public final ESuccess write (@Nonnull final RepoStorageKey aKey,
-                               @Nonnull final RepoStorageItem aItem,
+                               @Nonnull final IRepoStorageContent aContent,
                                @Nullable final OffsetDateTime aPublicationDT)
   {
     ValueEnforcer.notNull (aKey, "Key");
-    ValueEnforcer.notNull (aItem, "Item");
+    ValueEnforcer.notNull (aContent, "Content");
 
     if (!canWrite ())
     {
@@ -309,11 +315,11 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
       throw new UnsupportedOperationException ("write is not enabled");
     }
 
-    if (doWriteRepoStorageItem (aKey, aItem).isFailure ())
+    if (doWriteRepoStorageItem (aKey, aContent).isFailure ())
       return ESuccess.FAILURE;
 
     if (aKey instanceof RepoStorageKeyOfArtefact)
-      if (onAfterWrite ((RepoStorageKeyOfArtefact) aKey, aItem, aPublicationDT).isFailure ())
+      if (onAfterWrite ((RepoStorageKeyOfArtefact) aKey, aContent, aPublicationDT).isFailure ())
         return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;
