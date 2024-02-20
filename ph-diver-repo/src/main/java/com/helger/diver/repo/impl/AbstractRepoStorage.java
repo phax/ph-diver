@@ -43,11 +43,11 @@ import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.IRepoStorageAuditor;
 import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.IRepoStorageReadItem;
+import com.helger.diver.repo.IRepoStorageType;
 import com.helger.diver.repo.RepoStorageContentByteArray;
-import com.helger.diver.repo.RepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
-import com.helger.diver.repo.RepoStorageType;
+import com.helger.diver.repo.RepoStorageReadItem;
 import com.helger.security.messagedigest.EMessageDigestAlgorithm;
 
 /**
@@ -66,7 +66,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractRepoStorage.class);
 
-  private final RepoStorageType m_aType;
+  private final IRepoStorageType m_aType;
   private final String m_sID;
   // Currently constant
   private final EMessageDigestAlgorithm m_eMDAlgo = DEFAULT_MD_ALGORITHM;
@@ -76,7 +76,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   private boolean m_bVerifyHashOnRead = DEFAULT_VERIFY_HASH_VALUE;
   private IRepoStorageAuditor m_aAuditor = IRepoStorageAuditor.DO_NOTHING_AUDITOR;
 
-  protected AbstractRepoStorage (@Nonnull final RepoStorageType aType,
+  protected AbstractRepoStorage (@Nonnull final IRepoStorageType aType,
                                  @Nonnull @Nonempty final String sID,
                                  @Nonnull final ERepoWritable eWriteEnabled,
                                  @Nonnull final ERepoDeletable eDeleteEnabled)
@@ -92,7 +92,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   }
 
   @Nonnull
-  public final RepoStorageType getRepoType ()
+  public final IRepoStorageType getRepoType ()
   {
     return m_aType;
   }
@@ -219,7 +219,8 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
           if (aIS != null)
           {
             final byte [] aContentBytes = StreamHelper.getAllBytes (aIS);
-            return new RepoStorageReadItem (RepoStorageContentByteArray.of (aContentBytes), ERepoHashState.NOT_VERIFIED);
+            return new RepoStorageReadItem (RepoStorageContentByteArray.of (aContentBytes),
+                                            ERepoHashState.NOT_VERIFIED);
           }
         }
       }

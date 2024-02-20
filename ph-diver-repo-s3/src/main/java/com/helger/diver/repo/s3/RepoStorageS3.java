@@ -30,6 +30,7 @@ import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.IRepoStorageContent;
+import com.helger.diver.repo.IRepoStorageType;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
@@ -53,7 +54,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
  */
 public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
 {
-  public static final RepoStorageType AWS_S3 = new RepoStorageType ("aws-s3", true, true);
+  public static final IRepoStorageType AWS_S3 = new RepoStorageType ("aws-s3", true, true);
 
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageS3.class);
 

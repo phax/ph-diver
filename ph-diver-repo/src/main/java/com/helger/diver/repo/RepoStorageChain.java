@@ -43,14 +43,14 @@ public class RepoStorageChain implements IRepoStorageBase
   public static final boolean DEFAULT_CACHE_REMOTE_CONTENT = true;
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageChain.class);
 
-  private final ICommonsList <IRepoStorage> m_aStorages;
+  private final ICommonsList <IRepoStorage> m_aReadingStorages;
   private final ICommonsList <IRepoStorage> m_aWritableStorages;
   private boolean m_bCacheRemoteContent = DEFAULT_CACHE_REMOTE_CONTENT;
 
   /**
    * Constructor. The order of storages is maintained.
    *
-   * @param aStorages
+   * @param aReadingStorages
    *        The storages to be considered. May neither be <code>null</code> nor
    *        empty.
    * @param aWritableStorages
@@ -59,17 +59,17 @@ public class RepoStorageChain implements IRepoStorageBase
    *        eventually received artefact from a remote storage is not saved
    *        locally.
    */
-  public RepoStorageChain (@Nonnull final List <? extends IRepoStorage> aStorages,
+  public RepoStorageChain (@Nonnull final List <? extends IRepoStorage> aReadingStorages,
                            @Nullable final List <? extends IRepoStorage> aWritableStorages)
   {
-    ValueEnforcer.notEmptyNoNullValue (aStorages, "Storages");
+    ValueEnforcer.notEmptyNoNullValue (aReadingStorages, "ReadingStorages");
     if (aWritableStorages != null)
     {
       ValueEnforcer.noNullValue (aWritableStorages, "WritablePersistentStorages");
       for (final IRepoStorage aStorage : aWritableStorages)
         ValueEnforcer.isTrue (aStorage.canWrite (), "Writable storage must be writable");
     }
-    m_aStorages = new CommonsArrayList <> (aStorages);
+    m_aReadingStorages = new CommonsArrayList <> (aReadingStorages);
     m_aWritableStorages = new CommonsArrayList <> (aWritableStorages);
   }
 
@@ -77,7 +77,7 @@ public class RepoStorageChain implements IRepoStorageBase
   @Nonempty
   public final ICommonsList <IRepoStorage> internalGetAllStorages ()
   {
-    return m_aStorages.getClone ();
+    return m_aReadingStorages.getClone ();
   }
 
   @Nonnull
@@ -111,9 +111,9 @@ public class RepoStorageChain implements IRepoStorageBase
       LOGGER.debug ("Checking for existence of '" +
                     aKey.getPath () +
                     "' in " +
-                    m_aStorages.getAllMapped (IRepoStorage::getRepoTypeID));
+                    m_aReadingStorages.getAllMapped (IRepoStorage::getRepoTypeID));
 
-    for (final IRepoStorage aStorage : m_aStorages)
+    for (final IRepoStorage aStorage : m_aReadingStorages)
     {
       // Try to read item
       if (aStorage.exists (aKey))
@@ -143,22 +143,22 @@ public class RepoStorageChain implements IRepoStorageBase
       LOGGER.debug ("Trying to read '" +
                     aKey.getPath () +
                     "' from " +
-                    m_aStorages.getAllMapped (IRepoStorage::getRepoTypeID));
+                    m_aReadingStorages.getAllMapped (IRepoStorage::getRepoTypeID));
 
-    for (final IRepoStorage aStorage : m_aStorages)
+    for (final IRepoStorage aReadStorage : m_aReadingStorages)
     {
       // Try to read item
-      final IRepoStorageReadItem aItem = aStorage.read (aKey);
-      if (aItem != null)
+      final IRepoStorageReadItem aReadItem = aReadStorage.read (aKey);
+      if (aReadItem != null)
       {
         final String sMsg = "Successfully read '" +
                             aKey.getPath () +
                             "' from " +
-                            aStorage.getRepoTypeID () +
+                            aReadStorage.getRepoTypeID () +
                             " with hash state '" +
-                            aItem.getHashState ().getDisplayName () +
+                            aReadItem.getHashState ().getDisplayName () +
                             "'";
-        if (aItem.getHashState () != ERepoHashState.VERIFIED_MATCHING)
+        if (aReadItem.getHashState () != ERepoHashState.VERIFIED_MATCHING)
           LOGGER.warn (sMsg);
         else
         {
@@ -170,7 +170,11 @@ public class RepoStorageChain implements IRepoStorageBase
         // 1. The source repository is remote
         // 2. Caching of content is enabled
         // 3. It is a real artifact and not just "any" data (like TopToC)
-        if (aStorage.getRepoType ().isRemote () && m_bCacheRemoteContent && aKey instanceof RepoStorageKeyOfArtefact)
+        // 4. The data can be read multiple times
+        if (aReadStorage.getRepoType ().isRemote () &&
+            m_bCacheRemoteContent &&
+            aKey instanceof RepoStorageKeyOfArtefact &&
+            aReadItem.getContent ().isReadMultiple ())
         {
           // Item was read from remote
           if (m_aWritableStorages.isNotEmpty ())
@@ -182,10 +186,10 @@ public class RepoStorageChain implements IRepoStorageBase
                             "' to " +
                             m_aWritableStorages.getAllMapped (IRepoStorage::getRepoTypeID));
             for (final IRepoStorage aWritableStorage : m_aWritableStorages)
-              aWritableStorage.write (aKey, aItem.getContent ());
+              aWritableStorage.write (aKey, aReadItem.getContent ());
           }
         }
-        return aItem;
+        return aReadItem;
       }
 
       // else try reading from next repo

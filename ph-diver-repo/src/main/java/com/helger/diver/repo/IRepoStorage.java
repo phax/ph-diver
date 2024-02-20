@@ -44,7 +44,7 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    *         <code>null</code>.
    */
   @Nonnull
-  RepoStorageType getRepoType ();
+  IRepoStorageType getRepoType ();
 
   /**
    * @return The ID of the repository storage type the implementation handles.

@@ -38,9 +38,9 @@ import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.IRepoStorageReadItem;
+import com.helger.diver.repo.IRepoStorageType;
 import com.helger.diver.repo.RepoStorageContentByteArray;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
-import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.toc.IRepoStorageWithToc;
 import com.helger.diver.repo.toc.IRepoTopTocService;
 import com.helger.diver.repo.toc.RepoToc;
@@ -68,7 +68,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
   private final AtomicBoolean m_aTopTocServiceInitialized = new AtomicBoolean (false);
   private final IRepoTopTocService m_aTopTocService;
 
-  protected AbstractRepoStorageWithToc (@Nonnull final RepoStorageType aType,
+  protected AbstractRepoStorageWithToc (@Nonnull final IRepoStorageType aType,
                                         @Nonnull @Nonempty final String sID,
                                         @Nonnull final ERepoWritable eWriteEnabled,
                                         @Nonnull final ERepoDeletable eDeleteEnabled,

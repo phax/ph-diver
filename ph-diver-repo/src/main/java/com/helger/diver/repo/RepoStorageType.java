@@ -22,7 +22,6 @@ import javax.annotation.concurrent.Immutable;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.hashcode.HashCodeGenerator;
-import com.helger.commons.id.IHasID;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -31,11 +30,11 @@ import com.helger.commons.string.ToStringGenerator;
  * @author Philip Helger
  */
 @Immutable
-public final class RepoStorageType implements IHasID <String>
+public final class RepoStorageType implements IRepoStorageType
 {
-  public static final RepoStorageType IN_MEMORY = new RepoStorageType ("inmemory", false, false);
-  public static final RepoStorageType LOCAL_FILE_SYSTEM = new RepoStorageType ("localfs", true, false);
-  public static final RepoStorageType HTTP = new RepoStorageType ("http", true, true);
+  public static final IRepoStorageType IN_MEMORY = new RepoStorageType ("inmemory", false, false);
+  public static final IRepoStorageType LOCAL_FILE_SYSTEM = new RepoStorageType ("localfs", true, false);
+  public static final IRepoStorageType HTTP = new RepoStorageType ("http", true, true);
 
   private final String m_sID;
   private final boolean m_bPersistent;
@@ -87,7 +86,7 @@ public final class RepoStorageType implements IHasID <String>
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("ID", m_sID)
+    return new ToStringGenerator (null).append ("ID", m_sID)
                                        .append ("Persistent", m_bPersistent)
                                        .append ("Remote", m_bRemote)
                                        .getToString ();
