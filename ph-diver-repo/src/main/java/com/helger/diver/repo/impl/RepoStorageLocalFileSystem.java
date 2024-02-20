@@ -17,7 +17,9 @@
 package com.helger.diver.repo.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,11 +31,12 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FileOperationManager;
-import com.helger.commons.io.file.SimpleFileIO;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ESuccess;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
+import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.toc.IRepoTopTocService;
@@ -121,16 +124,30 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
 
   @Override
   @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
+  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
   {
     final File fTarget = getRelativeFile (aKey);
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Writing to local file system '" + fTarget.getAbsolutePath () + "'");
 
     // Use the source payload
-    if (SimpleFileIO.writeFile (fTarget, aPayload).isFailure ())
+    try (final OutputStream aFOS = FileHelper.getOutputStream (fTarget))
     {
-      LOGGER.error ("Failed to put local file system object '" + fTarget.getAbsolutePath () + "'");
+      if (StreamHelper.copyByteStream ()
+                      .from (aContent.getBufferedInputStream ())
+                      .closeFrom (true)
+                      .to (aFOS)
+                      .closeTo (true)
+                      .build ()
+                      .isFailure ())
+      {
+        LOGGER.error ("Failed to write local file system object '" + fTarget.getAbsolutePath () + "'");
+        return ESuccess.FAILURE;
+      }
+    }
+    catch (final IOException ex)
+    {
+      LOGGER.error ("Failed to write local file system object '" + fTarget.getAbsolutePath () + "'", ex);
       return ESuccess.FAILURE;
     }
 

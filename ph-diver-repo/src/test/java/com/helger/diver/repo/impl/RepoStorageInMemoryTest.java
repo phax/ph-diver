@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
@@ -114,7 +113,7 @@ public final class RepoStorageInMemoryTest
     final String sUploadedPayload = "bla-" + ThreadLocalRandom.current ().nextInt ();
 
     // Register only payload, but no hash
-    aRepo.registerObject (aKey, sUploadedPayload.getBytes (StandardCharsets.UTF_8));
+    aRepo.registerObject (aKey, RepoStorageContentByteArray.ofUtf8 (sUploadedPayload));
 
     // Read again
     final IRepoStorageItem aItem = aRepo.read (aKey);

@@ -24,12 +24,12 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.state.ESuccess;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
+import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
@@ -133,7 +133,7 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
 
   @Override
   @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
+  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
   {
     final String sRealKey = aKey.getPath ();
 
@@ -145,9 +145,9 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
                                                                                   .bucket (m_sBucketName)
                                                                                   .key (sRealKey)
                                                                                   .build (),
-                                                                  RequestBody.fromContentProvider ( () -> new NonBlockingByteArrayInputStream (aPayload),
-                                                                                                    aPayload.length,
-                                                                                                    CMimeType.APPLICATION_OCTET_STREAM.getAsString ()));
+                                                                  RequestBody.fromContentProvider (aContent::getBufferedInputStream,
+                                                                                                   aContent.getLength (),
+                                                                                                   CMimeType.APPLICATION_OCTET_STREAM.getAsString ()));
     if (!aPutResponse.sdkHttpResponse ().isSuccessful ())
     {
       LOGGER.error ("Failed to put S3 object '" + m_sBucketName + "' / '" + sRealKey + "'");

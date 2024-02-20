@@ -49,7 +49,6 @@ import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.security.messagedigest.EMessageDigestAlgorithm;
-import com.helger.security.messagedigest.MessageDigestValue;
 
 /**
  * Abstract implementation of a repository storage. It supports the verification
@@ -239,12 +238,14 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   }
 
   @Nonnull
-  protected abstract ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload);
+  protected abstract ESuccess writeObject (@Nonnull final RepoStorageKey aKey,
+                                           @Nonnull final IRepoStorageContent aContent);
 
   @Nullable
-  private ESuccess _writeObjectWithAudit (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
+  private ESuccess _writeObjectWithAudit (@Nonnull final RepoStorageKey aKey,
+                                          @Nonnull final IRepoStorageContent aContent)
   {
-    final ESuccess ret = writeObject (aKey, aPayload);
+    final ESuccess ret = writeObject (aKey, aContent);
     m_aAuditor.onWrite (thisAsT (), aKey, ret);
     return ret;
   }
@@ -264,18 +265,39 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
                  m_aType.getID () +
                  "]");
 
-    // TODO change to stream based
-    final byte [] aContentBytes = aContent.getAllBytesNoCopy ();
+    final MessageDigest aMD = m_eMDAlgo.createMessageDigest ();
+    final IRepoStorageContent aMDContent = new IRepoStorageContent ()
+    {
+      public boolean isReadMultiple ()
+      {
+        return aContent.isReadMultiple ();
+      }
 
-    // Create the message digest up front
-    final byte [] aDigestBytes = MessageDigestValue.create (aContentBytes, m_eMDAlgo).bytes ();
+      public InputStream getInputStream ()
+      {
+        return new DigestInputStream (aContent.getInputStream (), aMD);
+      }
+
+      public long getLength ()
+      {
+        return aContent.getLength ();
+      }
+
+      public String getAsUtf8String ()
+      {
+        return aContent.getAsUtf8String ();
+      }
+    };
 
     // Store the main data
-    if (_writeObjectWithAudit (aKey, aContentBytes).isFailure ())
+    if (_writeObjectWithAudit (aKey, aMDContent).isFailure ())
       return ESuccess.FAILURE;
 
+    // Get the digest bytes
+    final byte [] aDigestBytes = aMD.digest ();
+
     // Store the hash value
-    if (_writeObjectWithAudit (aKey.getKeyHashSha256 (), aDigestBytes).isFailure ())
+    if (_writeObjectWithAudit (aKey.getKeyHashSha256 (), RepoStorageContentByteArray.of (aDigestBytes)).isFailure ())
       return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;

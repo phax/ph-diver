@@ -17,7 +17,6 @@
 package com.helger.diver.repo;
 
 import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.io.IHasInputStreamAndReader;
@@ -35,10 +34,14 @@ public interface IRepoStorageContent extends IHasInputStreamAndReader
   @Nonnegative
   long getLength ();
 
-  // Use stream based where possible
-  @Deprecated
-  @Nonnull
-  byte [] getAllBytesNoCopy ();
+  /**
+   * @return <code>true</code> if the content length fits into an int and can
+   *         therefore be used as a byte array or so, <code>false</code> if not.
+   */
+  default boolean isLengthAnInt ()
+  {
+    return getLength () <= Integer.MAX_VALUE;
+  }
 
   /**
    * @return The whole content as an UTF-8 String. This is primarily available

@@ -29,7 +29,7 @@ import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
+import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +42,7 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
+import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
@@ -161,7 +162,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
 
   @Override
   @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
+  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
     if (LOGGER.isInfoEnabled ())
@@ -170,7 +171,9 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     try
     {
       final HttpPut aPut = new HttpPut (sURL);
-      aPut.setEntity (new ByteArrayEntity (aPayload, ContentType.APPLICATION_OCTET_STREAM));
+      aPut.setEntity (new InputStreamEntity (aContent.getBufferedInputStream (),
+                                             aContent.getLength (),
+                                             ContentType.APPLICATION_OCTET_STREAM));
       if (m_aWriteCustomizer != null)
       {
         if (LOGGER.isDebugEnabled ())

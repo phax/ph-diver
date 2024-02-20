@@ -33,9 +33,11 @@ import com.helger.commons.collection.impl.CommonsLinkedHashMap;
 import com.helger.commons.collection.impl.ICommonsOrderedMap;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ESuccess;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
+import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.toc.IRepoTopTocService;
@@ -135,13 +137,19 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
 
   @Nonnull
   private ESuccess _write (@Nonnull final RepoStorageKey aKey,
-                           @Nonnull final byte [] aPayload,
+                           @Nonnull final IRepoStorageContent aContent,
                            final boolean bAllowOverwrite)
   {
+    ValueEnforcer.isTrue ( () -> aContent.isLengthAnInt (),
+                           () -> "Content Length " + aContent.getLength () + " is too large (>2GB) to store in Memory");
+
     final String sRealKey = aKey.getPath ();
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Writing to in-memory '" + sRealKey + "'");
+
+    // Read into memory
+    final byte [] aPayload = StreamHelper.getAllBytes (aContent);
 
     final ESuccess eSuccess;
     if (bAllowOverwrite)
@@ -187,9 +195,9 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
 
   @Override
   @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
+  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
   {
-    return _write (aKey, aPayload, m_bAllowOverwrite);
+    return _write (aKey, aContent, m_bAllowOverwrite);
   }
 
   /**
@@ -198,18 +206,19 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
    *
    * @param aKey
    *        The key to register.
-   * @param aPayload
-   *        The payload to be accessible.
+   * @param aContent
+   *        The content to be accessible.
    * @return this for chaining
    */
   @Nonnull
-  public RepoStorageInMemory registerObject (@Nonnull final RepoStorageKey aKey, @Nonnull final byte [] aPayload)
+  public RepoStorageInMemory registerObject (@Nonnull final RepoStorageKey aKey,
+                                             @Nonnull final IRepoStorageContent aContent)
   {
     ValueEnforcer.notNull (aKey, "Key");
-    ValueEnforcer.notNull (aPayload, "Payload");
+    ValueEnforcer.notNull (aContent, "Content");
 
     // Never allow overwrite
-    _write (aKey, aPayload, false);
+    _write (aKey, aContent, false);
     return this;
   }
 
