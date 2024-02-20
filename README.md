@@ -28,15 +28,18 @@ Each VESID consists of:
 * a mandatory *Group ID* 
     * Represents an organisation or group that provides a set of artefacts. That must be using the reverse domain name notation (as in `com.helger`)
     * It MUST NOT be empty and follow the regular expression `[a-zA-Z0-9_\-\.]{1,64}`
-    * The usage of dot (`.`) in a Group ID represents the separation of different hierarchy levels (e.g. directory and sub directory). 
+    * The usage of dot (`.`) in a Group ID represents the separation of different hierarchy levels (e.g. directory and sub directory).
+    * The Group ID MUST be treated case sensitive
 * a mandatory *Artefact ID*
     * Uniquely represents an artefact offered by a specific group. Artefact IDs must be unique per Group ID in which they are used. 
     * It MUST NOT be empty and follow the regular expression `[a-zA-Z0-9_\-\.]{1,64}`
+    * The Artefact ID MUST be treated case sensitive
 * a mandatory *Version Number* that enforces semantic versioning
     * Each Version Number must be unique per combination of Group ID and Artefact ID
     * The usage of semantic version supports the strict ordering of elements
     * Each version must follow either the form `major[.minor[.micro[-classifier]]]` where `major`, `minor` and `micro` must be unsigned integer values (like 1 or 2023) or the form `classifier` which is interpreted as `0.0.0-classifier`.
     * The version classifier `SNAPSHOT` is a special case and identifies "work in progress" artefacts that are not final yet
+    * The Version Number MUST be treated case sensitive
 * an optional *Classifier* - it MAY be empty and follow the regular expression `[a-zA-Z0-9_\-\.]{0,64}`
 
 The limitations in the allowed characters for the different parts are meant to allow an easy representation on file systems. 
