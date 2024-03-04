@@ -163,7 +163,7 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
     final File fTarget = getRelativeFile (aKey);
     LOGGER.info ("Deleting from local file system '" + fTarget.getAbsolutePath () + "'");
 
-    if (FileOperationManager.INSTANCE.deleteFileIfExisting (fTarget).isFailure ())
+    if (FileOperationManager.INSTANCE.deleteFile (fTarget).isFailure ())
     {
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Failed to delete local file system object '" + fTarget.getAbsolutePath () + "'");
