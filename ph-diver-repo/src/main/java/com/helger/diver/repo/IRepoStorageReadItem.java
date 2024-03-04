@@ -35,14 +35,30 @@ public interface IRepoStorageReadItem
   @Nonnull
   IRepoStorageContent getContent ();
 
+  /**
+   * @return <code>true</code> if this repo item has an expected hash value
+   *         assigned with it.
+   */
   boolean hasExpectedDigest ();
 
+  /**
+   * @return The stored hash bytes of this repo item or <code>null</code>.
+   * @see #hasExpectedDigest()
+   */
   @Nullable
   @ReturnsMutableCopy
   byte [] getExpectedDigest ();
 
+  /**
+   * @return <code>true</code> if a hash value was calculated during reading,
+   *         <code>false</code> if not.
+   */
   boolean hasCalculatedDigest ();
 
+  /**
+   * @return The calculated hash bytes of this repo item or <code>null</code>.
+   * @see #hasCalculatedDigest()
+   */
   @Nullable
   @ReturnsMutableCopy
   byte [] getCalculatedDigest ();
