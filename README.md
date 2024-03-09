@@ -104,7 +104,7 @@ Alternate usage as a Maven BOM:
 
 # News and Noteworthy
 
-* v1.1.0 - work in progress
+* v1.1.0 - 2024-03-09
     * Extracted `RepoStorageKeyOfArtefact` from `RepoStorageKey` [backwards incompatible change]
     * Class `RepoStorageHttp` got an API extension, so that the used HTTP requests can be customized
     * Added a top-level table of contents (ToC) service that contains all groups and the artefacts of all groups (via `IRepoTopTocService`) and an XML based implementation (class `RepoTopTocServiceRepoBasedXML`)
