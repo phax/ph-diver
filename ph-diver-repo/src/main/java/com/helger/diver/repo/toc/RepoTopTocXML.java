@@ -111,10 +111,10 @@ public class RepoTopTocXML
     final ICommonsList <String> aGroupPart = StringHelper.getExploded (RepoStorageKeyOfArtefact.GROUP_LEVEL_SEPARATOR,
                                                                        sGroupID);
     // Resolve all recursive subgroups
-    Group aGroup = m_aTopLevelGroups.get (aGroupPart.removeFirst ());
+    Group aGroup = m_aTopLevelGroups.get (aGroupPart.removeFirstOrNull ());
     while (aGroup != null && aGroupPart.isNotEmpty ())
     {
-      aGroup = aGroup.m_aSubGroups.get (aGroupPart.removeFirst ());
+      aGroup = aGroup.m_aSubGroups.get (aGroupPart.removeFirstOrNull ());
     }
     return aGroup;
   }
@@ -194,10 +194,10 @@ public class RepoTopTocXML
     final ICommonsList <String> aGroupPart = StringHelper.getExploded (RepoStorageKeyOfArtefact.GROUP_LEVEL_SEPARATOR,
                                                                        sGroupID);
     // Resolve all recursive subgroups
-    Group aGroup = m_aTopLevelGroups.computeIfAbsent (aGroupPart.removeFirst (), Group::new);
+    Group aGroup = m_aTopLevelGroups.computeIfAbsent (aGroupPart.removeFirstOrNull (), Group::new);
     while (aGroupPart.isNotEmpty ())
     {
-      aGroup = aGroup.m_aSubGroups.computeIfAbsent (aGroupPart.removeFirst (), Group::new);
+      aGroup = aGroup.m_aSubGroups.computeIfAbsent (aGroupPart.removeFirstOrNull (), Group::new);
     }
     return aGroup;
   }

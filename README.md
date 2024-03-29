@@ -104,6 +104,9 @@ Alternate usage as a Maven BOM:
 
 # News and Noteworthy
 
+* v1.1.1 - 2024-03-29
+    * Updated to ph-commons 11.1.5
+    * Ensured Java 21 compatibility
 * v1.1.0 - 2024-03-09
     * Extracted `RepoStorageKeyOfArtefact` from `RepoStorageKey` [backwards incompatible change]
     * Class `RepoStorageHttp` got an API extension, so that the used HTTP requests can be customized

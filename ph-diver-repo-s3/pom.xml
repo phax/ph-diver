@@ -53,10 +53,6 @@
     </developer>
   </developers>
   
-  <properties>
-    <awssdk-version>2.25.6</awssdk-version>
-  </properties>
-  
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
