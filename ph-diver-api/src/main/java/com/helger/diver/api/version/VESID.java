@@ -155,6 +155,25 @@ public final class VESID implements Comparable <VESID>
    *        Artifact ID. May neither be <code>null</code> nor empty.
    * @param aVersion
    *        Version object. May not be <code>null</code>.
+   * @since 1.1.2
+   */
+  public VESID (@Nonnull @Nonempty final String sGroupID,
+                @Nonnull @Nonempty final String sArtifactID,
+                @Nonnull final VESVersion aVersion)
+  {
+    this (sGroupID, sArtifactID, aVersion, (String) null);
+  }
+
+  /**
+   * Constructor. All parameters must match the constraints from
+   * {@link #isValidPart(String)}.
+   *
+   * @param sGroupID
+   *        Group ID. May neither be <code>null</code> nor empty.
+   * @param sArtifactID
+   *        Artifact ID. May neither be <code>null</code> nor empty.
+   * @param aVersion
+   *        Version object. May not be <code>null</code>.
    * @param sClassifier
    *        Classifier. May be <code>null</code>.
    */
