@@ -241,6 +241,14 @@ public final class VESID implements Comparable <VESID>
   }
 
   @Nonnull
+  public VESID getWithArtifactID (@Nullable final String sNewArtifactID)
+  {
+    if (EqualsHelper.equals (m_sArtifactID, sNewArtifactID))
+      return this;
+    return new VESID (m_sGroupID, sNewArtifactID, m_aVersion, m_sClassifier);
+  }
+
+  @Nonnull
   public VESID getWithVersion (@Nonnull final VESVersion aNewVersion)
   {
     if (EqualsHelper.equals (m_aVersion, aNewVersion))
