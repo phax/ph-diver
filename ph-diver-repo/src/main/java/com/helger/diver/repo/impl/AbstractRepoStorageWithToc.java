@@ -182,9 +182,11 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
         // Add new version
         if (toc.addVersion (aVESID.getVersionObj (), aRealPubDT).isUnchanged ())
         {
-          LOGGER.warn ("Failed to add version '" +
-                       aVESID.getAsSingleID () +
-                       "' to ToC of because it is already contained");
+          // This is okay, if e.g. resource and VES reside in the same folder
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("Failed to add version '" +
+                          aVESID.getAsSingleID () +
+                          "' to ToC of because it is already contained");
         }
         else
         {
