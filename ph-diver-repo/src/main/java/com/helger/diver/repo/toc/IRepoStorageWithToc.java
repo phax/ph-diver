@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.string.StringHelper;
 import com.helger.diver.api.version.VESID;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.IRepoStorageReadItem;
@@ -74,7 +75,7 @@ public interface IRepoStorageWithToc extends IRepoStorage
    */
   @Nullable
   default IRepoStorageReadItem readToc (@Nonnull @Nonempty final String sGroupID,
-                                    @Nonnull @Nonempty final String sArtifactID)
+                                        @Nonnull @Nonempty final String sArtifactID)
   {
     return read (RepoStorageKeyOfArtefact.ofToc (sGroupID, sArtifactID));
   }
@@ -120,6 +121,57 @@ public interface IRepoStorageWithToc extends IRepoStorage
         // Convert to domain model
         return RepoToc.createFromJaxbObject (aJaxbObject);
       }
+    }
+    return null;
+  }
+
+  /**
+   * Find the latest release version of the provided group ID and artifact ID.
+   * This excludes snapshot versions.
+   *
+   * @param sGroupID
+   *        Group ID to resolve. May be <code>null</code>.
+   * @param sArtifactID
+   *        Artifact ID to resolve. May be <code>null</code>.
+   * @return <code>null</code> if either group ID does not exist or artifact ID
+   *         does not exist or the combination of group ID and artifact ID only
+   *         has snapshot builds.
+   * @since 1.1.2
+   */
+  @Nullable
+  default VESID getLatestReleaseVersion (@Nullable final String sGroupID, @Nullable final String sArtifactID)
+  {
+    final RepoToc aToc = readTocModel (sGroupID, sArtifactID);
+    if (aToc != null)
+    {
+      final String sLatestVersion = aToc.getLatestReleaseVersionAsString ();
+      if (StringHelper.hasText (sLatestVersion))
+        return new VESID (sGroupID, sArtifactID, sLatestVersion);
+    }
+    return null;
+  }
+
+  /**
+   * Find the latest version (release and snapshot) of the provided group ID and
+   * artifact ID.
+   *
+   * @param sGroupID
+   *        Group ID to resolve. May be <code>null</code>.
+   * @param sArtifactID
+   *        Artifact ID to resolve. May be <code>null</code>.
+   * @return <code>null</code> if either group ID does not exist or artifact ID
+   *         does not exist.
+   * @since 1.1.2
+   */
+  @Nullable
+  default VESID getLatestVersion (@Nullable final String sGroupID, @Nullable final String sArtifactID)
+  {
+    final RepoToc aToc = readTocModel (sGroupID, sArtifactID);
+    if (aToc != null)
+    {
+      final String sLatestVersion = aToc.getLatestVersionAsString ();
+      if (StringHelper.hasText (sLatestVersion))
+        return new VESID (sGroupID, sArtifactID, sLatestVersion);
     }
     return null;
   }
