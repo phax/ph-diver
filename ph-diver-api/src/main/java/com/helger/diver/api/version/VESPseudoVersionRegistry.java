@@ -38,9 +38,10 @@ import com.helger.diver.api.version.spi.IVESPseudoVersionRegistrarSPI;
  * Registry for all known {@link IVESPseudoVersion} instances.
  *
  * @author Philip Helger
+ * @since 1.2.0
  */
 @NotThreadSafe
-public class VESPseudoVersionRegistry
+public class VESPseudoVersionRegistry implements IVESPseudoVersionRegistry
 {
   /**
    * Oldest indicates the very first (oldest) version.

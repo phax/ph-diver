@@ -20,12 +20,14 @@ import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.IsSPIImplementation;
 import com.helger.commons.annotation.UsedViaReflection;
+import com.helger.diver.api.version.IVESPseudoVersionRegistry;
 import com.helger.diver.api.version.VESPseudoVersionRegistry;
 
 /**
  * Default pseudo version registrar
  *
  * @author Philip Helger
+ * @since 1.2.0
  */
 @IsSPIImplementation
 public final class DefaultPseudoVersionRegistrarSPIImpl implements IVESPseudoVersionRegistrarSPI
@@ -35,7 +37,7 @@ public final class DefaultPseudoVersionRegistrarSPIImpl implements IVESPseudoVer
   public DefaultPseudoVersionRegistrarSPIImpl ()
   {}
 
-  public void registerPseudoVersions (@Nonnull final VESPseudoVersionRegistry aRegistry)
+  public void registerPseudoVersions (@Nonnull final IVESPseudoVersionRegistry aRegistry)
   {
     aRegistry.registerPseudoVersion (VESPseudoVersionRegistry.OLDEST);
     aRegistry.registerPseudoVersion (VESPseudoVersionRegistry.LATEST);

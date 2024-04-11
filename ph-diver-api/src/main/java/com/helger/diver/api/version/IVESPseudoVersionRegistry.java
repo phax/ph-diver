@@ -17,19 +17,21 @@
 package com.helger.diver.api.version;
 
 import javax.annotation.Nonnull;
-
-import com.helger.commons.version.Version;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 /**
- * Helper interface to ensure that versions and pseudo version can be kept in
- * strict order.
+ * Base interface for a Pseudo version registry.
  *
  * @author Philip Helger
  * @since 1.2.0
  */
-public interface IPseudoVersionComparable
+@NotThreadSafe
+public interface IVESPseudoVersionRegistry
 {
-  int compareToPseudoVersion (@Nonnull IVESPseudoVersion aOtherPseudoVersion);
+  @Nonnull
+  IVESPseudoVersion registerPseudoVersion (@Nonnull IVESPseudoVersion aPseudoVersion);
 
-  int compareToVersion (@Nonnull Version aStaticVersion);
+  @Nullable
+  IVESPseudoVersion getFromIDOrNull (@Nullable String sID);
 }

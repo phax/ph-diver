@@ -28,6 +28,7 @@ import com.helger.commons.version.Version;
  * Default implementation of {@link IVESPseudoVersion}
  *
  * @author Philip Helger
+ * @since 1.2.0
  */
 public class VESPseudoVersion implements IVESPseudoVersion
 {

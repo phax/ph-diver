@@ -18,6 +18,12 @@ package com.helger.diver.api.version;
 
 import com.helger.commons.id.IHasID;
 
+/**
+ * Base read-only interface for a pseudo version.
+ *
+ * @author Philip Helger
+ * @since 1.2.0
+ */
 public interface IVESPseudoVersion extends IHasID <String>, IPseudoVersionComparable
 {
   /* empty */

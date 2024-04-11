@@ -19,7 +19,7 @@ package com.helger.diver.api.version.spi;
 import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.IsSPIInterface;
-import com.helger.diver.api.version.VESPseudoVersionRegistry;
+import com.helger.diver.api.version.IVESPseudoVersionRegistry;
 
 /**
  * SPI pseudo version registration interface
@@ -36,5 +36,5 @@ public interface IVESPseudoVersionRegistrarSPI
    * @param aRegistry
    *        The registry to register to. Never <code>null</code>.
    */
-  void registerPseudoVersions (@Nonnull VESPseudoVersionRegistry aRegistry);
+  void registerPseudoVersions (@Nonnull IVESPseudoVersionRegistry aRegistry);
 }
