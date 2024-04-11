@@ -16,9 +16,29 @@
  */
 package com.helger.diver.api.version;
 
-import com.helger.commons.id.IHasID;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-public interface IVESPseudoVersion extends IHasID <String>, IPseudoVersionComparable
+import org.junit.Test;
+
+/**
+ * Test class for class {@link VESPseudoVersionRegistry}
+ *
+ * @author Philip Helger
+ */
+public final class VESPseudoVersionRegistryTest
 {
-  /* empty */
+  @Test
+  public void testBasic ()
+  {
+    final VESPseudoVersionRegistry a = VESPseudoVersionRegistry.getInstance ();
+    assertNotNull (a);
+
+    assertEquals (2, a.size ());
+
+    assertNotNull (a.getFromIDOrNull (VESPseudoVersionRegistry.LATEST.getID ()));
+    assertNotNull (a.getFromIDOrNull (VESPseudoVersionRegistry.OLDEST.getID ()));
+    assertNull (a.getFromIDOrNull ("hoppla"));
+  }
 }

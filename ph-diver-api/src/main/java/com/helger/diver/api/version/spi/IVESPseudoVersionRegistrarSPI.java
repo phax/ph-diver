@@ -14,11 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.diver.api.version;
+package com.helger.diver.api.version.spi;
 
-import com.helger.commons.id.IHasID;
+import javax.annotation.Nonnull;
 
-public interface IVESPseudoVersion extends IHasID <String>, IPseudoVersionComparable
+import com.helger.commons.annotation.IsSPIInterface;
+import com.helger.diver.api.version.VESPseudoVersionRegistry;
+
+/**
+ * SPI pseudo version registration interface
+ *
+ * @author Philip Helger
+ * @since 1.2.0
+ */
+@IsSPIInterface
+public interface IVESPseudoVersionRegistrarSPI
 {
-  /* empty */
+  /**
+   * Register all pseudo versions of this library to the provided registry.
+   *
+   * @param aRegistry
+   *        The registry to register to. Never <code>null</code>.
+   */
+  void registerPseudoVersions (@Nonnull VESPseudoVersionRegistry aRegistry);
 }
