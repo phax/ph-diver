@@ -60,24 +60,24 @@ public final class VESVersion implements Comparable <VESVersion>
   private static final Logger LOGGER = LoggerFactory.getLogger (VESVersion.class);
 
   private final Version m_aStaticVersion;
-  private final EVESPseudoVersion m_ePseudoVersion;
+  private final IVESPseudoVersion m_aPseudoVersion;
 
   /**
    * Constructor - only invoked by the static factory methods below
    *
    * @param aStaticVersion
    *        Static version. May be <code>null</code>.
-   * @param ePseudoVersion
+   * @param aPseudoVersion
    *        Pseudo version. May be <code>null</code>.
    */
-  private VESVersion (@Nullable final Version aStaticVersion, @Nullable final EVESPseudoVersion ePseudoVersion)
+  private VESVersion (@Nullable final Version aStaticVersion, @Nullable final IVESPseudoVersion aPseudoVersion)
   {
-    ValueEnforcer.isTrue (aStaticVersion != null || ePseudoVersion != null,
+    ValueEnforcer.isTrue (aStaticVersion != null || aPseudoVersion != null,
                           "Either Static Version or Pseudo Version must be provided");
-    ValueEnforcer.isFalse (aStaticVersion != null && ePseudoVersion != null,
+    ValueEnforcer.isFalse (aStaticVersion != null && aPseudoVersion != null,
                            "Only one of Static Version or Pseudo Version must be provided");
     m_aStaticVersion = aStaticVersion;
-    m_ePseudoVersion = ePseudoVersion;
+    m_aPseudoVersion = aPseudoVersion;
   }
 
   /**
@@ -132,7 +132,7 @@ public final class VESVersion implements Comparable <VESVersion>
    */
   public boolean isPseudoVersion ()
   {
-    return m_ePseudoVersion != null;
+    return m_aPseudoVersion != null;
   }
 
   /**
@@ -141,9 +141,9 @@ public final class VESVersion implements Comparable <VESVersion>
    * @see #isPseudoVersion()
    */
   @Nullable
-  public EVESPseudoVersion getPseudoVersion ()
+  public IVESPseudoVersion getPseudoVersion ()
   {
-    return m_ePseudoVersion;
+    return m_aPseudoVersion;
   }
 
   @Nonnull
@@ -198,9 +198,9 @@ public final class VESVersion implements Comparable <VESVersion>
   }
 
   @Nonnull
-  public static String getAsString (@Nonnull final EVESPseudoVersion ePseudoVersion)
+  public static String getAsString (@Nonnull final IVESPseudoVersion aPseudoVersion)
   {
-    return ePseudoVersion.getID ();
+    return aPseudoVersion.getID ();
   }
 
   /**
@@ -212,7 +212,7 @@ public final class VESVersion implements Comparable <VESVersion>
     if (m_aStaticVersion != null)
       return getAsString (m_aStaticVersion);
 
-    return getAsString (m_ePseudoVersion);
+    return getAsString (m_aPseudoVersion);
   }
 
   @Nonnull
@@ -261,18 +261,14 @@ public final class VESVersion implements Comparable <VESVersion>
    *
    * @param aStaticVersion
    *        Static version. May not be <code>null</code>.
-   * @param ePseudoVersion
+   * @param aPseudoVersion
    *        Pseudo version. May not be <code>null</code>.
    * @return -1, 0 or +1
    */
-  private static int _compare (@Nonnull final Version aStaticVersion, @Nonnull final EVESPseudoVersion ePseudoVersion)
+  private static int _compareWithPseudoVersion (@Nonnull final Version aStaticVersion,
+                                                @Nonnull final IVESPseudoVersion aPseudoVersion)
   {
-    if (ePseudoVersion == EVESPseudoVersion.LATEST)
-    {
-      // Latest is always last
-      return -1;
-    }
-    return +1;
+    return -aPseudoVersion.compareToVersion (aStaticVersion);
   }
 
   public int compareTo (@Nonnull final VESVersion rhs)
@@ -281,16 +277,16 @@ public final class VESVersion implements Comparable <VESVersion>
     {
       if (rhs.isStaticVersion ())
         return _compareSemantically (m_aStaticVersion, rhs.m_aStaticVersion);
-      return _compare (m_aStaticVersion, rhs.m_ePseudoVersion);
+      return _compareWithPseudoVersion (m_aStaticVersion, rhs.m_aPseudoVersion);
     }
 
     // this is a pseudo version
     if (rhs.isStaticVersion ())
     {
       // Invert result
-      return -_compare (rhs.m_aStaticVersion, m_ePseudoVersion);
+      return -_compareWithPseudoVersion (rhs.m_aStaticVersion, m_aPseudoVersion);
     }
-    return m_ePseudoVersion.compareToSemantically (rhs.m_ePseudoVersion);
+    return m_aPseudoVersion.compareToPseudoVersion (rhs.m_aPseudoVersion);
   }
 
   @Override
@@ -302,20 +298,20 @@ public final class VESVersion implements Comparable <VESVersion>
       return false;
     final VESVersion rhs = (VESVersion) o;
     return EqualsHelper.equals (m_aStaticVersion, rhs.m_aStaticVersion) &&
-           EqualsHelper.equals (m_ePseudoVersion, rhs.m_ePseudoVersion);
+           EqualsHelper.equals (m_aPseudoVersion, rhs.m_aPseudoVersion);
   }
 
   @Override
   public int hashCode ()
   {
-    return new HashCodeGenerator (this).append (m_aStaticVersion).append (m_ePseudoVersion).getHashCode ();
+    return new HashCodeGenerator (this).append (m_aStaticVersion).append (m_aPseudoVersion).getHashCode ();
   }
 
   @Override
   public String toString ()
   {
     return new ToStringGenerator (null).appendIfNotNull ("StaticVersion", m_aStaticVersion)
-                                       .appendIfNotNull ("PseudoVersion", m_ePseudoVersion)
+                                       .appendIfNotNull ("PseudoVersion", m_aPseudoVersion)
                                        .getToString ();
   }
 
@@ -327,10 +323,10 @@ public final class VESVersion implements Comparable <VESVersion>
   }
 
   @Nonnull
-  public static VESVersion of (@Nonnull final EVESPseudoVersion ePseudoVersion)
+  public static VESVersion of (@Nonnull final IVESPseudoVersion aPseudoVersion)
   {
-    ValueEnforcer.notNull (ePseudoVersion, "PseudoVersion");
-    return new VESVersion (null, ePseudoVersion);
+    ValueEnforcer.notNull (aPseudoVersion, "PseudoVersion");
+    return new VESVersion (null, aPseudoVersion);
   }
 
   /**
@@ -402,7 +398,7 @@ public final class VESVersion implements Comparable <VESVersion>
       throw new IllegalArgumentException ("Version string must not be empty");
 
     // Check pseudo version first
-    final EVESPseudoVersion ePseudoVersion = EVESPseudoVersion.getFromIDOrNull (sVersion);
+    final IVESPseudoVersion ePseudoVersion = VESPseudoVersionRegistry.getInstance ().getFromIDOrNull (sVersion);
     if (ePseudoVersion != null)
       return of (ePseudoVersion);
 

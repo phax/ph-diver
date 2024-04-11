@@ -259,7 +259,7 @@ public final class VESID implements Comparable <VESID>
   @Nonnull
   public VESID getWithVersionLatest ()
   {
-    return getWithVersion (VESVersion.of (EVESPseudoVersion.LATEST));
+    return getWithVersion (VESVersion.of (VESPseudoVersionRegistry.LATEST));
   }
 
   @Nonnull

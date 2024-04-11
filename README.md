@@ -104,9 +104,10 @@ Alternate usage as a Maven BOM:
 
 # News and Noteworthy
 
-* v1.1.2 - work in progress
+* v1.2.0 - work in progress
     * Extended the API of `IRepoStorageWithToc` with `getLatest(Release)Version`
     * Extended the API of `RepoToc`
+    * Replaced the enum `EVESPseudoVersion` with `IVESPseudoVersion` and `VESPseudoVersionRegistry`
 * v1.1.1 - 2024-03-29
     * Updated to ph-commons 11.1.5
     * Ensured Java 21 compatibility
