@@ -136,6 +136,7 @@ public interface IRepoStorageWithToc extends IRepoStorage
    * @return <code>null</code> if either group ID does not exist or artifact ID
    *         does not exist or the combination of group ID and artifact ID only
    *         has snapshot builds.
+   * @see #readTocModel(String, String)
    * @since 1.1.2
    */
   @Nullable
@@ -161,6 +162,7 @@ public interface IRepoStorageWithToc extends IRepoStorage
    *        Artifact ID to resolve. May be <code>null</code>.
    * @return <code>null</code> if either group ID does not exist or artifact ID
    *         does not exist.
+   * @see #readTocModel(String, String)
    * @since 1.1.2
    */
   @Nullable

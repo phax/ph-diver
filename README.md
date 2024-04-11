@@ -106,6 +106,7 @@ Alternate usage as a Maven BOM:
 
 * v1.1.2 - work in progress
     * Extended the API of `IRepoStorageWithToc` with `getLatest(Release)Version`
+    * Extended the API of `RepoToc`
 * v1.1.1 - 2024-03-29
     * Updated to ph-commons 11.1.5
     * Ensured Java 21 compatibility

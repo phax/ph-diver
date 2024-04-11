@@ -24,6 +24,8 @@ import java.util.Map;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +60,7 @@ import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
  * @author Philip Helger
  * @since 1.0.1
  */
+@NotThreadSafe
 public class RepoToc
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoToc.class);
@@ -65,7 +68,7 @@ public class RepoToc
   private final String m_sGroupID;
   private final String m_sArtifactID;
 
-  // Latest version last
+  // Oldest version first; Latest version last
   // VESVersion uses a different "compare" then Version!
   private final ICommonsSortedMap <VESVersion, OffsetDateTime> m_aVersions = new CommonsTreeMap <> ();
 
@@ -127,7 +130,7 @@ public class RepoToc
    * @return The total number of contained versions. Always &ge; 0.
    */
   @Nonnegative
-  public int getVersionCount ()
+  public final int getVersionCount ()
   {
     return m_aVersions.size ();
   }
@@ -163,7 +166,7 @@ public class RepoToc
    * @see #getLatestReleaseVersion()
    */
   @Nullable
-  public VESVersion getLatestVersion ()
+  public final VESVersion getLatestVersion ()
   {
     return m_aVersions.getLastKey ();
   }
@@ -176,7 +179,7 @@ public class RepoToc
    * @see #getLatestReleaseVersionAsString()
    */
   @Nullable
-  public String getLatestVersionAsString ()
+  public final String getLatestVersionAsString ()
   {
     final VESVersion aVer = getLatestVersion ();
     return aVer == null ? null : aVer.getAsString ();
@@ -190,7 +193,7 @@ public class RepoToc
    * @see #getLatestReleaseVersionPublicationDateTime()
    */
   @Nullable
-  public OffsetDateTime getLatestVersionPublicationDateTime ()
+  public final OffsetDateTime getLatestVersionPublicationDateTime ()
   {
     return m_aVersions.getLastValue ();
   }
@@ -203,7 +206,7 @@ public class RepoToc
    * @see #getLatestVersion()
    */
   @Nullable
-  public VESVersion getLatestReleaseVersion ()
+  public final VESVersion getLatestReleaseVersion ()
   {
     return m_aLatestReleaseVersion;
   }
@@ -216,7 +219,7 @@ public class RepoToc
    * @see #getLatestVersionAsString()
    */
   @Nullable
-  public String getLatestReleaseVersionAsString ()
+  public final String getLatestReleaseVersionAsString ()
   {
     final VESVersion aVer = getLatestReleaseVersion ();
     return aVer == null ? null : aVer.getAsString ();
@@ -230,7 +233,7 @@ public class RepoToc
    * @see #getLatestVersionPublicationDateTime()
    */
   @Nullable
-  public OffsetDateTime getLatestReleaseVersionPublicationDateTime ()
+  public final OffsetDateTime getLatestReleaseVersionPublicationDateTime ()
   {
     return m_aLatestReleaseVersionPubDT;
   }
@@ -244,9 +247,26 @@ public class RepoToc
    *         if not.
    * @since 1.1.0
    */
-  public boolean containsVersion (@Nullable final VESVersion aVersion)
+  public final boolean containsVersion (@Nullable final VESVersion aVersion)
   {
     return aVersion != null && m_aVersions.containsKey (aVersion);
+  }
+
+  /**
+   * Get the publication date of the specified version.
+   *
+   * @param aVersion
+   *        The version to query. May be <code>null</code>
+   * @return <code>null</code> if the provided version is <code>null</code> or
+   *         not present.
+   * @since 1.1.2
+   */
+  @Nullable
+  public final OffsetDateTime getPublicationDateTimeOfVersion (@Nullable final VESVersion aVersion)
+  {
+    if (aVersion == null)
+      return null;
+    return m_aVersions.get (aVersion);
   }
 
   @Nonnull
@@ -305,6 +325,7 @@ public class RepoToc
    *         {@link EChange#UNCHANGED} otherwise.
    */
   @Nonnull
+  @OverridingMethodsMustInvokeSuper
   public EChange addVersion (@Nonnull final VESVersion aVersion, @Nonnull final OffsetDateTime aPublishDT)
   {
     ValueEnforcer.notNull (aVersion, "Version");
@@ -314,6 +335,7 @@ public class RepoToc
   }
 
   @Nonnull
+  @OverridingMethodsMustInvokeSuper
   public EChange removeVersion (@Nonnull final VESVersion aVersion)
   {
     ValueEnforcer.notNull (aVersion, "Version");
