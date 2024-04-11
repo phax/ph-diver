@@ -63,7 +63,7 @@ public class VESPseudoVersionRegistry implements IVESPseudoVersionRegistry
   });
 
   /**
-   * Latest indicates the very latest version.
+   * Latest indicates the very latest version (including snapshot).
    */
   public static final IVESPseudoVersion LATEST = new VESPseudoVersion ("latest", new IPseudoVersionComparable ()
   {
@@ -79,6 +79,32 @@ public class VESPseudoVersionRegistry implements IVESPseudoVersionRegistry
       return +1;
     }
   });
+
+  /**
+   * Latest indicates the very latest version (excluding snapshot).
+   */
+  public static final IVESPseudoVersion LATEST_RELEASE;
+  static
+  {
+    LATEST_RELEASE = new VESPseudoVersion ("latest-release", new IPseudoVersionComparable ()
+    {
+      public int compareToPseudoVersion (@Nonnull final IVESPseudoVersion aOtherPseudoVersion)
+      {
+        // We are before LATEST
+        if (aOtherPseudoVersion.equals (LATEST))
+          return -1;
+
+        // LATEST_RELEASE is always greater than the rest
+        return +1;
+      }
+
+      public int compareToVersion (@Nonnull final Version aStaticVersion)
+      {
+        // LATEST_RELEASE is always greater
+        return +1;
+      }
+    });
+  }
 
   private static final class SingletonHolder
   {

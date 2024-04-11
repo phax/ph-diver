@@ -143,7 +143,8 @@ public final class VESVersionTest
     final VESVersion ver3 = VESVersion.parseOrNull ("1.2.4");
     final VESVersion ver4 = VESVersion.parseOrNull ("1.3");
     final VESVersion ver5 = VESVersion.parseOrNull ("2023.5");
-    final VESVersion ver6 = VESVersion.of (VESPseudoVersionRegistry.LATEST);
+    final VESVersion ver6 = VESVersion.of (VESPseudoVersionRegistry.LATEST_RELEASE);
+    final VESVersion ver7 = VESVersion.of (VESPseudoVersionRegistry.LATEST);
 
     assertEquals (0, ver0.compareTo (ver0));
     assertTrue (ver0.compareTo (ver1) < 0);
@@ -152,6 +153,7 @@ public final class VESVersionTest
     assertTrue (ver0.compareTo (ver4) < 0);
     assertTrue (ver0.compareTo (ver5) < 0);
     assertTrue (ver0.compareTo (ver6) < 0);
+    assertTrue (ver0.compareTo (ver7) < 0);
 
     assertTrue (ver1.compareTo (ver0) > 0);
     assertEquals (0, ver1.compareTo (ver1));
@@ -160,6 +162,7 @@ public final class VESVersionTest
     assertTrue (ver1.compareTo (ver4) < 0);
     assertTrue (ver1.compareTo (ver5) < 0);
     assertTrue (ver1.compareTo (ver6) < 0);
+    assertTrue (ver1.compareTo (ver7) < 0);
 
     assertTrue (ver2.compareTo (ver0) > 0);
     assertTrue (ver2.compareTo (ver1) > 0);
@@ -168,6 +171,7 @@ public final class VESVersionTest
     assertTrue (ver2.compareTo (ver4) < 0);
     assertTrue (ver2.compareTo (ver5) < 0);
     assertTrue (ver2.compareTo (ver6) < 0);
+    assertTrue (ver2.compareTo (ver7) < 0);
 
     assertTrue (ver3.compareTo (ver0) > 0);
     assertTrue (ver3.compareTo (ver1) > 0);
@@ -176,6 +180,7 @@ public final class VESVersionTest
     assertTrue (ver3.compareTo (ver4) < 0);
     assertTrue (ver3.compareTo (ver5) < 0);
     assertTrue (ver3.compareTo (ver6) < 0);
+    assertTrue (ver3.compareTo (ver7) < 0);
 
     assertTrue (ver4.compareTo (ver0) > 0);
     assertTrue (ver4.compareTo (ver1) > 0);
@@ -184,6 +189,7 @@ public final class VESVersionTest
     assertEquals (0, ver4.compareTo (ver4));
     assertTrue (ver4.compareTo (ver5) < 0);
     assertTrue (ver4.compareTo (ver6) < 0);
+    assertTrue (ver4.compareTo (ver7) < 0);
 
     assertTrue (ver5.compareTo (ver0) > 0);
     assertTrue (ver5.compareTo (ver1) > 0);
@@ -192,6 +198,7 @@ public final class VESVersionTest
     assertTrue (ver5.compareTo (ver4) > 0);
     assertEquals (0, ver5.compareTo (ver5));
     assertTrue (ver5.compareTo (ver6) < 0);
+    assertTrue (ver5.compareTo (ver7) < 0);
 
     assertTrue (ver6.compareTo (ver0) > 0);
     assertTrue (ver6.compareTo (ver1) > 0);
@@ -200,6 +207,16 @@ public final class VESVersionTest
     assertTrue (ver6.compareTo (ver4) > 0);
     assertTrue (ver6.compareTo (ver5) > 0);
     assertEquals (0, ver6.compareTo (ver6));
+    assertTrue (ver6.compareTo (ver7) < 0);
+
+    assertTrue (ver7.compareTo (ver0) > 0);
+    assertTrue (ver7.compareTo (ver1) > 0);
+    assertTrue (ver7.compareTo (ver2) > 0);
+    assertTrue (ver7.compareTo (ver3) > 0);
+    assertTrue (ver7.compareTo (ver4) > 0);
+    assertTrue (ver7.compareTo (ver5) > 0);
+    assertTrue (ver7.compareTo (ver6) > 0);
+    assertEquals (0, ver7.compareTo (ver7));
   }
 
   @Test

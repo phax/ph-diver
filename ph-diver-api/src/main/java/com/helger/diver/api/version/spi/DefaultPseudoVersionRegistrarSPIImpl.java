@@ -40,6 +40,7 @@ public final class DefaultPseudoVersionRegistrarSPIImpl implements IVESPseudoVer
   public void registerPseudoVersions (@Nonnull final IVESPseudoVersionRegistry aRegistry)
   {
     aRegistry.registerPseudoVersion (VESPseudoVersionRegistry.OLDEST);
+    aRegistry.registerPseudoVersion (VESPseudoVersionRegistry.LATEST_RELEASE);
     aRegistry.registerPseudoVersion (VESPseudoVersionRegistry.LATEST);
   }
 }

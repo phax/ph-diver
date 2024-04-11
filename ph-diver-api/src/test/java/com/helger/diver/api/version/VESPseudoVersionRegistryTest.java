@@ -35,10 +35,11 @@ public final class VESPseudoVersionRegistryTest
     final VESPseudoVersionRegistry a = VESPseudoVersionRegistry.getInstance ();
     assertNotNull (a);
 
-    assertEquals (2, a.size ());
+    assertEquals (3, a.size ());
 
-    assertNotNull (a.getFromIDOrNull (VESPseudoVersionRegistry.LATEST.getID ()));
     assertNotNull (a.getFromIDOrNull (VESPseudoVersionRegistry.OLDEST.getID ()));
+    assertNotNull (a.getFromIDOrNull (VESPseudoVersionRegistry.LATEST_RELEASE.getID ()));
+    assertNotNull (a.getFromIDOrNull (VESPseudoVersionRegistry.LATEST.getID ()));
     assertNull (a.getFromIDOrNull ("hoppla"));
   }
 }
