@@ -159,6 +159,18 @@ public class RepoToc
   }
 
   /**
+   * @return A copy of all contained versions as a list. Never
+   *         <code>null</code>.
+   * @since 1.2.0
+   */
+  @Nonnull
+  @ReturnsMutableCopy
+  public final ICommonsList <VESVersion> getAllVersionsAsList ()
+  {
+    return new CommonsArrayList <> (m_aVersions.keySet ());
+  }
+
+  /**
    * Get the latest overall version, including snapshot versions.
    *
    * @return The latest overall version. May be <code>null</code> if no version
