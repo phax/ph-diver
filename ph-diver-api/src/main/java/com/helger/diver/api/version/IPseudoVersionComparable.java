@@ -29,7 +29,23 @@ import com.helger.commons.version.Version;
  */
 public interface IPseudoVersionComparable
 {
+  /**
+   * Compare this object to the provided pseudo version.
+   *
+   * @param aOtherPseudoVersion
+   *        The pseudo version to compare to. Never <code>null</code>.
+   * @return a value &lt; 0 if this is &lt; other version; value 0 if this =
+   *         other version; value &gt; 0 if this is &gt; other version
+   */
   int compareToPseudoVersion (@Nonnull IVESPseudoVersion aOtherPseudoVersion);
 
-  int compareToVersion (@Nonnull Version aStaticVersion);
+  /**
+   * Compare this object to the provided static version.
+   *
+   * @param aOtherStaticVersion
+   *        The static version to compare to. Never <code>null</code>.
+   * @return a value &lt; 0 if this is &lt; other version; value 0 if this =
+   *         other version; value &gt; 0 if this is &gt; other version
+   */
+  int compareToVersion (@Nonnull Version aOtherStaticVersion);
 }

@@ -20,6 +20,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import com.helger.commons.state.EChange;
+
 /**
  * Base interface for a Pseudo version registry.
  *
@@ -29,9 +31,24 @@ import javax.annotation.concurrent.NotThreadSafe;
 @NotThreadSafe
 public interface IVESPseudoVersionRegistry
 {
+  /**
+   * Register the provided pseudo version.
+   *
+   * @param aPseudoVersion
+   *        The pseudo version to register. Must not be <code>null</code>.
+   * @return {@link EChange#CHANGED} if it was added, {@link EChange#UNCHANGED}
+   *         if it was already present. Never <code>null</code>.
+   */
   @Nonnull
-  IVESPseudoVersion registerPseudoVersion (@Nonnull IVESPseudoVersion aPseudoVersion);
+  EChange registerPseudoVersion (@Nonnull IVESPseudoVersion aPseudoVersion);
 
+  /**
+   * Try to resolve the pseudo version with the provided ID.
+   *
+   * @param sID
+   *        The pseudo version ID to look up.
+   * @return <code>null</code> if no such pseudo version is present.
+   */
   @Nullable
   IVESPseudoVersion getFromIDOrNull (@Nullable String sID);
 }

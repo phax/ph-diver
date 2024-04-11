@@ -30,6 +30,7 @@ import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.lang.ServiceLoaderHelper;
+import com.helger.commons.state.EChange;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.version.Version;
 import com.helger.diver.api.version.spi.IVESPseudoVersionRegistrarSPI;
@@ -121,15 +122,18 @@ public class VESPseudoVersionRegistry implements IVESPseudoVersionRegistry
   }
 
   @Nonnull
-  public IVESPseudoVersion registerPseudoVersion (@Nonnull final IVESPseudoVersion aPseudoVersion)
+  public EChange registerPseudoVersion (@Nonnull final IVESPseudoVersion aPseudoVersion)
   {
     ValueEnforcer.notNull (aPseudoVersion, "PseudoVersion");
 
     final String sKey = aPseudoVersion.getID ();
     if (m_aPVs.containsKey (sKey))
-      throw new IllegalArgumentException ("Another pseudoversion with ID '" + sKey + "' is already registered");
+    {
+      LOGGER.error ("Another pseudoversion with ID '" + sKey + "' is already registered");
+      return EChange.UNCHANGED;
+    }
     m_aPVs.put (sKey, aPseudoVersion);
-    return aPseudoVersion;
+    return EChange.CHANGED;
   }
 
   @Nullable
