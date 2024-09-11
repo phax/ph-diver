@@ -24,7 +24,7 @@ import com.helger.commons.id.IHasID;
  * @author Philip Helger
  * @since 1.2.0
  */
-public interface IVESPseudoVersion extends IHasID <String>, IPseudoVersionComparable
+public interface IDVRPseudoVersion extends IHasID <String>, IDVRPseudoVersionComparable
 {
   /* empty */
 }

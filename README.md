@@ -17,44 +17,50 @@ This library consists of the following submodules:
 The reason why the several types of repositories are separated, is mainly because of specific runtime dependencies needed, and to 
   avoid that your dependencies are bloated if you only need a specific kind of repository.
 
-# VESID
+# DVRID
 
-VES is short for "Validation Execution Set" and is based on its original purpose to identify Validation Execution Sets.
-Each VESID is used to identify a technical artefact (file) very similar to [Maven coordinates](https://maven.apache.org/pom.html#Maven_Coordinates). 
+The DVRID, short for Digitally Version Resource ID, is an identifier for any technical artefact (file) 
+  very similar to [Maven coordinates](https://maven.apache.org/pom.html#Maven_Coordinates).
 
-## VESID contents
+The original term was "VESID" which was very much focused on validation artefacts. 
+   Each VESID is a DVRID, but not vice versa.
+   DVRID defines the syntax constraints required to be adhered to by all applications.
+   The terminology was changed for version 2.0.0 of the library. 
 
-Each VESID consists of:
-* a mandatory *Group ID* 
+## DVRID contents
+
+Each DVRID consists of:
+* Mandatory **Group ID** 
     * Represents an organisation or group that provides a set of artefacts. That must be using the reverse domain name notation (as in `com.helger`)
     * It MUST NOT be empty and follow the regular expression `[a-zA-Z0-9_\-\.]{1,64}`
-    * The usage of dot (`.`) in a Group ID represents the separation of different hierarchy levels (e.g. directory and sub directory).
+    * The usage of dot (`.`) in a Group ID represents the separation of different hierarchy levels (e.g. directory and sub-directory).
     * The Group ID MUST be treated case sensitive
-* a mandatory *Artefact ID*
+* Mandatory **Artefact ID**
     * Uniquely represents an artefact offered by a specific group. Artefact IDs must be unique per Group ID in which they are used. 
     * It MUST NOT be empty and follow the regular expression `[a-zA-Z0-9_\-\.]{1,64}`
     * The Artefact ID MUST be treated case sensitive
-* a mandatory *Version Number* that enforces semantic versioning
-    * Each Version Number must be unique per combination of Group ID and Artefact ID
+* Mandatory **Version Number** that enforces strict ordering
+    * Each Version Number must be unique per combination of *Group ID* and *Artefact ID*
     * The usage of semantic version supports the strict ordering of elements
     * Each version must follow either the form `major[.minor[.micro[-classifier]]]` where `major`, `minor` and `micro` must be unsigned integer values (like 1 or 2023) or the form `classifier` which is interpreted as `0.0.0-classifier`.
     * The version classifier `SNAPSHOT` is a special case and identifies "work in progress" artefacts that are not final yet
     * The Version Number MUST be treated case sensitive
-* an optional *Classifier* - it MAY be empty and follow the regular expression `[a-zA-Z0-9_\-\.]{0,64}`
+* Optional **Classifier**
+    * It MAY be empty and follow the regular expression `[a-zA-Z0-9_\-\.]{0,64}`
     * The Classifier MUST be treated case sensitive
 
 The limitations in the allowed characters for the different parts are meant to allow an easy representation on file systems. 
 
-## VESID string representation
+## DVRID string representation
 
-Each VESID can be represented in a single string in the form `groupID:artifactID:version[:classifier]`.
+Each DVRID can be represented in a single string in the form `groupID:artifactID:version[:classifier]`.
 
 The string representation of version numbers is a bit tricky, because `1`, `1.0` and `1.0.0` are all semantically equivalent.
   Thats why it was decided, that trailing zeroes for minor and micro versions are NOT contained in the string representation, to be as brief as possible
-  So e.g., for version `1.0.0` the string representation is `1`; for version `3.2.0`, the string representation is `3.2`.
+  So e.g., for version `1.0.0` the string representation must be `1`; for version `3.2.0`, the string representation must be `3.2`.
   Versions using a classifier like `3.0.0-SNAPSHOT` are represented as `3-SNAPSHOT`.
   Versions that only consist of a classifier like `0.0.0-XYZ` are represented only as the classifier `XYZ`.
-  That is a work around to be able to handle all kind of versions, but they are treated as `0.0.0-something`. 
+  That is a work around to be able to handle all kind of versions, but they are treated with a major version of 0, a minor version of 0 and a micro version of 0. 
 
 # Repository
 
@@ -104,6 +110,13 @@ Alternate usage as a Maven BOM:
 
 # News and Noteworthy
 
+* v2.0.0 - work in progress
+    * Renamed `*VESID*` to `*DVRID*`
+    * Renamed `IVES*` to `IDVR*`
+    * Renamed `IPseudoVersionComparable` to `IDVRPseudoVersionComparable`
+    * Removed all deprecated APIs marked for removal
+    * Moved `DVRID` related classes in package `com.helger.diver.api.id`
+    * Added class `DVRIDException`
 * v1.2.0 - 2024-04-25
     * Extended the API of `IRepoStorageWithToc` with `getLatest(Release)Version`
     * Extended the API of `RepoToc`

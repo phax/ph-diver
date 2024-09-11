@@ -28,7 +28,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.junit.Test;
 
 import com.helger.commons.state.ESuccess;
-import com.helger.diver.api.version.VESID;
+import com.helger.diver.api.DVRException;
+import com.helger.diver.api.id.DVRID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
@@ -46,7 +47,7 @@ import com.helger.diver.repo.toc.RepoToc;
 public final class RepoStorageInMemoryTest
 {
   @Test
-  public void testReadWriteReadDelete ()
+  public void testReadWriteReadDelete () throws DVRException
   {
     final RepoStorageInMemory aRepo = RepoStorageInMemory.createDefault ("unittest",
                                                                          ERepoWritable.WITH_WRITE,
@@ -55,7 +56,7 @@ public final class RepoStorageInMemoryTest
     assertTrue (aRepo.canDelete ());
     assertTrue (aRepo.isEnableTocUpdates ());
 
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"), ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRID ("com.ecosio", "local", "1"), ".txt");
     // Ensure not existing
     assertNull (aRepo.read (aKey));
 
@@ -68,7 +69,7 @@ public final class RepoStorageInMemoryTest
       assertTrue (eSuccess.isSuccess ());
 
       {
-        final RepoToc aToc = aRepo.readTocModel (aKey.getVESID ());
+        final RepoToc aToc = aRepo.readTocModel (aKey.getDVRID ());
         assertNotNull (aToc);
         assertEquals (1, aToc.getVersionCount ());
       }
@@ -84,7 +85,7 @@ public final class RepoStorageInMemoryTest
       assertTrue (eSuccess.isSuccess ());
 
       {
-        final RepoToc aToc = aRepo.readTocModel (aKey.getVESID ());
+        final RepoToc aToc = aRepo.readTocModel (aKey.getDVRID ());
         assertNotNull (aToc);
         assertEquals (0, aToc.getVersionCount ());
       }
@@ -101,7 +102,7 @@ public final class RepoStorageInMemoryTest
   }
 
   @Test (expected = UnsupportedOperationException.class)
-  public void testReadOnly ()
+  public void testReadOnly () throws DVRException
   {
     final RepoStorageInMemory aRepo = RepoStorageInMemory.createDefault ("unittest",
                                                                          ERepoWritable.WITHOUT_WRITE,
@@ -110,7 +111,7 @@ public final class RepoStorageInMemoryTest
     assertFalse (aRepo.canDelete ());
     assertTrue (aRepo.isAllowOverwrite ());
 
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"), ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRID ("com.ecosio", "local", "1"), ".txt");
     final String sUploadedPayload = "bla-" + ThreadLocalRandom.current ().nextInt ();
 
     // Register only payload, but no hash

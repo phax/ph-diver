@@ -45,7 +45,8 @@ import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.diver.api.version.VESVersion;
+import com.helger.diver.api.DVRException;
+import com.helger.diver.api.version.DVRVersion;
 import com.helger.diver.repo.toc.jaxb.v10.RTVersionListType;
 import com.helger.diver.repo.toc.jaxb.v10.RTVersionType;
 import com.helger.diver.repo.toc.jaxb.v10.RTVersioningType;
@@ -69,21 +70,21 @@ public class RepoToc
   private final String m_sArtifactID;
 
   // Oldest version first; Latest version last
-  // VESVersion uses a different "compare" then Version!
-  private final ICommonsSortedMap <VESVersion, OffsetDateTime> m_aVersions = new CommonsTreeMap <> ();
+  // DVRVersion uses a different "compare" then Version!
+  private final ICommonsSortedMap <DVRVersion, OffsetDateTime> m_aVersions = new CommonsTreeMap <> ();
 
   // Status variables
-  private VESVersion m_aLatestReleaseVersion;
+  private DVRVersion m_aLatestReleaseVersion;
   private OffsetDateTime m_aLatestReleaseVersionPubDT;
 
   /**
    * Constructor
    *
    * @param sGroupID
-   *        VESID Group ID of the ToC. May neither be <code>null</code> nor
+   *        DVRID Group ID of the ToC. May neither be <code>null</code> nor
    *        empty.
    * @param sArtifactID
-   *        VESID Artifact ID of the ToC. May neither be <code>null</code> nor
+   *        DVRID Artifact ID of the ToC. May neither be <code>null</code> nor
    *        empty.
    */
   public RepoToc (@Nonnull @Nonempty final String sGroupID, @Nonnull @Nonempty final String sArtifactID)
@@ -94,7 +95,7 @@ public class RepoToc
   @VisibleForTesting
   RepoToc (@Nonnull @Nonempty final String sGroupID,
            @Nonnull @Nonempty final String sArtifactID,
-           @Nullable final Map <VESVersion, OffsetDateTime> aVersions)
+           @Nullable final Map <DVRVersion, OffsetDateTime> aVersions)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
@@ -105,7 +106,7 @@ public class RepoToc
   }
 
   /**
-   * @return The VESID Group ID as provided in the constructor. Neither
+   * @return The DVRID Group ID as provided in the constructor. Neither
    *         <code>null</code> nor empty.
    */
   @Nonnull
@@ -116,7 +117,7 @@ public class RepoToc
   }
 
   /**
-   * @return The VESID Artefact ID as provided in the constructor. Neither
+   * @return The DVRID Artefact ID as provided in the constructor. Neither
    *         <code>null</code> nor empty.
    */
   @Nonnull
@@ -141,7 +142,7 @@ public class RepoToc
    */
   @Nonnull
   @ReturnsMutableCopy
-  public final ICommonsSortedMap <VESVersion, OffsetDateTime> getAllVersions ()
+  public final ICommonsSortedMap <DVRVersion, OffsetDateTime> getAllVersions ()
   {
     return m_aVersions.getClone ();
   }
@@ -153,7 +154,7 @@ public class RepoToc
    */
   @Nonnull
   @ReturnsMutableCopy
-  public final ICommonsSortedSet <VESVersion> getAllVersionsOnly ()
+  public final ICommonsSortedSet <DVRVersion> getAllVersionsOnly ()
   {
     return m_aVersions.copyOfKeySet ();
   }
@@ -165,7 +166,7 @@ public class RepoToc
    */
   @Nonnull
   @ReturnsMutableCopy
-  public final ICommonsList <VESVersion> getAllVersionsAsList ()
+  public final ICommonsList <DVRVersion> getAllVersionsAsList ()
   {
     return new CommonsArrayList <> (m_aVersions.keySet ());
   }
@@ -178,7 +179,7 @@ public class RepoToc
    * @see #getLatestReleaseVersion()
    */
   @Nullable
-  public final VESVersion getLatestVersion ()
+  public final DVRVersion getLatestVersion ()
   {
     return m_aVersions.getLastKey ();
   }
@@ -193,7 +194,7 @@ public class RepoToc
   @Nullable
   public final String getLatestVersionAsString ()
   {
-    final VESVersion aVer = getLatestVersion ();
+    final DVRVersion aVer = getLatestVersion ();
     return aVer == null ? null : aVer.getAsString ();
   }
 
@@ -218,7 +219,7 @@ public class RepoToc
    * @see #getLatestVersion()
    */
   @Nullable
-  public final VESVersion getLatestReleaseVersion ()
+  public final DVRVersion getLatestReleaseVersion ()
   {
     return m_aLatestReleaseVersion;
   }
@@ -233,7 +234,7 @@ public class RepoToc
   @Nullable
   public final String getLatestReleaseVersionAsString ()
   {
-    final VESVersion aVer = getLatestReleaseVersion ();
+    final DVRVersion aVer = getLatestReleaseVersion ();
     return aVer == null ? null : aVer.getAsString ();
   }
 
@@ -259,7 +260,7 @@ public class RepoToc
    *         if not.
    * @since 1.1.0
    */
-  public final boolean containsVersion (@Nullable final VESVersion aVersion)
+  public final boolean containsVersion (@Nullable final DVRVersion aVersion)
   {
     return aVersion != null && m_aVersions.containsKey (aVersion);
   }
@@ -274,7 +275,7 @@ public class RepoToc
    * @since 1.1.2
    */
   @Nullable
-  public final OffsetDateTime getPublicationDateTimeOfVersion (@Nullable final VESVersion aVersion)
+  public final OffsetDateTime getPublicationDateTimeOfVersion (@Nullable final DVRVersion aVersion)
   {
     if (aVersion == null)
       return null;
@@ -282,7 +283,7 @@ public class RepoToc
   }
 
   @Nonnull
-  private EChange _addVersion (@Nonnull final VESVersion aVersion,
+  private EChange _addVersion (@Nonnull final DVRVersion aVersion,
                                @Nonnull final OffsetDateTime aPublishDT,
                                final boolean bDoLog)
   {
@@ -338,7 +339,7 @@ public class RepoToc
    */
   @Nonnull
   @OverridingMethodsMustInvokeSuper
-  public EChange addVersion (@Nonnull final VESVersion aVersion, @Nonnull final OffsetDateTime aPublishDT)
+  public EChange addVersion (@Nonnull final DVRVersion aVersion, @Nonnull final OffsetDateTime aPublishDT)
   {
     ValueEnforcer.notNull (aVersion, "Version");
     ValueEnforcer.notNull (aPublishDT, "PublishDT");
@@ -348,7 +349,7 @@ public class RepoToc
 
   @Nonnull
   @OverridingMethodsMustInvokeSuper
-  public EChange removeVersion (@Nonnull final VESVersion aVersion)
+  public EChange removeVersion (@Nonnull final DVRVersion aVersion)
   {
     ValueEnforcer.notNull (aVersion, "Version");
     ValueEnforcer.isTrue (aVersion.isStaticVersion (), "Version must be static and not pseudo");
@@ -366,12 +367,12 @@ public class RepoToc
     if (m_aVersions.isNotEmpty ())
     {
       // Copy from Set to List
-      final ICommonsList <Map.Entry <VESVersion, OffsetDateTime>> aVersionList = new CommonsArrayList <> (m_aVersions.entrySet ());
+      final ICommonsList <Map.Entry <DVRVersion, OffsetDateTime>> aVersionList = new CommonsArrayList <> (m_aVersions.entrySet ());
       // Iterate backwards
-      final ListIterator <Map.Entry <VESVersion, OffsetDateTime>> aIter = aVersionList.listIterator (aVersionList.size ());
+      final ListIterator <Map.Entry <DVRVersion, OffsetDateTime>> aIter = aVersionList.listIterator (aVersionList.size ());
       while (aIter.hasPrevious ())
       {
-        final Map.Entry <VESVersion, OffsetDateTime> aCur = aIter.previous ();
+        final Map.Entry <DVRVersion, OffsetDateTime> aCur = aIter.previous ();
         if (!aCur.getKey ().isStaticSnapshotVersion ())
         {
           m_aLatestReleaseVersion = aCur.getKey ();
@@ -434,7 +435,7 @@ public class RepoToc
       aVersioning.setLatestRelease (StringHelper.getNotNull (getLatestReleaseVersionAsString (), ""));
       {
         final RTVersionListType aVersions = new RTVersionListType ();
-        for (final Map.Entry <VESVersion, OffsetDateTime> aEntry : m_aVersions.entrySet ())
+        for (final Map.Entry <DVRVersion, OffsetDateTime> aEntry : m_aVersions.entrySet ())
         {
           final RTVersionType aVersion = new RTVersionType ();
           aVersion.setPublished (XMLOffsetDateTime.of (aEntry.getValue ()));
@@ -460,12 +461,16 @@ public class RepoToc
   {
     final RepoToc ret = new RepoToc (aRepoToc.getGroupId (), aRepoToc.getArtifactId ());
     // Try to read as silently as possible, without unnecessary logging
-    aRepoToc.getVersioning ()
-            .getVersions ()
-            .getVersion ()
-            .forEach (x -> ret._addVersion (VESVersion.parseOrThrow (x.getValue ()),
-                                            _toODT (x.getPublished ()),
-                                            false));
+    aRepoToc.getVersioning ().getVersions ().getVersion ().forEach (x -> {
+      try
+      {
+        ret._addVersion (DVRVersion.parseOrThrow (x.getValue ()), _toODT (x.getPublished ()), false);
+      }
+      catch (final DVRException ex)
+      {
+        LOGGER.error ("Failed to restore DVR version", ex);
+      }
+    });
     return ret;
   }
 }

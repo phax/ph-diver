@@ -33,9 +33,11 @@ import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.version.Version;
+import com.helger.diver.api.DVRException;
+import com.helger.diver.api.id.DVRID;
 
 /**
- * This class contains the version of a VESID. This can either be a static
+ * This class contains the version of a DVRID. This can either be a static
  * version or a pseudo version. This version type has a specific kind of
  * ordering, so that versions using the classifier "SNAPSHOT" are ordered BEFORE
  * respective release versions. Example order:
@@ -53,14 +55,14 @@ import com.helger.commons.version.Version;
 @Immutable
 @MustImplementComparable
 @MustImplementEqualsAndHashcode
-public final class VESVersion implements Comparable <VESVersion>
+public final class DVRVersion implements Comparable <DVRVersion>
 {
   public static final String QUALIFIER_SNAPSHOT = "SNAPSHOT";
 
-  private static final Logger LOGGER = LoggerFactory.getLogger (VESVersion.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (DVRVersion.class);
 
   private final Version m_aStaticVersion;
-  private final IVESPseudoVersion m_aPseudoVersion;
+  private final IDVRPseudoVersion m_aPseudoVersion;
 
   /**
    * Constructor - only invoked by the static factory methods below
@@ -70,7 +72,7 @@ public final class VESVersion implements Comparable <VESVersion>
    * @param aPseudoVersion
    *        Pseudo version. May be <code>null</code>.
    */
-  private VESVersion (@Nullable final Version aStaticVersion, @Nullable final IVESPseudoVersion aPseudoVersion)
+  private DVRVersion (@Nullable final Version aStaticVersion, @Nullable final IDVRPseudoVersion aPseudoVersion)
   {
     ValueEnforcer.isTrue (aStaticVersion != null || aPseudoVersion != null,
                           "Either Static Version or Pseudo Version must be provided");
@@ -141,7 +143,7 @@ public final class VESVersion implements Comparable <VESVersion>
    * @see #isPseudoVersion()
    */
   @Nullable
-  public IVESPseudoVersion getPseudoVersion ()
+  public IDVRPseudoVersion getPseudoVersion ()
   {
     return m_aPseudoVersion;
   }
@@ -198,7 +200,7 @@ public final class VESVersion implements Comparable <VESVersion>
   }
 
   @Nonnull
-  public static String getAsString (@Nonnull final IVESPseudoVersion aPseudoVersion)
+  public static String getAsString (@Nonnull final IDVRPseudoVersion aPseudoVersion)
   {
     return aPseudoVersion.getID ();
   }
@@ -266,12 +268,12 @@ public final class VESVersion implements Comparable <VESVersion>
    * @return -1, 0 or +1
    */
   private static int _compareWithPseudoVersion (@Nonnull final Version aStaticVersion,
-                                                @Nonnull final IVESPseudoVersion aPseudoVersion)
+                                                @Nonnull final IDVRPseudoVersion aPseudoVersion)
   {
     return -aPseudoVersion.compareToVersion (aStaticVersion);
   }
 
-  public int compareTo (@Nonnull final VESVersion rhs)
+  public int compareTo (@Nonnull final DVRVersion rhs)
   {
     if (isStaticVersion ())
     {
@@ -296,7 +298,7 @@ public final class VESVersion implements Comparable <VESVersion>
       return true;
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
-    final VESVersion rhs = (VESVersion) o;
+    final DVRVersion rhs = (DVRVersion) o;
     return EqualsHelper.equals (m_aStaticVersion, rhs.m_aStaticVersion) &&
            EqualsHelper.equals (m_aPseudoVersion, rhs.m_aPseudoVersion);
   }
@@ -316,17 +318,17 @@ public final class VESVersion implements Comparable <VESVersion>
   }
 
   @Nonnull
-  public static VESVersion of (@Nonnull final Version aVersion)
+  public static DVRVersion of (@Nonnull final Version aVersion)
   {
     ValueEnforcer.notNull (aVersion, "Version");
-    return new VESVersion (aVersion, null);
+    return new DVRVersion (aVersion, null);
   }
 
   @Nonnull
-  public static VESVersion of (@Nonnull final IVESPseudoVersion aPseudoVersion)
+  public static DVRVersion of (@Nonnull final IDVRPseudoVersion aPseudoVersion)
   {
     ValueEnforcer.notNull (aPseudoVersion, "PseudoVersion");
-    return new VESVersion (null, aPseudoVersion);
+    return new DVRVersion (null, aPseudoVersion);
   }
 
   /**
@@ -354,8 +356,8 @@ public final class VESVersion implements Comparable <VESVersion>
     if (StringHelper.hasNoText (sVersion))
       return false;
 
-    // Must follow the VESID constraints
-    if (!VESID.isValidVersion (sVersion))
+    // Must follow the DVRID constraints
+    if (!DVRID.isValidVersion (sVersion))
       return false;
 
     // Parse to Version object
@@ -392,13 +394,13 @@ public final class VESVersion implements Comparable <VESVersion>
   }
 
   @Nonnull
-  public static VESVersion parseOrThrow (@Nullable final String sVersion)
+  public static DVRVersion parseOrThrow (@Nullable final String sVersion) throws DVRException
   {
     if (StringHelper.hasNoText (sVersion))
-      throw new IllegalArgumentException ("Version string must not be empty");
+      throw new DVRException ("Version string must not be empty");
 
     // Check pseudo version first
-    final IVESPseudoVersion ePseudoVersion = VESPseudoVersionRegistry.getInstance ().getFromIDOrNull (sVersion);
+    final IDVRPseudoVersion ePseudoVersion = DVRPseudoVersionRegistry.getInstance ().getFromIDOrNull (sVersion);
     if (ePseudoVersion != null)
       return of (ePseudoVersion);
 
@@ -408,17 +410,17 @@ public final class VESVersion implements Comparable <VESVersion>
       return of (Version.parse (sVersion));
     }
 
-    throw new IllegalArgumentException ("Failed to parse '" + sVersion + "' to a VES Version");
+    throw new DVRException ("Failed to parse '" + sVersion + "' to a DVR Version");
   }
 
   @Nullable
-  public static VESVersion parseOrNull (@Nullable final String sVersion)
+  public static DVRVersion parseOrNull (@Nullable final String sVersion)
   {
     try
     {
       return parseOrThrow (sVersion);
     }
-    catch (final RuntimeException ex)
+    catch (final DVRException | RuntimeException ex)
     {
       LOGGER.warn (ex.getMessage ());
       return null;

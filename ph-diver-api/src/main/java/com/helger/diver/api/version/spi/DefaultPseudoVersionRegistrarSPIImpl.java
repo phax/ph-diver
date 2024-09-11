@@ -20,8 +20,8 @@ import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.IsSPIImplementation;
 import com.helger.commons.annotation.UsedViaReflection;
-import com.helger.diver.api.version.IVESPseudoVersionRegistry;
-import com.helger.diver.api.version.VESPseudoVersionRegistry;
+import com.helger.diver.api.version.DVRPseudoVersionRegistry;
+import com.helger.diver.api.version.IDVRPseudoVersionRegistry;
 
 /**
  * Default pseudo version registrar
@@ -30,17 +30,17 @@ import com.helger.diver.api.version.VESPseudoVersionRegistry;
  * @since 1.2.0
  */
 @IsSPIImplementation
-public final class DefaultPseudoVersionRegistrarSPIImpl implements IVESPseudoVersionRegistrarSPI
+public final class DefaultPseudoVersionRegistrarSPIImpl implements IDVRPseudoVersionRegistrarSPI
 {
   @Deprecated (forRemoval = false)
   @UsedViaReflection
   public DefaultPseudoVersionRegistrarSPIImpl ()
   {}
 
-  public void registerPseudoVersions (@Nonnull final IVESPseudoVersionRegistry aRegistry)
+  public void registerPseudoVersions (@Nonnull final IDVRPseudoVersionRegistry aRegistry)
   {
-    aRegistry.registerPseudoVersion (VESPseudoVersionRegistry.OLDEST);
-    aRegistry.registerPseudoVersion (VESPseudoVersionRegistry.LATEST_RELEASE);
-    aRegistry.registerPseudoVersion (VESPseudoVersionRegistry.LATEST);
+    aRegistry.registerPseudoVersion (DVRPseudoVersionRegistry.OLDEST);
+    aRegistry.registerPseudoVersion (DVRPseudoVersionRegistry.LATEST_RELEASE);
+    aRegistry.registerPseudoVersion (DVRPseudoVersionRegistry.LATEST);
   }
 }

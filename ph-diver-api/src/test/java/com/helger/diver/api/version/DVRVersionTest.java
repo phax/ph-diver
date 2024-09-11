@@ -28,17 +28,17 @@ import com.helger.commons.mock.CommonsTestHelper;
 import com.helger.commons.version.Version;
 
 /**
- * Test class for class {@link VESVersion}.
+ * Test class for class {@link DVRVersion}.
  *
  * @author Philip Helger
  */
-public final class VESVersionTest
+public final class DVRVersionTest
 {
   @Test
   public void testBasic ()
   {
     // Valid static
-    VESVersion ver = VESVersion.parseOrNull ("1.2.3");
+    DVRVersion ver = DVRVersion.parseOrNull ("1.2.3");
     assertNotNull (ver);
     assertTrue (ver.isStaticVersion ());
     assertNotNull (ver.getStaticVersion ());
@@ -47,7 +47,7 @@ public final class VESVersionTest
     assertEquals ("1.2.3", ver.getAsString ());
 
     // Valid static
-    ver = VESVersion.parseOrNull ("1.2.3.a");
+    ver = DVRVersion.parseOrNull ("1.2.3.a");
     assertNotNull (ver);
     assertTrue (ver.isStaticVersion ());
     assertNotNull (ver.getStaticVersion ());
@@ -56,7 +56,7 @@ public final class VESVersionTest
     assertEquals ("1.2.3-a", ver.getAsString ());
 
     // Valid static
-    ver = VESVersion.parseOrNull ("1.2.3.4.5.6.7.8");
+    ver = DVRVersion.parseOrNull ("1.2.3.4.5.6.7.8");
     assertNotNull (ver);
     assertTrue (ver.isStaticVersion ());
     assertNotNull (ver.getStaticVersion ());
@@ -65,7 +65,7 @@ public final class VESVersionTest
     assertEquals ("1.2.3-4.5.6.7.8", ver.getAsString ());
 
     // Valid static
-    ver = VESVersion.parseOrNull ("1.2.3-a");
+    ver = DVRVersion.parseOrNull ("1.2.3-a");
     assertNotNull (ver);
     assertTrue (ver.isStaticVersion ());
     assertNotNull (ver.getStaticVersion ());
@@ -74,11 +74,11 @@ public final class VESVersionTest
     assertEquals ("1.2.3-a", ver.getAsString ());
 
     // Invalid static
-    ver = VESVersion.parseOrNull ("0.09.5");
+    ver = DVRVersion.parseOrNull ("0.09.5");
     assertNull (ver);
 
     // Valid pseudo version
-    ver = VESVersion.parseOrNull ("latest");
+    ver = DVRVersion.parseOrNull ("latest");
     assertNotNull (ver);
     assertFalse (ver.isStaticVersion ());
     assertNull (ver.getStaticVersion ());
@@ -87,7 +87,7 @@ public final class VESVersionTest
     assertEquals ("latest", ver.getAsString ());
 
     // Invalid pseudo version
-    ver = VESVersion.parseOrNull ("blafoo");
+    ver = DVRVersion.parseOrNull ("blafoo");
     assertNotNull (ver);
     assertTrue (ver.isStaticVersion ());
     assertNotNull (ver.getStaticVersion ());
@@ -105,46 +105,46 @@ public final class VESVersionTest
   @Test
   public void testGetAsString ()
   {
-    assertEquals ("1.2.3-bla", VESVersion.parseOrNull ("1.2.3.bla").getAsString ());
-    assertEquals ("1.2.3", VESVersion.parseOrNull ("1.2.3").getAsString ());
-    assertEquals ("1.2", VESVersion.parseOrNull ("1.2").getAsString ());
-    assertEquals ("1", VESVersion.parseOrNull ("1").getAsString ());
-    assertEquals ("1", VESVersion.parseOrNull ("1.0").getAsString ());
-    assertEquals ("1", VESVersion.parseOrNull ("1.0.0").getAsString ());
-    assertEquals ("0.1", VESVersion.parseOrNull ("0.1").getAsString ());
+    assertEquals ("1.2.3-bla", DVRVersion.parseOrNull ("1.2.3.bla").getAsString ());
+    assertEquals ("1.2.3", DVRVersion.parseOrNull ("1.2.3").getAsString ());
+    assertEquals ("1.2", DVRVersion.parseOrNull ("1.2").getAsString ());
+    assertEquals ("1", DVRVersion.parseOrNull ("1").getAsString ());
+    assertEquals ("1", DVRVersion.parseOrNull ("1.0").getAsString ());
+    assertEquals ("1", DVRVersion.parseOrNull ("1.0.0").getAsString ());
+    assertEquals ("0.1", DVRVersion.parseOrNull ("0.1").getAsString ());
   }
 
   @Test
   public void testZero ()
   {
-    assertEquals ("0", VESVersion.parseOrNull ("0").getAsString ());
-    assertEquals ("0", VESVersion.parseOrNull ("0.0").getAsString ());
-    assertEquals ("0", VESVersion.parseOrNull ("0.0.0").getAsString ());
+    assertEquals ("0", DVRVersion.parseOrNull ("0").getAsString ());
+    assertEquals ("0", DVRVersion.parseOrNull ("0.0").getAsString ());
+    assertEquals ("0", DVRVersion.parseOrNull ("0.0.0").getAsString ());
   }
 
   @Test
   public void testEqualsHashcode ()
   {
-    final VESVersion ver = VESVersion.parseOrNull ("1.2.3");
-    CommonsTestHelper.testEqualsImplementationWithEqualContentObject (ver, VESVersion.parseOrNull ("1.2.3"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, VESVersion.parseOrNull ("1.2.4"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, VESVersion.parseOrNull ("1.1.3"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, VESVersion.parseOrNull ("2.2.3"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, VESVersion.parseOrNull ("1.2"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, VESVersion.parseOrNull ("1.2.3.bla"));
+    final DVRVersion ver = DVRVersion.parseOrNull ("1.2.3");
+    CommonsTestHelper.testEqualsImplementationWithEqualContentObject (ver, DVRVersion.parseOrNull ("1.2.3"));
+    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("1.2.4"));
+    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("1.1.3"));
+    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("2.2.3"));
+    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("1.2"));
+    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("1.2.3.bla"));
   }
 
   @Test
   public void testCompare ()
   {
-    final VESVersion ver0 = VESVersion.of (VESPseudoVersionRegistry.OLDEST);
-    final VESVersion ver1 = VESVersion.parseOrNull ("1.2");
-    final VESVersion ver2 = VESVersion.parseOrNull ("1.2.3");
-    final VESVersion ver3 = VESVersion.parseOrNull ("1.2.4");
-    final VESVersion ver4 = VESVersion.parseOrNull ("1.3");
-    final VESVersion ver5 = VESVersion.parseOrNull ("2023.5");
-    final VESVersion ver6 = VESVersion.of (VESPseudoVersionRegistry.LATEST_RELEASE);
-    final VESVersion ver7 = VESVersion.of (VESPseudoVersionRegistry.LATEST);
+    final DVRVersion ver0 = DVRVersion.of (DVRPseudoVersionRegistry.OLDEST);
+    final DVRVersion ver1 = DVRVersion.parseOrNull ("1.2");
+    final DVRVersion ver2 = DVRVersion.parseOrNull ("1.2.3");
+    final DVRVersion ver3 = DVRVersion.parseOrNull ("1.2.4");
+    final DVRVersion ver4 = DVRVersion.parseOrNull ("1.3");
+    final DVRVersion ver5 = DVRVersion.parseOrNull ("2023.5");
+    final DVRVersion ver6 = DVRVersion.of (DVRPseudoVersionRegistry.LATEST_RELEASE);
+    final DVRVersion ver7 = DVRVersion.of (DVRPseudoVersionRegistry.LATEST);
 
     assertEquals (0, ver0.compareTo (ver0));
     assertTrue (ver0.compareTo (ver1) < 0);
@@ -222,10 +222,10 @@ public final class VESVersionTest
   @Test
   public void testSnapshot ()
   {
-    final VESVersion ver1 = VESVersion.parseOrNull ("0.9.9");
-    final VESVersion ver2 = VESVersion.parseOrNull ("1.0.0-SNAPSHOT");
-    final VESVersion ver3 = VESVersion.parseOrNull ("1.0.0");
-    final VESVersion ver4 = VESVersion.parseOrNull ("1.0.1");
+    final DVRVersion ver1 = DVRVersion.parseOrNull ("0.9.9");
+    final DVRVersion ver2 = DVRVersion.parseOrNull ("1.0.0-SNAPSHOT");
+    final DVRVersion ver3 = DVRVersion.parseOrNull ("1.0.0");
+    final DVRVersion ver4 = DVRVersion.parseOrNull ("1.0.1");
 
     assertTrue (ver1.compareTo (ver1) == 0);
     assertTrue (ver1.compareTo (ver2) < 0);

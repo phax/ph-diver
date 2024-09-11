@@ -33,7 +33,7 @@ import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.diver.api.version.VESID;
+import com.helger.diver.api.id.DVRID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorageContent;
@@ -129,7 +129,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
     if (aTocItem == null)
     {
       // Create a new one
-      aToc = new RepoToc (aKeyToc.getVESID ().getGroupID (), aKeyToc.getVESID ().getArtifactID ());
+      aToc = new RepoToc (aKeyToc.getDVRID ().getGroupID (), aKeyToc.getDVRID ().getArtifactID ());
     }
     else
     {
@@ -174,27 +174,27 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
     {
       // Update ToC
       return updateToc (aKey.getKeyToc (), toc -> {
-        final VESID aVESID = aKey.getVESID ();
+        final DVRID aDVRID = aKey.getDVRID ();
         // Make sure a publication DT is present and always UTC
         final OffsetDateTime aRealPubDT = aPublicationDT != null ? aPublicationDT : PDTFactory
                                                                                               .getCurrentOffsetDateTimeUTC ();
 
         // Add new version
-        if (toc.addVersion (aVESID.getVersionObj (), aRealPubDT).isUnchanged ())
+        if (toc.addVersion (aDVRID.getVersionObj (), aRealPubDT).isUnchanged ())
         {
-          // This is okay, if e.g. resource and VES reside in the same folder
+          // This is okay, if e.g. resource and DVR reside in the same folder
           if (LOGGER.isDebugEnabled ())
             LOGGER.debug ("Failed to add version '" +
-                          aVESID.getAsSingleID () +
+                          aDVRID.getAsSingleID () +
                           "' to ToC of because it is already contained");
         }
         else
         {
-          LOGGER.info ("Successfully added version '" + aVESID.getAsSingleID () + "' to ToC");
+          LOGGER.info ("Successfully added version '" + aDVRID.getAsSingleID () + "' to ToC");
         }
 
         // Update top-level ToC
-        getTopTocService ().registerGroupAndArtifact (aVESID.getGroupID (), aVESID.getArtifactID ());
+        getTopTocService ().registerGroupAndArtifact (aDVRID.getGroupID (), aDVRID.getArtifactID ());
       });
     }
 
@@ -209,17 +209,17 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
     {
       // Update ToC
       return updateToc (aKey.getKeyToc (), toc -> {
-        final VESID aVESID = aKey.getVESID ();
+        final DVRID aDVRID = aKey.getDVRID ();
         // Remove deleted version
-        if (toc.removeVersion (aVESID.getVersionObj ()).isUnchanged ())
+        if (toc.removeVersion (aDVRID.getVersionObj ()).isUnchanged ())
         {
           LOGGER.warn ("Failed to delete version '" +
-                       aVESID.getAsSingleID () +
+                       aDVRID.getAsSingleID () +
                        "' from ToC because it is not contained");
         }
         else
         {
-          LOGGER.info ("Successfully deleted version '" + aVESID.getAsSingleID () + "' from ToC");
+          LOGGER.info ("Successfully deleted version '" + aDVRID.getAsSingleID () + "' from ToC");
         }
       });
     }

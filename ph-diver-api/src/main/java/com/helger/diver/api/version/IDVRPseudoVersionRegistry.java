@@ -29,7 +29,7 @@ import com.helger.commons.state.EChange;
  * @since 1.2.0
  */
 @NotThreadSafe
-public interface IVESPseudoVersionRegistry
+public interface IDVRPseudoVersionRegistry
 {
   /**
    * Register the provided pseudo version.
@@ -40,7 +40,7 @@ public interface IVESPseudoVersionRegistry
    *         if it was already present. Never <code>null</code>.
    */
   @Nonnull
-  EChange registerPseudoVersion (@Nonnull IVESPseudoVersion aPseudoVersion);
+  EChange registerPseudoVersion (@Nonnull IDVRPseudoVersion aPseudoVersion);
 
   /**
    * Try to resolve the pseudo version with the provided ID.
@@ -50,5 +50,5 @@ public interface IVESPseudoVersionRegistry
    * @return <code>null</code> if no such pseudo version is present.
    */
   @Nullable
-  IVESPseudoVersion getFromIDOrNull (@Nullable String sID);
+  IDVRPseudoVersion getFromIDOrNull (@Nullable String sID);
 }

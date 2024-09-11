@@ -20,8 +20,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.string.StringHelper;
-import com.helger.diver.api.version.VESID;
+import com.helger.diver.api.id.DVRID;
+import com.helger.diver.api.version.DVRVersion;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.IRepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
@@ -84,16 +84,16 @@ public interface IRepoStorageWithToc extends IRepoStorage
    * Read the ToC for the provided Group ID and Artefact ID and return the
    * parsed data.
    *
-   * @param aVESID
-   *        VESID to take Group ID and Artifact ID from. May not be
+   * @param aDVRID
+   *        DVRID to take Group ID and Artifact ID from. May not be
    *        <code>null</code>.
    * @return <code>null</code> if either group or artifact do not exist, or if
    *         no ToC is present.
    */
   @Nullable
-  default RepoToc readTocModel (@Nonnull final VESID aVESID)
+  default RepoToc readTocModel (@Nonnull final DVRID aDVRID)
   {
-    return readTocModel (aVESID.getGroupID (), aVESID.getArtifactID ());
+    return readTocModel (aDVRID.getGroupID (), aDVRID.getArtifactID ());
   }
 
   /**
@@ -140,14 +140,14 @@ public interface IRepoStorageWithToc extends IRepoStorage
    * @since 1.1.2
    */
   @Nullable
-  default VESID getLatestReleaseVersion (@Nullable final String sGroupID, @Nullable final String sArtifactID)
+  default DVRID getLatestReleaseVersion (@Nullable final String sGroupID, @Nullable final String sArtifactID)
   {
     final RepoToc aToc = readTocModel (sGroupID, sArtifactID);
     if (aToc != null)
     {
-      final String sLatestVersion = aToc.getLatestReleaseVersionAsString ();
-      if (StringHelper.hasText (sLatestVersion))
-        return new VESID (sGroupID, sArtifactID, sLatestVersion);
+      final DVRVersion aLatestVersion = aToc.getLatestReleaseVersion ();
+      if (aLatestVersion != null)
+        return new DVRID (sGroupID, sArtifactID, aLatestVersion);
     }
     return null;
   }
@@ -166,14 +166,14 @@ public interface IRepoStorageWithToc extends IRepoStorage
    * @since 1.1.2
    */
   @Nullable
-  default VESID getLatestVersion (@Nullable final String sGroupID, @Nullable final String sArtifactID)
+  default DVRID getLatestVersion (@Nullable final String sGroupID, @Nullable final String sArtifactID)
   {
     final RepoToc aToc = readTocModel (sGroupID, sArtifactID);
     if (aToc != null)
     {
-      final String sLatestVersion = aToc.getLatestVersionAsString ();
-      if (StringHelper.hasText (sLatestVersion))
-        return new VESID (sGroupID, sArtifactID, sLatestVersion);
+      final DVRVersion aLatestVersion = aToc.getLatestVersion ();
+      if (aLatestVersion != null)
+        return new DVRID (sGroupID, sArtifactID, aLatestVersion);
     }
     return null;
   }

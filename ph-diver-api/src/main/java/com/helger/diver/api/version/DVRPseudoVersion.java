@@ -25,17 +25,17 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.version.Version;
 
 /**
- * Default implementation of {@link IVESPseudoVersion}
+ * Default implementation of {@link IDVRPseudoVersion}
  *
  * @author Philip Helger
  * @since 1.2.0
  */
-public class VESPseudoVersion implements IVESPseudoVersion
+public class DVRPseudoVersion implements IDVRPseudoVersion
 {
   private final String m_sID;
-  private final IPseudoVersionComparable m_aComparable;
+  private final IDVRPseudoVersionComparable m_aComparable;
 
-  public VESPseudoVersion (@Nonnull @Nonempty final String sID, @Nonnull final IPseudoVersionComparable aComparable)
+  public DVRPseudoVersion (@Nonnull @Nonempty final String sID, @Nonnull final IDVRPseudoVersionComparable aComparable)
   {
     ValueEnforcer.notEmpty (sID, "ID");
     ValueEnforcer.notNull (aComparable, "Comparable");
@@ -50,7 +50,7 @@ public class VESPseudoVersion implements IVESPseudoVersion
     return m_sID;
   }
 
-  public int compareToPseudoVersion (@Nonnull final IVESPseudoVersion aOtherPseudoVersion)
+  public int compareToPseudoVersion (@Nonnull final IDVRPseudoVersion aOtherPseudoVersion)
   {
     ValueEnforcer.notNull (aOtherPseudoVersion, "OtherPseudoVersion");
 
@@ -77,7 +77,7 @@ public class VESPseudoVersion implements IVESPseudoVersion
       return true;
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
-    final VESPseudoVersion rhs = (VESPseudoVersion) o;
+    final DVRPseudoVersion rhs = (DVRPseudoVersion) o;
     return m_sID.equals (rhs.m_sID);
   }
 

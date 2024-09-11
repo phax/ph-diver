@@ -33,7 +33,8 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.url.URLHelper;
-import com.helger.diver.api.version.VESID;
+import com.helger.diver.api.DVRException;
+import com.helger.diver.api.id.DVRID;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
@@ -119,17 +120,17 @@ public final class RepoStorageS3Test
   }
 
   @Test
-  public void testWritableWriteAndRead ()
+  public void testWritableWriteAndRead () throws DVRException
   {
     final RepoStorageS3 aRepo = _createRepoWritable ();
     assertTrue (aRepo.canWrite ());
 
     // Existing only in "local fs" repo but not in S3
-    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "local", "1"),
+    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRID ("com.ecosio", "local", "1"),
                                                                           ".txt"));
     assertNull (aItem);
 
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new VESID ("com.ecosio", "s3-written", "1"),
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRID ("com.ecosio", "s3-written", "1"),
                                                                        ".txt");
     boolean bS3Available = true;
 

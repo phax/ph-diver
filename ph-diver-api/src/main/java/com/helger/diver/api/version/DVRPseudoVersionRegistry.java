@@ -33,23 +33,23 @@ import com.helger.commons.lang.ServiceLoaderHelper;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.version.Version;
-import com.helger.diver.api.version.spi.IVESPseudoVersionRegistrarSPI;
+import com.helger.diver.api.version.spi.IDVRPseudoVersionRegistrarSPI;
 
 /**
- * Registry for all known {@link IVESPseudoVersion} instances.
+ * Registry for all known {@link IDVRPseudoVersion} instances.
  *
  * @author Philip Helger
  * @since 1.2.0
  */
 @NotThreadSafe
-public class VESPseudoVersionRegistry implements IVESPseudoVersionRegistry
+public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
 {
   /**
    * Oldest indicates the very first (oldest) version.
    */
-  public static final IVESPseudoVersion OLDEST = new VESPseudoVersion ("oldest", new IPseudoVersionComparable ()
+  public static final IDVRPseudoVersion OLDEST = new DVRPseudoVersion ("oldest", new IDVRPseudoVersionComparable ()
   {
-    public int compareToPseudoVersion (@Nonnull final IVESPseudoVersion aOtherPseudoVersion)
+    public int compareToPseudoVersion (@Nonnull final IDVRPseudoVersion aOtherPseudoVersion)
     {
       // OLDEST is always smaller
       return -1;
@@ -65,9 +65,9 @@ public class VESPseudoVersionRegistry implements IVESPseudoVersionRegistry
   /**
    * Latest indicates the very latest version (including snapshot).
    */
-  public static final IVESPseudoVersion LATEST = new VESPseudoVersion ("latest", new IPseudoVersionComparable ()
+  public static final IDVRPseudoVersion LATEST = new DVRPseudoVersion ("latest", new IDVRPseudoVersionComparable ()
   {
-    public int compareToPseudoVersion (@Nonnull final IVESPseudoVersion aOtherPseudoVersion)
+    public int compareToPseudoVersion (@Nonnull final IDVRPseudoVersion aOtherPseudoVersion)
     {
       // LATEST is always greater
       return +1;
@@ -83,12 +83,12 @@ public class VESPseudoVersionRegistry implements IVESPseudoVersionRegistry
   /**
    * Latest indicates the very latest version (excluding snapshot).
    */
-  public static final IVESPseudoVersion LATEST_RELEASE;
+  public static final IDVRPseudoVersion LATEST_RELEASE;
   static
   {
-    LATEST_RELEASE = new VESPseudoVersion ("latest-release", new IPseudoVersionComparable ()
+    LATEST_RELEASE = new DVRPseudoVersion ("latest-release", new IDVRPseudoVersionComparable ()
     {
-      public int compareToPseudoVersion (@Nonnull final IVESPseudoVersion aOtherPseudoVersion)
+      public int compareToPseudoVersion (@Nonnull final IDVRPseudoVersion aOtherPseudoVersion)
       {
         // We are before LATEST
         if (aOtherPseudoVersion.equals (LATEST))
@@ -108,20 +108,20 @@ public class VESPseudoVersionRegistry implements IVESPseudoVersionRegistry
 
   private static final class SingletonHolder
   {
-    static final VESPseudoVersionRegistry INSTANCE = new VESPseudoVersionRegistry ();
+    static final DVRPseudoVersionRegistry INSTANCE = new DVRPseudoVersionRegistry ();
   }
 
-  private static final Logger LOGGER = LoggerFactory.getLogger (VESPseudoVersionRegistry.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (DVRPseudoVersionRegistry.class);
 
-  private final ICommonsMap <String, IVESPseudoVersion> m_aPVs = new CommonsHashMap <> ();
+  private final ICommonsMap <String, IDVRPseudoVersion> m_aPVs = new CommonsHashMap <> ();
 
-  private VESPseudoVersionRegistry ()
+  private DVRPseudoVersionRegistry ()
   {
     _reinitialize (false);
   }
 
   @Nonnull
-  public static VESPseudoVersionRegistry getInstance ()
+  public static DVRPseudoVersionRegistry getInstance ()
   {
     return SingletonHolder.INSTANCE;
   }
@@ -129,17 +129,17 @@ public class VESPseudoVersionRegistry implements IVESPseudoVersionRegistry
   private void _reinitialize (final boolean bLog)
   {
     if (bLog)
-      LOGGER.info ("Reinitializing the VESPseudoVersionRegistry");
+      LOGGER.info ("Reinitializing the DVRPseudoVersionRegistry");
 
     // Remove existing
     m_aPVs.clear ();
 
     // Register all again
-    for (final IVESPseudoVersionRegistrarSPI aSPI : ServiceLoaderHelper.getAllSPIImplementations (IVESPseudoVersionRegistrarSPI.class))
+    for (final IDVRPseudoVersionRegistrarSPI aSPI : ServiceLoaderHelper.getAllSPIImplementations (IDVRPseudoVersionRegistrarSPI.class))
       aSPI.registerPseudoVersions (this);
 
     if (bLog)
-      LOGGER.info ("Finished reinitializing the VESPseudoVersionRegistry with " + m_aPVs.size () + " entries");
+      LOGGER.info ("Finished reinitializing the DVRPseudoVersionRegistry with " + m_aPVs.size () + " entries");
   }
 
   public final void reinitialize ()
@@ -148,7 +148,7 @@ public class VESPseudoVersionRegistry implements IVESPseudoVersionRegistry
   }
 
   @Nonnull
-  public EChange registerPseudoVersion (@Nonnull final IVESPseudoVersion aPseudoVersion)
+  public EChange registerPseudoVersion (@Nonnull final IDVRPseudoVersion aPseudoVersion)
   {
     ValueEnforcer.notNull (aPseudoVersion, "PseudoVersion");
 
@@ -163,7 +163,7 @@ public class VESPseudoVersionRegistry implements IVESPseudoVersionRegistry
   }
 
   @Nullable
-  public IVESPseudoVersion getFromIDOrNull (@Nullable final String sID)
+  public IDVRPseudoVersion getFromIDOrNull (@Nullable final String sID)
   {
     return m_aPVs.get (sID);
   }
@@ -182,7 +182,7 @@ public class VESPseudoVersionRegistry implements IVESPseudoVersionRegistry
       return true;
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
-    final VESPseudoVersionRegistry rhs = (VESPseudoVersionRegistry) o;
+    final DVRPseudoVersionRegistry rhs = (DVRPseudoVersionRegistry) o;
     return m_aPVs.equals (rhs.m_aPVs);
   }
 

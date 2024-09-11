@@ -35,7 +35,8 @@ import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.datetime.PDTWebDateHelper;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.mock.CommonsTestHelper;
-import com.helger.diver.api.version.VESVersion;
+import com.helger.diver.api.DVRException;
+import com.helger.diver.api.version.DVRVersion;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 
 /**
@@ -46,14 +47,14 @@ import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 public final class RepoTocTest
 {
   @Test
-  public void testBasic ()
+  public void testBasic () throws DVRException
   {
     final RepoToc aToC = new RepoToc ("g", "a");
     assertEquals ("g", aToC.getGroupID ());
     assertEquals ("a", aToC.getArtifactID ());
 
     // No version
-    ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
+    ICommonsSortedMap <DVRVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
     assertTrue (aVersions.isEmpty ());
 
@@ -64,10 +65,10 @@ public final class RepoTocTest
 
     // 1 release version
     assertFalse (aToC.containsVersion (null));
-    assertFalse (aToC.containsVersion (VESVersion.parseOrThrow ("1.0")));
-    assertTrue (aToC.addVersion (VESVersion.parseOrThrow ("1.0"), PDTFactory.getCurrentOffsetDateTime ()).isChanged ());
+    assertFalse (aToC.containsVersion (DVRVersion.parseOrThrow ("1.0")));
+    assertTrue (aToC.addVersion (DVRVersion.parseOrThrow ("1.0"), PDTFactory.getCurrentOffsetDateTime ()).isChanged ());
     assertFalse (aToC.containsVersion (null));
-    assertTrue (aToC.containsVersion (VESVersion.parseOrThrow ("1.0")));
+    assertTrue (aToC.containsVersion (DVRVersion.parseOrThrow ("1.0")));
 
     aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
@@ -79,7 +80,7 @@ public final class RepoTocTest
     assertEquals ("1", aToC.getLatestReleaseVersionAsString ());
 
     // 2 release versions
-    assertTrue (aToC.addVersion (VESVersion.parseOrThrow ("1.1"), PDTFactory.getCurrentOffsetDateTime ()).isChanged ());
+    assertTrue (aToC.addVersion (DVRVersion.parseOrThrow ("1.1"), PDTFactory.getCurrentOffsetDateTime ()).isChanged ());
 
     aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
@@ -91,7 +92,7 @@ public final class RepoTocTest
     assertEquals ("1.1", aToC.getLatestReleaseVersionAsString ());
 
     // 2 release versions, 1 SNAPSHOT version
-    assertTrue (aToC.addVersion (VESVersion.parseOrThrow ("1.2-SNAPSHOT"), PDTFactory.getCurrentOffsetDateTime ())
+    assertTrue (aToC.addVersion (DVRVersion.parseOrThrow ("1.2-SNAPSHOT"), PDTFactory.getCurrentOffsetDateTime ())
                     .isChanged ());
 
     aVersions = aToC.getAllVersions ();
@@ -104,7 +105,7 @@ public final class RepoTocTest
     assertEquals ("1.1", aToC.getLatestReleaseVersionAsString ());
 
     // 3 release versions, 1 SNAPSHOT version
-    assertTrue (aToC.addVersion (VESVersion.parseOrThrow ("1.2"), PDTFactory.getCurrentOffsetDateTime ()).isChanged ());
+    assertTrue (aToC.addVersion (DVRVersion.parseOrThrow ("1.2"), PDTFactory.getCurrentOffsetDateTime ()).isChanged ());
 
     aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
@@ -117,17 +118,17 @@ public final class RepoTocTest
   }
 
   @Test
-  public void testStandardMethods ()
+  public void testStandardMethods () throws DVRException
   {
     final OffsetDateTime aODT = PDTFactory.getCurrentOffsetDateTime ();
 
-    final ICommonsMap <VESVersion, OffsetDateTime> aVersions = new CommonsHashMap <> ();
-    aVersions.put (VESVersion.parseOrThrow ("1.0"), aODT);
-    aVersions.put (VESVersion.parseOrThrow ("1.1"), aODT);
+    final ICommonsMap <DVRVersion, OffsetDateTime> aVersions = new CommonsHashMap <> ();
+    aVersions.put (DVRVersion.parseOrThrow ("1.0"), aODT);
+    aVersions.put (DVRVersion.parseOrThrow ("1.1"), aODT);
     final RepoToc aToC = new RepoToc ("g", "a", aVersions);
 
-    final ICommonsMap <VESVersion, OffsetDateTime> aVersions2 = aVersions.getClone ();
-    aVersions2.put (VESVersion.parseOrThrow ("1.2"), aODT);
+    final ICommonsMap <DVRVersion, OffsetDateTime> aVersions2 = aVersions.getClone ();
+    aVersions2.put (DVRVersion.parseOrThrow ("1.2"), aODT);
 
     CommonsTestHelper.testDefaultImplementationWithEqualContentObject (aToC, new RepoToc ("g", "a", aVersions));
     CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (aToC, new RepoToc ("g2", "a", aVersions));
@@ -136,7 +137,7 @@ public final class RepoTocTest
   }
 
   @Test
-  public void testCreateFromJaxb ()
+  public void testCreateFromJaxb () throws DVRException
   {
     final RepoToc1Marshaller m = new RepoToc1Marshaller ();
     final RepoTocType aRepoToc1 = m.read (new ClassPathResource ("repotoc/repotoc-1.xml"));
@@ -157,23 +158,23 @@ public final class RepoTocTest
                             .plus (123, ChronoUnit.MILLIS), aToC.getLatestReleaseVersionPublicationDateTime ());
 
     assertEquals (4, aToC.getVersionCount ());
-    final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
+    final ICommonsSortedMap <DVRVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
     assertEquals (4, aVersions.size ());
 
-    OffsetDateTime aDT = aVersions.get (VESVersion.parseOrThrow ("10.0.0"));
+    OffsetDateTime aDT = aVersions.get (DVRVersion.parseOrThrow ("10.0.0"));
     assertNotNull (aDT);
     assertEquals ("2023-07-19T14:37:00Z", PDTWebDateHelper.getAsStringXSD (aDT));
 
-    aDT = aVersions.get (VESVersion.parseOrThrow ("10.1.4"));
+    aDT = aVersions.get (DVRVersion.parseOrThrow ("10.1.4"));
     assertNotNull (aDT);
     assertEquals ("2023-08-19T15:37:00Z", PDTWebDateHelper.getAsStringXSD (aDT));
 
-    aDT = aVersions.get (VESVersion.parseOrThrow ("11.1.2"));
+    aDT = aVersions.get (DVRVersion.parseOrThrow ("11.1.2"));
     assertNotNull (aDT);
     assertEquals ("2023-09-19T16:37:00.123Z", PDTWebDateHelper.getAsStringXSD (aDT));
 
-    aDT = aVersions.get (VESVersion.parseOrThrow ("11.1.3-SNAPSHOT"));
+    aDT = aVersions.get (DVRVersion.parseOrThrow ("11.1.3-SNAPSHOT"));
     assertNotNull (aDT);
     assertEquals ("2023-09-19T17:45:12.456Z", PDTWebDateHelper.getAsStringXSD (aDT));
 
@@ -182,7 +183,7 @@ public final class RepoTocTest
   }
 
   @Test
-  public void testDeleteVersionOldestRelease ()
+  public void testDeleteVersionOldestRelease () throws DVRException
   {
     final RepoToc1Marshaller m = new RepoToc1Marshaller ();
     final RepoTocType aRepoToc1 = m.read (new ClassPathResource ("repotoc/repotoc-1.xml"));
@@ -192,13 +193,13 @@ public final class RepoTocTest
     assertNotNull (aToC);
 
     // removed oldest release version
-    aToC.removeVersion (VESVersion.parseOrThrow ("10.0.0"));
+    aToC.removeVersion (DVRVersion.parseOrThrow ("10.0.0"));
 
     assertEquals ("11.1.3-SNAPSHOT", aToC.getLatestVersionAsString ());
     assertEquals ("11.1.2", aToC.getLatestReleaseVersionAsString ());
 
     assertEquals (3, aToC.getVersionCount ());
-    final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
+    final ICommonsSortedMap <DVRVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
     assertEquals (3, aVersions.size ());
 
@@ -207,7 +208,7 @@ public final class RepoTocTest
   }
 
   @Test
-  public void testDeleteVersionNewestRelease ()
+  public void testDeleteVersionNewestRelease () throws DVRException
   {
     final RepoToc1Marshaller m = new RepoToc1Marshaller ();
     final RepoTocType aRepoToc1 = m.read (new ClassPathResource ("repotoc/repotoc-1.xml"));
@@ -217,13 +218,13 @@ public final class RepoTocTest
     assertNotNull (aToC);
 
     // removed newest release version
-    aToC.removeVersion (VESVersion.parseOrThrow ("11.1.2"));
+    aToC.removeVersion (DVRVersion.parseOrThrow ("11.1.2"));
 
     assertEquals ("11.1.3-SNAPSHOT", aToC.getLatestVersionAsString ());
     assertEquals ("10.1.4", aToC.getLatestReleaseVersionAsString ());
 
     assertEquals (3, aToC.getVersionCount ());
-    final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
+    final ICommonsSortedMap <DVRVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
     assertEquals (3, aVersions.size ());
 
@@ -232,7 +233,7 @@ public final class RepoTocTest
   }
 
   @Test
-  public void testDeleteVersionNewestSnapshot ()
+  public void testDeleteVersionNewestSnapshot () throws DVRException
   {
     final RepoToc1Marshaller m = new RepoToc1Marshaller ();
     final RepoTocType aRepoToc1 = m.read (new ClassPathResource ("repotoc/repotoc-1.xml"));
@@ -242,13 +243,13 @@ public final class RepoTocTest
     assertNotNull (aToC);
 
     // removed newest release version
-    aToC.removeVersion (VESVersion.parseOrThrow ("11.1.3-SNAPSHOT"));
+    aToC.removeVersion (DVRVersion.parseOrThrow ("11.1.3-SNAPSHOT"));
 
     assertEquals ("11.1.2", aToC.getLatestVersionAsString ());
     assertEquals ("11.1.2", aToC.getLatestReleaseVersionAsString ());
 
     assertEquals (3, aToC.getVersionCount ());
-    final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
+    final ICommonsSortedMap <DVRVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
     assertEquals (3, aVersions.size ());
 
@@ -257,7 +258,7 @@ public final class RepoTocTest
   }
 
   @Test
-  public void testDeleteVersionAll ()
+  public void testDeleteVersionAll () throws DVRException
   {
     final RepoToc1Marshaller m = new RepoToc1Marshaller ();
     final RepoTocType aRepoToc1 = m.read (new ClassPathResource ("repotoc/repotoc-1.xml"));
@@ -267,16 +268,16 @@ public final class RepoTocTest
     assertNotNull (aToC);
 
     // removed newest release version
-    aToC.removeVersion (VESVersion.parseOrThrow ("10.0.0"));
-    aToC.removeVersion (VESVersion.parseOrThrow ("10.1.4"));
-    aToC.removeVersion (VESVersion.parseOrThrow ("11.1.2"));
-    aToC.removeVersion (VESVersion.parseOrThrow ("11.1.3-SNAPSHOT"));
+    aToC.removeVersion (DVRVersion.parseOrThrow ("10.0.0"));
+    aToC.removeVersion (DVRVersion.parseOrThrow ("10.1.4"));
+    aToC.removeVersion (DVRVersion.parseOrThrow ("11.1.2"));
+    aToC.removeVersion (DVRVersion.parseOrThrow ("11.1.3-SNAPSHOT"));
 
     assertNull (aToC.getLatestVersionAsString ());
     assertNull (aToC.getLatestReleaseVersionAsString ());
 
     assertEquals (0, aToC.getVersionCount ());
-    final ICommonsSortedMap <VESVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
+    final ICommonsSortedMap <DVRVersion, OffsetDateTime> aVersions = aToC.getAllVersions ();
     assertNotNull (aVersions);
     assertEquals (0, aVersions.size ());
 

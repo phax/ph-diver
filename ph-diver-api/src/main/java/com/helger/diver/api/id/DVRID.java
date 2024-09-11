@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.diver.api.version;
+package com.helger.diver.api.id;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -33,25 +33,30 @@ import com.helger.commons.hashcode.IHashCodeGenerator;
 import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.diver.api.DVRException;
+import com.helger.diver.api.version.DVRPseudoVersionRegistry;
+import com.helger.diver.api.version.DVRVersion;
+import com.helger.diver.api.version.IDVRPseudoVersion;
 
 /**
- * The VESID was based originally on "Validation Executor Set ID" but is now
- * used in a wider range of use cases. However, to stay consistent with prior
- * usages, the name was kept.
+ * The DVRID represents the coordinates of a single technical artefact in a
+ * specific version. It was originally called VESID for "Validation Executor Set
+ * ID" but is now used in a wider range of use cases. The name was changed for
+ * release v2.0.0
  *
  * @author Philip Helger
  */
 @Immutable
 @MustImplementComparable
 @MustImplementEqualsAndHashcode
-public final class VESID implements Comparable <VESID>
+public final class DVRID implements Comparable <DVRID>
 {
   /** The separator char between ID elements */
   public static final char ID_SEPARATOR = ':';
 
   private final String m_sGroupID;
   private final String m_sArtifactID;
-  private final VESVersion m_aVersion;
+  private final DVRVersion m_aVersion;
   private final String m_sClassifier;
   // status vars
   private int m_nHashCode = IHashCodeGenerator.ILLEGAL_HASHCODE;
@@ -61,41 +66,25 @@ public final class VESID implements Comparable <VESID>
     return RegExHelper.stringMatchesPattern ("[a-zA-Z0-9_\\-\\.]{1," + nMaxLen + "}", sPart);
   }
 
-  /**
-   * Check if the provided part matches the necessary regular expression.
-   *
-   * @param sPart
-   *        The part to be checked. May be <code>null</code>.
-   * @return <code>true</code> if the value matches the regular expression,
-   *         <code>false</code> otherwise.
-   */
-  @Deprecated (forRemoval = true, since = "1.0.2")
-  public static boolean isValidPart (@Nullable final String sPart)
-  {
-    if (StringHelper.hasNoText (sPart))
-      return false;
-    return _isValidPart (sPart, 256);
-  }
-
   public static boolean isValidGroupID (@Nullable final String sPart)
   {
     if (StringHelper.hasNoText (sPart))
       return false;
-    return _isValidPart (sPart, VESIDSettings.getMaxGroupIDLen ());
+    return _isValidPart (sPart, DVRIDSettings.getMaxGroupIDLen ());
   }
 
   public static boolean isValidArtifactID (@Nullable final String sPart)
   {
     if (StringHelper.hasNoText (sPart))
       return false;
-    return _isValidPart (sPart, VESIDSettings.getMaxArtifactIDLen ());
+    return _isValidPart (sPart, DVRIDSettings.getMaxArtifactIDLen ());
   }
 
   public static boolean isValidVersion (@Nullable final String sPart)
   {
     if (StringHelper.hasNoText (sPart))
       return false;
-    return _isValidPart (sPart, VESIDSettings.getMaxVersionLen ());
+    return _isValidPart (sPart, DVRIDSettings.getMaxVersionLen ());
   }
 
   public static boolean isValidClassifier (@Nullable final String sPart)
@@ -103,12 +92,13 @@ public final class VESID implements Comparable <VESID>
     // Classifier is optional
     if (StringHelper.hasNoText (sPart))
       return true;
-    return _isValidPart (sPart, VESIDSettings.getMaxClassifierLen ());
+    return _isValidPart (sPart, DVRIDSettings.getMaxClassifierLen ());
   }
 
   /**
    * Constructor without classifier. All parameters must match the constraints
-   * from {@link #isValidPart(String)}.
+   * from {@link #isValidGroupID(String)}, {@link #isValidArtifactID(String)}
+   * and {@link #isValidVersion(String)}.
    *
    * @param sGroupID
    *        Group ID. May neither be <code>null</code> nor empty.
@@ -116,17 +106,20 @@ public final class VESID implements Comparable <VESID>
    *        Artifact ID. May neither be <code>null</code> nor empty.
    * @param sVersion
    *        Version string. May neither be <code>null</code> nor empty.
+   * @throws DVRException
+   *         if the provided version is invalid
    */
-  public VESID (@Nonnull @Nonempty final String sGroupID,
+  public DVRID (@Nonnull @Nonempty final String sGroupID,
                 @Nonnull @Nonempty final String sArtifactID,
-                @Nonnull @Nonempty final String sVersion)
+                @Nonnull @Nonempty final String sVersion) throws DVRException
   {
     this (sGroupID, sArtifactID, sVersion, (String) null);
   }
 
   /**
    * Constructor. All parameters must match the constraints from
-   * {@link #isValidPart(String)}.
+   * {@link #isValidGroupID(String)}, {@link #isValidArtifactID(String)},
+   * {@link #isValidVersion(String)} and {@link #isValidClassifier(String)}.
    *
    * @param sGroupID
    *        Group ID. May neither be <code>null</code> nor empty.
@@ -136,18 +129,21 @@ public final class VESID implements Comparable <VESID>
    *        Version string. May neither be <code>null</code> nor empty.
    * @param sClassifier
    *        Classifier. May be <code>null</code>.
+   * @throws DVRException
+   *         if the provided version is invalid
    */
-  public VESID (@Nonnull @Nonempty final String sGroupID,
+  public DVRID (@Nonnull @Nonempty final String sGroupID,
                 @Nonnull @Nonempty final String sArtifactID,
                 @Nonnull @Nonempty final String sVersion,
-                @Nullable final String sClassifier)
+                @Nullable final String sClassifier) throws DVRException
   {
-    this (sGroupID, sArtifactID, VESVersion.parseOrThrow (sVersion), sClassifier);
+    this (sGroupID, sArtifactID, DVRVersion.parseOrThrow (sVersion), sClassifier);
   }
 
   /**
    * Constructor. All parameters must match the constraints from
-   * {@link #isValidPart(String)}.
+   * {@link #isValidGroupID(String)}, {@link #isValidArtifactID(String)} and
+   * {@link #isValidVersion(String)}.
    *
    * @param sGroupID
    *        Group ID. May neither be <code>null</code> nor empty.
@@ -157,16 +153,17 @@ public final class VESID implements Comparable <VESID>
    *        Version object. May not be <code>null</code>.
    * @since 1.1.2
    */
-  public VESID (@Nonnull @Nonempty final String sGroupID,
+  public DVRID (@Nonnull @Nonempty final String sGroupID,
                 @Nonnull @Nonempty final String sArtifactID,
-                @Nonnull final VESVersion aVersion)
+                @Nonnull final DVRVersion aVersion)
   {
     this (sGroupID, sArtifactID, aVersion, (String) null);
   }
 
   /**
    * Constructor. All parameters must match the constraints from
-   * {@link #isValidPart(String)}.
+   * {@link #isValidGroupID(String)}, {@link #isValidArtifactID(String)},
+   * {@link #isValidVersion(String)} and {@link #isValidClassifier(String)}.
    *
    * @param sGroupID
    *        Group ID. May neither be <code>null</code> nor empty.
@@ -177,9 +174,9 @@ public final class VESID implements Comparable <VESID>
    * @param sClassifier
    *        Classifier. May be <code>null</code>.
    */
-  public VESID (@Nonnull @Nonempty final String sGroupID,
+  public DVRID (@Nonnull @Nonempty final String sGroupID,
                 @Nonnull @Nonempty final String sArtifactID,
-                @Nonnull final VESVersion aVersion,
+                @Nonnull final DVRVersion aVersion,
                 @Nullable final String sClassifier)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
@@ -217,14 +214,8 @@ public final class VESID implements Comparable <VESID>
     return m_aVersion.getAsString ();
   }
 
-  @Deprecated (forRemoval = true, since = "9.0.0")
-  public String getVersion ()
-  {
-    return getVersionString ();
-  }
-
   @Nonnull
-  public VESVersion getVersionObj ()
+  public DVRVersion getVersionObj ()
   {
     return m_aVersion;
   }
@@ -241,45 +232,45 @@ public final class VESID implements Comparable <VESID>
   }
 
   @Nonnull
-  public VESID getWithArtifactID (@Nullable final String sNewArtifactID)
+  public DVRID getWithArtifactID (@Nullable final String sNewArtifactID)
   {
     if (EqualsHelper.equals (m_sArtifactID, sNewArtifactID))
       return this;
-    return new VESID (m_sGroupID, sNewArtifactID, m_aVersion, m_sClassifier);
+    return new DVRID (m_sGroupID, sNewArtifactID, m_aVersion, m_sClassifier);
   }
 
   @Nonnull
-  public VESID getWithVersion (@Nonnull final VESVersion aNewVersion)
+  public DVRID getWithVersion (@Nonnull final DVRVersion aNewVersion)
   {
     if (EqualsHelper.equals (m_aVersion, aNewVersion))
       return this;
-    return new VESID (m_sGroupID, m_sArtifactID, aNewVersion, m_sClassifier);
+    return new DVRID (m_sGroupID, m_sArtifactID, aNewVersion, m_sClassifier);
   }
 
   @Nonnull
-  public VESID getWithVersion (@Nonnull final IVESPseudoVersion aPseudoVersion)
+  public DVRID getWithVersion (@Nonnull final IDVRPseudoVersion aPseudoVersion)
   {
-    return getWithVersion (VESVersion.of (aPseudoVersion));
+    return getWithVersion (DVRVersion.of (aPseudoVersion));
   }
 
   @Nonnull
-  public VESID getWithVersionLatest ()
+  public DVRID getWithVersionLatest ()
   {
-    return getWithVersion (VESPseudoVersionRegistry.LATEST);
+    return getWithVersion (DVRPseudoVersionRegistry.LATEST);
   }
 
   @Nonnull
-  public VESID getWithVersionLatestRelease ()
+  public DVRID getWithVersionLatestRelease ()
   {
-    return getWithVersion (VESPseudoVersionRegistry.LATEST_RELEASE);
+    return getWithVersion (DVRPseudoVersionRegistry.LATEST_RELEASE);
   }
 
   @Nonnull
-  public VESID getWithClassifier (@Nullable final String sNewClassifier)
+  public DVRID getWithClassifier (@Nullable final String sNewClassifier)
   {
     if (EqualsHelper.equals (m_sClassifier, sNewClassifier))
       return this;
-    return new VESID (m_sGroupID, m_sArtifactID, m_aVersion, sNewClassifier);
+    return new DVRID (m_sGroupID, m_sArtifactID, m_aVersion, sNewClassifier);
   }
 
   @Nonnull
@@ -292,7 +283,7 @@ public final class VESID implements Comparable <VESID>
     return ret;
   }
 
-  public int compareTo (final VESID aOther)
+  public int compareTo (final DVRID aOther)
   {
     int ret = m_sGroupID.compareTo (aOther.m_sGroupID);
     if (ret == 0)
@@ -315,7 +306,7 @@ public final class VESID implements Comparable <VESID>
       return true;
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
-    final VESID rhs = (VESID) o;
+    final DVRID rhs = (DVRID) o;
     return m_sGroupID.equals (rhs.m_sGroupID) &&
            m_sArtifactID.equals (rhs.m_sArtifactID) &&
            m_aVersion.equals (rhs.m_aVersion) &&
@@ -346,24 +337,24 @@ public final class VESID implements Comparable <VESID>
   }
 
   @Nonnull
-  public static VESID parseID (@Nullable final String sVESID)
+  public static DVRID parseID (@Nullable final String sDVRID) throws DVRException
   {
-    final ICommonsList <String> aParts = StringHelper.getExploded (ID_SEPARATOR, sVESID);
+    final ICommonsList <String> aParts = StringHelper.getExploded (ID_SEPARATOR, sDVRID);
     final int nSize = aParts.size ();
     if (nSize >= 3 && nSize <= 4)
-      return new VESID (aParts.get (0), aParts.get (1), aParts.get (2), nSize >= 4 ? aParts.get (3) : null);
+      return new DVRID (aParts.get (0), aParts.get (1), aParts.get (2), nSize >= 4 ? aParts.get (3) : null);
 
-    throw new IllegalArgumentException ("Invalid VESID '" + sVESID + "' provided!");
+    throw new DVRException ("Invalid DVRID '" + sDVRID + "' provided!");
   }
 
   @Nullable
-  public static VESID parseIDOrNull (@Nullable final String sVESID)
+  public static DVRID parseIDOrNull (@Nullable final String sCVRID)
   {
     try
     {
-      return parseID (sVESID);
+      return parseID (sCVRID);
     }
-    catch (final RuntimeException ex)
+    catch (final DVRException | RuntimeException ex)
     {
       return null;
     }

@@ -26,10 +26,11 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.diver.api.version.VESID;
+import com.helger.diver.api.id.DVRID;
+import com.helger.diver.api.version.DVRVersion;
 
 /**
- * This is a specific storage key that not just contains a path but also a VESID
+ * This is a specific storage key that not just contains a path but also a DVRID
  * to uniquely identify the object.
  *
  * @author Philip Helger
@@ -47,24 +48,24 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageKeyOfArtefact.class);
 
   // Special fake version to be used by the ToC where we don't need any version
-  private static final String TOC_VERSION = "0";
+  private static final DVRVersion TOC_VERSION = DVRVersion.parseOrNull ("0");
 
-  private final VESID m_aVESID;
+  private final DVRID m_aDVRID;
 
-  private RepoStorageKeyOfArtefact (@Nonnull final VESID aVESID, @Nonnull @Nonempty final String sPath)
+  private RepoStorageKeyOfArtefact (@Nonnull final DVRID aDVRID, @Nonnull @Nonempty final String sPath)
   {
     super (sPath);
-    ValueEnforcer.notNull (aVESID, "VESID");
-    ValueEnforcer.isTrue (aVESID.getVersionObj ().isStaticVersion (),
-                          "VESID must use a static version to access a repository item");
+    ValueEnforcer.notNull (aDVRID, "DVRID");
+    ValueEnforcer.isTrue (aDVRID.getVersionObj ().isStaticVersion (),
+                          "DVRID must use a static version to access a repository item");
 
-    m_aVESID = aVESID;
+    m_aDVRID = aDVRID;
   }
 
   @Nonnull
-  public final VESID getVESID ()
+  public final DVRID getDVRID ()
   {
-    return m_aVESID;
+    return m_aDVRID;
   }
 
   @Override
@@ -80,14 +81,14 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
                    sPath +
                    "'");
     }
-    return new RepoStorageKeyOfArtefact (m_aVESID, sPath + FILE_EXT_SHA256);
+    return new RepoStorageKeyOfArtefact (m_aDVRID, sPath + FILE_EXT_SHA256);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public RepoStorageKeyOfArtefact getKeyToc ()
   {
-    return ofToc (m_aVESID.getGroupID (), m_aVESID.getArtifactID ());
+    return ofToc (m_aDVRID.getGroupID (), m_aDVRID.getArtifactID ());
   }
 
   @Override
@@ -98,19 +99,19 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
     if (o == null || !super.equals (o))
       return false;
     final RepoStorageKeyOfArtefact rhs = (RepoStorageKeyOfArtefact) o;
-    return m_aVESID.equals (rhs.m_aVESID);
+    return m_aDVRID.equals (rhs.m_aDVRID);
   }
 
   @Override
   public int hashCode ()
   {
-    return HashCodeGenerator.getDerived (super.hashCode ()).append (m_aVESID).getHashCode ();
+    return HashCodeGenerator.getDerived (super.hashCode ()).append (m_aDVRID).getHashCode ();
   }
 
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).append ("VESID", m_aVESID).getToString ();
+    return ToStringGenerator.getDerived (super.toString ()).append ("DVRID", m_aDVRID).getToString ();
   }
 
   /**
@@ -135,14 +136,14 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
   }
 
   /**
-   * Create a {@link RepoStorageKey} from the passed VESID and the file
+   * Create a {@link RepoStorageKey} from the passed DVRID and the file
    * extension. The algorithm is like this:
    * <code>sGroupID.replace ('.', '/') + "/" + sArtifactID + "/" + sVersion + "/" + sArtifactID + "-" + sVersion [+ "-" + sClassifier] + sFileExt</code>
    * which is basically
    * <code>group/artifact/version/artifact-version[-classifier].fileExtension</code>
    *
-   * @param aVESID
-   *        The VESID to convert. Considers an optionally present classifier.
+   * @param aDVRID
+   *        The DVRID to convert. Considers an optionally present classifier.
    *        May not be <code>null</code>.
    * @param sFileExt
    *        The file extension to use. Must start with ".". May not be
@@ -150,19 +151,19 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static RepoStorageKeyOfArtefact of (@Nonnull final VESID aVESID, @Nonnull @Nonempty final String sFileExt)
+  public static RepoStorageKeyOfArtefact of (@Nonnull final DVRID aDVRID, @Nonnull @Nonempty final String sFileExt)
   {
-    ValueEnforcer.notNull (aVESID, "VESID");
-    ValueEnforcer.isTrue (aVESID.getVersionObj ().isStaticVersion (),
-                          "VESID must use a static version to access a repository item");
+    ValueEnforcer.notNull (aDVRID, "DVRID");
+    ValueEnforcer.isTrue (aDVRID.getVersionObj ().isStaticVersion (),
+                          "DVRID must use a static version to access a repository item");
     ValueEnforcer.notEmpty (sFileExt, "FileExt");
     ValueEnforcer.isTrue ( () -> sFileExt.startsWith ("."), "FileExt must start with a dot");
 
-    final String sGroupID = aVESID.getGroupID ();
-    final String sArtifactID = aVESID.getArtifactID ();
-    final String sVersion = aVESID.getVersionString ();
-    final String sClassifier = aVESID.hasClassifier () ? "-" + aVESID.getClassifier () : "";
-    return new RepoStorageKeyOfArtefact (aVESID,
+    final String sGroupID = aDVRID.getGroupID ();
+    final String sArtifactID = aDVRID.getArtifactID ();
+    final String sVersion = aDVRID.getVersionString ();
+    final String sClassifier = aDVRID.hasClassifier () ? "-" + aDVRID.getClassifier () : "";
+    return new RepoStorageKeyOfArtefact (aDVRID,
                                          getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
                                                  sVersion +
                                                  "/" +
@@ -181,7 +182,7 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
 
     // ToC per group and artifact
-    return new RepoStorageKeyOfArtefact (new VESID (sGroupID, sArtifactID, TOC_VERSION),
+    return new RepoStorageKeyOfArtefact (new DVRID (sGroupID, sArtifactID, TOC_VERSION),
                                          getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
                                                                                          FILENAME_TOC_DIVER_XML);
   }

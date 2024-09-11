@@ -23,23 +23,23 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 /**
- * Test class for class {@link VESPseudoVersionRegistry}
+ * Test class for class {@link DVRPseudoVersionRegistry}
  *
  * @author Philip Helger
  */
-public final class VESPseudoVersionRegistryTest
+public final class DVRPseudoVersionRegistryTest
 {
   @Test
   public void testBasic ()
   {
-    final VESPseudoVersionRegistry a = VESPseudoVersionRegistry.getInstance ();
+    final DVRPseudoVersionRegistry a = DVRPseudoVersionRegistry.getInstance ();
     assertNotNull (a);
 
     assertEquals (3, a.size ());
 
-    assertNotNull (a.getFromIDOrNull (VESPseudoVersionRegistry.OLDEST.getID ()));
-    assertNotNull (a.getFromIDOrNull (VESPseudoVersionRegistry.LATEST_RELEASE.getID ()));
-    assertNotNull (a.getFromIDOrNull (VESPseudoVersionRegistry.LATEST.getID ()));
+    assertNotNull (a.getFromIDOrNull (DVRPseudoVersionRegistry.OLDEST.getID ()));
+    assertNotNull (a.getFromIDOrNull (DVRPseudoVersionRegistry.LATEST_RELEASE.getID ()));
+    assertNotNull (a.getFromIDOrNull (DVRPseudoVersionRegistry.LATEST.getID ()));
     assertNull (a.getFromIDOrNull ("hoppla"));
   }
 }

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.diver.api.version;
+package com.helger.diver.api.id;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -25,28 +25,28 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.ValueEnforcer;
 
 /**
- * This class contains global settings for every VESID used. Modifies the
- * validity of all VESIDs around.
+ * This class contains global settings for every DVRID used. Modifies the
+ * validity of all DVRIDs around.
  *
  * @author Philip Helger
  * @since 1.0.2
  */
 @NotThreadSafe
-public final class VESIDSettings
+public final class DVRIDSettings
 {
   public static final int DEFAULT_MAX_GROUP_ID_LEN = 64;
   public static final int DEFAULT_MAX_ARTIFACT_ID_LEN = 64;
   public static final int DEFAULT_MAX_VERSION_LEN = 64;
   public static final int DEFAULT_MAX_CLASSIFIER_LEN = 64;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger (VESIDSettings.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (DVRIDSettings.class);
 
   private static int s_nMaxGroupIDLen = DEFAULT_MAX_GROUP_ID_LEN;
   private static int s_nMaxArtifactIDLen = DEFAULT_MAX_ARTIFACT_ID_LEN;
   private static int s_nMaxVersionLen = DEFAULT_MAX_VERSION_LEN;
   private static int s_nMaxClassifierLen = DEFAULT_MAX_CLASSIFIER_LEN;
 
-  private VESIDSettings ()
+  private DVRIDSettings ()
   {}
 
   @Nonnegative
@@ -60,7 +60,7 @@ public final class VESIDSettings
     ValueEnforcer.isGT0 (nMaxLen, "MaxLen");
     if (nMaxLen != s_nMaxGroupIDLen)
     {
-      LOGGER.warn ("Changed the maximum group ID length of VESID from " + s_nMaxGroupIDLen + " to " + nMaxLen);
+      LOGGER.warn ("Changed the maximum group ID length of DVRID from " + s_nMaxGroupIDLen + " to " + nMaxLen);
       s_nMaxGroupIDLen = nMaxLen;
     }
   }
@@ -76,7 +76,7 @@ public final class VESIDSettings
     ValueEnforcer.isGT0 (nMaxLen, "MaxLen");
     if (nMaxLen != s_nMaxArtifactIDLen)
     {
-      LOGGER.warn ("Changed the maximum artifact ID length of VESID from " + s_nMaxArtifactIDLen + " to " + nMaxLen);
+      LOGGER.warn ("Changed the maximum artifact ID length of DVRID from " + s_nMaxArtifactIDLen + " to " + nMaxLen);
       s_nMaxArtifactIDLen = nMaxLen;
     }
   }
@@ -92,7 +92,7 @@ public final class VESIDSettings
     ValueEnforcer.isGT0 (nMaxLen, "MaxLen");
     if (nMaxLen != s_nMaxVersionLen)
     {
-      LOGGER.warn ("Changed the maximum version length of VESID from " + s_nMaxVersionLen + " to " + nMaxLen);
+      LOGGER.warn ("Changed the maximum version length of DVRID from " + s_nMaxVersionLen + " to " + nMaxLen);
       s_nMaxVersionLen = nMaxLen;
     }
   }
@@ -108,7 +108,7 @@ public final class VESIDSettings
     ValueEnforcer.isGT0 (nMaxLen, "MaxLen");
     if (nMaxLen != s_nMaxClassifierLen)
     {
-      LOGGER.warn ("Changed the maximum classifier length of VESID from " + s_nMaxClassifierLen + " to " + nMaxLen);
+      LOGGER.warn ("Changed the maximum classifier length of DVRID from " + s_nMaxClassifierLen + " to " + nMaxLen);
       s_nMaxClassifierLen = nMaxLen;
     }
   }

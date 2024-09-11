@@ -27,7 +27,7 @@ import com.helger.commons.version.Version;
  * @author Philip Helger
  * @since 1.2.0
  */
-public interface IPseudoVersionComparable
+public interface IDVRPseudoVersionComparable
 {
   /**
    * Compare this object to the provided pseudo version.
@@ -37,7 +37,7 @@ public interface IPseudoVersionComparable
    * @return a value &lt; 0 if this is &lt; other version; value 0 if this =
    *         other version; value &gt; 0 if this is &gt; other version
    */
-  int compareToPseudoVersion (@Nonnull IVESPseudoVersion aOtherPseudoVersion);
+  int compareToPseudoVersion (@Nonnull IDVRPseudoVersion aOtherPseudoVersion);
 
   /**
    * Compare this object to the provided static version.
