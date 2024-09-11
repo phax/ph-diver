@@ -14,19 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.diver.api;
+package com.helger.diver.api.version;
 
 import javax.annotation.Nonnull;
 
+import com.helger.diver.api.DVRException;
+
 /**
- * A base exception for DVR handling
+ * A specific exception for DVR version handling
  *
  * @author Philip Helger
  * @since 2.0.0
  */
-public class DVRException extends Exception
+public class DVRVersionException extends DVRException
 {
-  public DVRException (@Nonnull final String sMsg)
+  public DVRVersionException (@Nonnull final String sMsg)
   {
     super (sMsg);
   }

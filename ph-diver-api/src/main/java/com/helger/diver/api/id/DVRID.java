@@ -36,6 +36,7 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.diver.api.DVRException;
 import com.helger.diver.api.version.DVRPseudoVersionRegistry;
 import com.helger.diver.api.version.DVRVersion;
+import com.helger.diver.api.version.DVRVersionException;
 import com.helger.diver.api.version.IDVRPseudoVersion;
 
 /**
@@ -106,12 +107,12 @@ public final class DVRID implements Comparable <DVRID>
    *        Artifact ID. May neither be <code>null</code> nor empty.
    * @param sVersion
    *        Version string. May neither be <code>null</code> nor empty.
-   * @throws DVRException
+   * @throws DVRVersionException
    *         if the provided version is invalid
    */
   public DVRID (@Nonnull @Nonempty final String sGroupID,
                 @Nonnull @Nonempty final String sArtifactID,
-                @Nonnull @Nonempty final String sVersion) throws DVRException
+                @Nonnull @Nonempty final String sVersion) throws DVRVersionException
   {
     this (sGroupID, sArtifactID, sVersion, (String) null);
   }
@@ -129,13 +130,13 @@ public final class DVRID implements Comparable <DVRID>
    *        Version string. May neither be <code>null</code> nor empty.
    * @param sClassifier
    *        Classifier. May be <code>null</code>.
-   * @throws DVRException
+   * @throws DVRVersionException
    *         if the provided version is invalid
    */
   public DVRID (@Nonnull @Nonempty final String sGroupID,
                 @Nonnull @Nonempty final String sArtifactID,
                 @Nonnull @Nonempty final String sVersion,
-                @Nullable final String sClassifier) throws DVRException
+                @Nullable final String sClassifier) throws DVRVersionException
   {
     this (sGroupID, sArtifactID, DVRVersion.parseOrThrow (sVersion), sClassifier);
   }
@@ -337,14 +338,14 @@ public final class DVRID implements Comparable <DVRID>
   }
 
   @Nonnull
-  public static DVRID parseID (@Nullable final String sDVRID) throws DVRException
+  public static DVRID parseID (@Nullable final String sDVRID) throws DVRIDException, DVRVersionException
   {
     final ICommonsList <String> aParts = StringHelper.getExploded (ID_SEPARATOR, sDVRID);
     final int nSize = aParts.size ();
     if (nSize >= 3 && nSize <= 4)
       return new DVRID (aParts.get (0), aParts.get (1), aParts.get (2), nSize >= 4 ? aParts.get (3) : null);
 
-    throw new DVRException ("Invalid DVRID '" + sDVRID + "' provided!");
+    throw new DVRIDException ("Invalid DVRID '" + sDVRID + "' provided!");
   }
 
   @Nullable

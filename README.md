@@ -116,7 +116,7 @@ Alternate usage as a Maven BOM:
     * Renamed `IPseudoVersionComparable` to `IDVRPseudoVersionComparable`
     * Removed all deprecated APIs marked for removal
     * Moved `DVRID` related classes in package `com.helger.diver.api.id`
-    * Added class `DVRIDException`
+    * Added class `DVRException`
 * v1.2.0 - 2024-04-25
     * Extended the API of `IRepoStorageWithToc` with `getLatest(Release)Version`
     * Extended the API of `RepoToc`

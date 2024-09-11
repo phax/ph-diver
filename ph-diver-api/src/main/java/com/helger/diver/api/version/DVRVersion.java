@@ -33,7 +33,6 @@ import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.version.Version;
-import com.helger.diver.api.DVRException;
 import com.helger.diver.api.id.DVRID;
 
 /**
@@ -394,10 +393,10 @@ public final class DVRVersion implements Comparable <DVRVersion>
   }
 
   @Nonnull
-  public static DVRVersion parseOrThrow (@Nullable final String sVersion) throws DVRException
+  public static DVRVersion parseOrThrow (@Nullable final String sVersion) throws DVRVersionException
   {
     if (StringHelper.hasNoText (sVersion))
-      throw new DVRException ("Version string must not be empty");
+      throw new DVRVersionException ("DVR Version string must not be empty");
 
     // Check pseudo version first
     final IDVRPseudoVersion ePseudoVersion = DVRPseudoVersionRegistry.getInstance ().getFromIDOrNull (sVersion);
@@ -410,7 +409,7 @@ public final class DVRVersion implements Comparable <DVRVersion>
       return of (Version.parse (sVersion));
     }
 
-    throw new DVRException ("Failed to parse '" + sVersion + "' to a DVR Version");
+    throw new DVRVersionException ("Failed to parse '" + sVersion + "' to a DVR Version");
   }
 
   @Nullable
@@ -420,7 +419,7 @@ public final class DVRVersion implements Comparable <DVRVersion>
     {
       return parseOrThrow (sVersion);
     }
-    catch (final DVRException | RuntimeException ex)
+    catch (final DVRVersionException | RuntimeException ex)
     {
       LOGGER.warn (ex.getMessage ());
       return null;

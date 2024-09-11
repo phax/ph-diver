@@ -76,6 +76,7 @@
           <instructions>
             <Automatic-Module-Name>com.helger.diver.api</Automatic-Module-Name>
             <Export-Package>
+              com.helger.diver.api,
               com.helger.diver.api.id,
               com.helger.diver.api.version,
               com.helger.diver.api.version.spi
