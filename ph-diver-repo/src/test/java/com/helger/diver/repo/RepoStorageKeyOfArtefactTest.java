@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.helger.diver.api.DVRException;
-import com.helger.diver.api.id.DVRID;
+import com.helger.diver.api.coord.DVRCoordinate;
 
 /**
  * Test class for class {@link RepoStorageKeyOfArtefact}.
@@ -33,20 +33,20 @@ public final class RepoStorageKeyOfArtefactTest
   @Test
   public void testBasic () throws DVRException
   {
-    RepoStorageKey aKey = RepoStorageKeyOfArtefact.of (DVRID.parseID ("com.ecosio:test-artefact:1.2.0"), ".xml");
+    RepoStorageKey aKey = RepoStorageKeyOfArtefact.of (DVRCoordinate.parseOrThrow ("com.ecosio:test-artefact:1.2.0"), ".xml");
     // Breaking change "1.2.0" -> "1.2" no trailing spaces
     assertEquals ("com/ecosio/test-artefact/1.2/test-artefact-1.2.xml", aKey.getPath ());
 
-    aKey = RepoStorageKeyOfArtefact.of (DVRID.parseID ("com.ecosio:test-artefact:1.2.0"), ".xyz");
+    aKey = RepoStorageKeyOfArtefact.of (DVRCoordinate.parseOrThrow ("com.ecosio:test-artefact:1.2.0"), ".xyz");
     assertEquals ("com/ecosio/test-artefact/1.2/test-artefact-1.2.xyz", aKey.getPath ());
 
-    aKey = RepoStorageKeyOfArtefact.of (DVRID.parseID ("com.ecosio:test-artefact:1.2.1"), ".xyz");
+    aKey = RepoStorageKeyOfArtefact.of (DVRCoordinate.parseOrThrow ("com.ecosio:test-artefact:1.2.1"), ".xyz");
     assertEquals ("com/ecosio/test-artefact/1.2.1/test-artefact-1.2.1.xyz", aKey.getPath ());
 
-    aKey = RepoStorageKeyOfArtefact.of (DVRID.parseID ("com.ecosio:test-artefact:1.0.0"), ".xyz");
+    aKey = RepoStorageKeyOfArtefact.of (DVRCoordinate.parseOrThrow ("com.ecosio:test-artefact:1.0.0"), ".xyz");
     assertEquals ("com/ecosio/test-artefact/1/test-artefact-1.xyz", aKey.getPath ());
 
-    aKey = RepoStorageKeyOfArtefact.of (DVRID.parseID ("a:b:4"), ".xyz");
+    aKey = RepoStorageKeyOfArtefact.of (DVRCoordinate.parseOrThrow ("a:b:4"), ".xyz");
     assertEquals ("a/b/4/b-4.xyz", aKey.getPath ());
   }
 }

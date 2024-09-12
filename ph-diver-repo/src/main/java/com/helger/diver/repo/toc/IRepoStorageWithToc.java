@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.Nonempty;
-import com.helger.diver.api.id.DVRID;
+import com.helger.diver.api.coord.DVRCoordinate;
 import com.helger.diver.api.version.DVRVersion;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.IRepoStorageReadItem;
@@ -91,7 +91,7 @@ public interface IRepoStorageWithToc extends IRepoStorage
    *         no ToC is present.
    */
   @Nullable
-  default RepoToc readTocModel (@Nonnull final DVRID aDVRID)
+  default RepoToc readTocModel (@Nonnull final DVRCoordinate aDVRID)
   {
     return readTocModel (aDVRID.getGroupID (), aDVRID.getArtifactID ());
   }
@@ -140,14 +140,14 @@ public interface IRepoStorageWithToc extends IRepoStorage
    * @since 1.1.2
    */
   @Nullable
-  default DVRID getLatestReleaseVersion (@Nullable final String sGroupID, @Nullable final String sArtifactID)
+  default DVRCoordinate getLatestReleaseVersion (@Nullable final String sGroupID, @Nullable final String sArtifactID)
   {
     final RepoToc aToc = readTocModel (sGroupID, sArtifactID);
     if (aToc != null)
     {
       final DVRVersion aLatestVersion = aToc.getLatestReleaseVersion ();
       if (aLatestVersion != null)
-        return new DVRID (sGroupID, sArtifactID, aLatestVersion);
+        return new DVRCoordinate (sGroupID, sArtifactID, aLatestVersion);
     }
     return null;
   }
@@ -166,14 +166,14 @@ public interface IRepoStorageWithToc extends IRepoStorage
    * @since 1.1.2
    */
   @Nullable
-  default DVRID getLatestVersion (@Nullable final String sGroupID, @Nullable final String sArtifactID)
+  default DVRCoordinate getLatestVersion (@Nullable final String sGroupID, @Nullable final String sArtifactID)
   {
     final RepoToc aToc = readTocModel (sGroupID, sArtifactID);
     if (aToc != null)
     {
       final DVRVersion aLatestVersion = aToc.getLatestVersion ();
       if (aLatestVersion != null)
-        return new DVRID (sGroupID, sArtifactID, aLatestVersion);
+        return new DVRCoordinate (sGroupID, sArtifactID, aLatestVersion);
     }
     return null;
   }

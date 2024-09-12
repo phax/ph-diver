@@ -26,7 +26,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.diver.api.id.DVRID;
+import com.helger.diver.api.coord.DVRCoordinate;
 import com.helger.diver.api.version.DVRVersion;
 
 /**
@@ -50,9 +50,9 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
   // Special fake version to be used by the ToC where we don't need any version
   private static final DVRVersion TOC_VERSION = DVRVersion.parseOrNull ("0");
 
-  private final DVRID m_aDVRID;
+  private final DVRCoordinate m_aDVRID;
 
-  private RepoStorageKeyOfArtefact (@Nonnull final DVRID aDVRID, @Nonnull @Nonempty final String sPath)
+  private RepoStorageKeyOfArtefact (@Nonnull final DVRCoordinate aDVRID, @Nonnull @Nonempty final String sPath)
   {
     super (sPath);
     ValueEnforcer.notNull (aDVRID, "DVRID");
@@ -63,7 +63,7 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
   }
 
   @Nonnull
-  public final DVRID getDVRID ()
+  public final DVRCoordinate getDVRID ()
   {
     return m_aDVRID;
   }
@@ -151,7 +151,7 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static RepoStorageKeyOfArtefact of (@Nonnull final DVRID aDVRID, @Nonnull @Nonempty final String sFileExt)
+  public static RepoStorageKeyOfArtefact of (@Nonnull final DVRCoordinate aDVRID, @Nonnull @Nonempty final String sFileExt)
   {
     ValueEnforcer.notNull (aDVRID, "DVRID");
     ValueEnforcer.isTrue (aDVRID.getVersionObj ().isStaticVersion (),
@@ -182,7 +182,7 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
 
     // ToC per group and artifact
-    return new RepoStorageKeyOfArtefact (new DVRID (sGroupID, sArtifactID, TOC_VERSION),
+    return new RepoStorageKeyOfArtefact (new DVRCoordinate (sGroupID, sArtifactID, TOC_VERSION),
                                          getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
                                                                                          FILENAME_TOC_DIVER_XML);
   }

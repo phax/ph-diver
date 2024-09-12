@@ -14,21 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.diver.api.id;
+package com.helger.diver.api.coord;
 
 import javax.annotation.Nonnull;
 
 import com.helger.diver.api.DVRException;
 
 /**
- * A specific exception for DVRID handling
+ * A specific exception for DVR Coordinate handling
  *
  * @author Philip Helger
  * @since 2.0.0
  */
-public class DVRIDException extends DVRException
+public class DVRCoordinateException extends DVRException
 {
-  public DVRIDException (@Nonnull final String sMsg)
+  public DVRCoordinateException (@Nonnull final String sMsg)
   {
     super (sMsg);
   }

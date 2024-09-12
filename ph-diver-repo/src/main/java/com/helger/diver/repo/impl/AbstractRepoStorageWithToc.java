@@ -33,7 +33,7 @@ import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.diver.api.id.DVRID;
+import com.helger.diver.api.coord.DVRCoordinate;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorageContent;
@@ -174,7 +174,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
     {
       // Update ToC
       return updateToc (aKey.getKeyToc (), toc -> {
-        final DVRID aDVRID = aKey.getDVRID ();
+        final DVRCoordinate aDVRID = aKey.getDVRID ();
         // Make sure a publication DT is present and always UTC
         final OffsetDateTime aRealPubDT = aPublicationDT != null ? aPublicationDT : PDTFactory
                                                                                               .getCurrentOffsetDateTimeUTC ();
@@ -209,7 +209,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
     {
       // Update ToC
       return updateToc (aKey.getKeyToc (), toc -> {
-        final DVRID aDVRID = aKey.getDVRID ();
+        final DVRCoordinate aDVRID = aKey.getDVRID ();
         // Remove deleted version
         if (toc.removeVersion (aDVRID.getVersionObj ()).isUnchanged ())
         {

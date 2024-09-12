@@ -14,12 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.diver.api.id;
+package com.helger.diver.api.coord;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.MustImplementComparable;
@@ -30,76 +32,46 @@ import com.helger.commons.compare.CompareHelper;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.hashcode.IHashCodeGenerator;
-import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.diver.api.DVRException;
+import com.helger.diver.api.settings.DVRValidityHelper;
 import com.helger.diver.api.version.DVRPseudoVersionRegistry;
 import com.helger.diver.api.version.DVRVersion;
 import com.helger.diver.api.version.DVRVersionException;
 import com.helger.diver.api.version.IDVRPseudoVersion;
 
 /**
- * The DVRID represents the coordinates of a single technical artefact in a
- * specific version. It was originally called VESID for "Validation Executor Set
- * ID" but is now used in a wider range of use cases. The name was changed for
- * release v2.0.0
+ * The DVR Coordinate represents the coordinate of a single technical artefact
+ * in a specific version.<br />
+ * It was originally called VESID for "Validation Executor Set ID" but is now
+ * used in a wider range of use cases. The name was changed for release v2 to
+ * DVRID. In v3 the name was changed again to DVR Coordinate.
  *
  * @author Philip Helger
  */
 @Immutable
 @MustImplementComparable
 @MustImplementEqualsAndHashcode
-public final class DVRID implements Comparable <DVRID>
+public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoordinate>
 {
   /** The separator char between ID elements */
-  public static final char ID_SEPARATOR = ':';
+  public static final char PART_SEPARATOR = ':';
+
+  private static final Logger LOGGER = LoggerFactory.getLogger (DVRCoordinate.class);
 
   private final String m_sGroupID;
   private final String m_sArtifactID;
   private final DVRVersion m_aVersion;
   private final String m_sClassifier;
   // status vars
-  private int m_nHashCode = IHashCodeGenerator.ILLEGAL_HASHCODE;
-
-  private static boolean _isValidPart (@Nonnull final String sPart, @Nonnegative final int nMaxLen)
-  {
-    return RegExHelper.stringMatchesPattern ("[a-zA-Z0-9_\\-\\.]{1," + nMaxLen + "}", sPart);
-  }
-
-  public static boolean isValidGroupID (@Nullable final String sPart)
-  {
-    if (StringHelper.hasNoText (sPart))
-      return false;
-    return _isValidPart (sPart, DVRIDSettings.getMaxGroupIDLen ());
-  }
-
-  public static boolean isValidArtifactID (@Nullable final String sPart)
-  {
-    if (StringHelper.hasNoText (sPart))
-      return false;
-    return _isValidPart (sPart, DVRIDSettings.getMaxArtifactIDLen ());
-  }
-
-  public static boolean isValidVersion (@Nullable final String sPart)
-  {
-    if (StringHelper.hasNoText (sPart))
-      return false;
-    return _isValidPart (sPart, DVRIDSettings.getMaxVersionLen ());
-  }
-
-  public static boolean isValidClassifier (@Nullable final String sPart)
-  {
-    // Classifier is optional
-    if (StringHelper.hasNoText (sPart))
-      return true;
-    return _isValidPart (sPart, DVRIDSettings.getMaxClassifierLen ());
-  }
+  private transient int m_nHashCode = IHashCodeGenerator.ILLEGAL_HASHCODE;
 
   /**
    * Constructor without classifier. All parameters must match the constraints
-   * from {@link #isValidGroupID(String)}, {@link #isValidArtifactID(String)}
-   * and {@link #isValidVersion(String)}.
+   * from {@link DVRValidityHelper#isValidCoordinateGroupID(String)},
+   * {@link DVRValidityHelper#isValidCoordinateArtifactID(String)} and
+   * {@link DVRValidityHelper#isValidCoordinateVersion(String)}.
    *
    * @param sGroupID
    *        Group ID. May neither be <code>null</code> nor empty.
@@ -110,17 +82,19 @@ public final class DVRID implements Comparable <DVRID>
    * @throws DVRVersionException
    *         if the provided version is invalid
    */
-  public DVRID (@Nonnull @Nonempty final String sGroupID,
-                @Nonnull @Nonempty final String sArtifactID,
-                @Nonnull @Nonempty final String sVersion) throws DVRVersionException
+  public DVRCoordinate (@Nonnull @Nonempty final String sGroupID,
+                        @Nonnull @Nonempty final String sArtifactID,
+                        @Nonnull @Nonempty final String sVersion) throws DVRVersionException
   {
     this (sGroupID, sArtifactID, sVersion, (String) null);
   }
 
   /**
    * Constructor. All parameters must match the constraints from
-   * {@link #isValidGroupID(String)}, {@link #isValidArtifactID(String)},
-   * {@link #isValidVersion(String)} and {@link #isValidClassifier(String)}.
+   * {@link DVRValidityHelper#isValidCoordinateGroupID(String)},
+   * {@link DVRValidityHelper#isValidCoordinateArtifactID(String)},
+   * {@link DVRValidityHelper#isValidCoordinateVersion(String)} and
+   * {@link DVRValidityHelper#isValidCoordinateClassifier(String)}.
    *
    * @param sGroupID
    *        Group ID. May neither be <code>null</code> nor empty.
@@ -133,18 +107,19 @@ public final class DVRID implements Comparable <DVRID>
    * @throws DVRVersionException
    *         if the provided version is invalid
    */
-  public DVRID (@Nonnull @Nonempty final String sGroupID,
-                @Nonnull @Nonempty final String sArtifactID,
-                @Nonnull @Nonempty final String sVersion,
-                @Nullable final String sClassifier) throws DVRVersionException
+  public DVRCoordinate (@Nonnull @Nonempty final String sGroupID,
+                        @Nonnull @Nonempty final String sArtifactID,
+                        @Nonnull @Nonempty final String sVersion,
+                        @Nullable final String sClassifier) throws DVRVersionException
   {
     this (sGroupID, sArtifactID, DVRVersion.parseOrThrow (sVersion), sClassifier);
   }
 
   /**
    * Constructor. All parameters must match the constraints from
-   * {@link #isValidGroupID(String)}, {@link #isValidArtifactID(String)} and
-   * {@link #isValidVersion(String)}.
+   * {@link DVRValidityHelper#isValidCoordinateGroupID(String)},
+   * {@link DVRValidityHelper#isValidCoordinateArtifactID(String)} and
+   * {@link DVRValidityHelper#isValidCoordinateVersion(String)}.
    *
    * @param sGroupID
    *        Group ID. May neither be <code>null</code> nor empty.
@@ -154,17 +129,19 @@ public final class DVRID implements Comparable <DVRID>
    *        Version object. May not be <code>null</code>.
    * @since 1.1.2
    */
-  public DVRID (@Nonnull @Nonempty final String sGroupID,
-                @Nonnull @Nonempty final String sArtifactID,
-                @Nonnull final DVRVersion aVersion)
+  public DVRCoordinate (@Nonnull @Nonempty final String sGroupID,
+                        @Nonnull @Nonempty final String sArtifactID,
+                        @Nonnull final DVRVersion aVersion)
   {
     this (sGroupID, sArtifactID, aVersion, (String) null);
   }
 
   /**
    * Constructor. All parameters must match the constraints from
-   * {@link #isValidGroupID(String)}, {@link #isValidArtifactID(String)},
-   * {@link #isValidVersion(String)} and {@link #isValidClassifier(String)}.
+   * {@link DVRValidityHelper#isValidCoordinateGroupID(String)},
+   * {@link DVRValidityHelper#isValidCoordinateArtifactID(String)},
+   * {@link DVRValidityHelper#isValidCoordinateVersion(String)} and
+   * {@link DVRValidityHelper#isValidCoordinateClassifier(String)}.
    *
    * @param sGroupID
    *        Group ID. May neither be <code>null</code> nor empty.
@@ -175,18 +152,22 @@ public final class DVRID implements Comparable <DVRID>
    * @param sClassifier
    *        Classifier. May be <code>null</code>.
    */
-  public DVRID (@Nonnull @Nonempty final String sGroupID,
-                @Nonnull @Nonempty final String sArtifactID,
-                @Nonnull final DVRVersion aVersion,
-                @Nullable final String sClassifier)
+  public DVRCoordinate (@Nonnull @Nonempty final String sGroupID,
+                        @Nonnull @Nonempty final String sArtifactID,
+                        @Nonnull final DVRVersion aVersion,
+                        @Nullable final String sClassifier)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
-    ValueEnforcer.isTrue (isValidGroupID (sGroupID), () -> "GroupID '" + sGroupID + "' is invalid");
+    ValueEnforcer.isTrue ( () -> DVRValidityHelper.isValidCoordinateGroupID (sGroupID),
+                           () -> "GroupID '" + sGroupID + "' is invalid");
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
-    ValueEnforcer.isTrue (isValidArtifactID (sArtifactID), () -> "ArtifactID '" + sArtifactID + "' is invalid");
+    ValueEnforcer.isTrue ( () -> DVRValidityHelper.isValidCoordinateArtifactID (sArtifactID),
+                           () -> "ArtifactID '" + sArtifactID + "' is invalid");
     ValueEnforcer.notNull (aVersion, "Version");
-    ValueEnforcer.isTrue (isValidVersion (aVersion.getAsString ()), () -> "Version '" + aVersion + "' is invalid");
-    ValueEnforcer.isTrue (isValidClassifier (sClassifier), () -> "Classifier '" + sClassifier + "' is invalid");
+    ValueEnforcer.isTrue ( () -> DVRValidityHelper.isValidCoordinateVersion (aVersion.getAsString ()),
+                           () -> "Version '" + aVersion + "' is invalid");
+    ValueEnforcer.isTrue ( () -> DVRValidityHelper.isValidCoordinateClassifier (sClassifier),
+                           () -> "Classifier '" + sClassifier + "' is invalid");
     m_sGroupID = sGroupID;
     m_sArtifactID = sArtifactID;
     m_aVersion = aVersion;
@@ -209,21 +190,9 @@ public final class DVRID implements Comparable <DVRID>
   }
 
   @Nonnull
-  @Nonempty
-  public String getVersionString ()
-  {
-    return m_aVersion.getAsString ();
-  }
-
-  @Nonnull
   public DVRVersion getVersionObj ()
   {
     return m_aVersion;
-  }
-
-  public boolean hasClassifier ()
-  {
-    return StringHelper.hasText (m_sClassifier);
   }
 
   @Nullable
@@ -233,71 +202,97 @@ public final class DVRID implements Comparable <DVRID>
   }
 
   @Nonnull
-  public DVRID getWithArtifactID (@Nullable final String sNewArtifactID)
+  public DVRCoordinate getWithGroupID (@Nullable final String sNewGroupID)
+  {
+    if (EqualsHelper.equals (m_sGroupID, sNewGroupID))
+      return this;
+    return new DVRCoordinate (sNewGroupID, m_sArtifactID, m_aVersion, m_sClassifier);
+  }
+
+  @Nonnull
+  public DVRCoordinate getWithArtifactID (@Nullable final String sNewArtifactID)
   {
     if (EqualsHelper.equals (m_sArtifactID, sNewArtifactID))
       return this;
-    return new DVRID (m_sGroupID, sNewArtifactID, m_aVersion, m_sClassifier);
+    return new DVRCoordinate (m_sGroupID, sNewArtifactID, m_aVersion, m_sClassifier);
   }
 
   @Nonnull
-  public DVRID getWithVersion (@Nonnull final DVRVersion aNewVersion)
+  public DVRCoordinate getWithVersion (@Nonnull final DVRVersion aNewVersion)
   {
     if (EqualsHelper.equals (m_aVersion, aNewVersion))
       return this;
-    return new DVRID (m_sGroupID, m_sArtifactID, aNewVersion, m_sClassifier);
+    return new DVRCoordinate (m_sGroupID, m_sArtifactID, aNewVersion, m_sClassifier);
   }
 
   @Nonnull
-  public DVRID getWithVersion (@Nonnull final IDVRPseudoVersion aPseudoVersion)
+  public DVRCoordinate getWithVersion (@Nonnull final IDVRPseudoVersion aPseudoVersion)
   {
     return getWithVersion (DVRVersion.of (aPseudoVersion));
   }
 
   @Nonnull
-  public DVRID getWithVersionLatest ()
+  public DVRCoordinate getWithVersionLatest ()
   {
     return getWithVersion (DVRPseudoVersionRegistry.LATEST);
   }
 
   @Nonnull
-  public DVRID getWithVersionLatestRelease ()
+  public DVRCoordinate getWithVersionLatestRelease ()
   {
     return getWithVersion (DVRPseudoVersionRegistry.LATEST_RELEASE);
   }
 
   @Nonnull
-  public DVRID getWithClassifier (@Nullable final String sNewClassifier)
+  public DVRCoordinate getWithClassifier (@Nullable final String sNewClassifier)
   {
     if (EqualsHelper.equals (m_sClassifier, sNewClassifier))
       return this;
-    return new DVRID (m_sGroupID, m_sArtifactID, m_aVersion, sNewClassifier);
+    return new DVRCoordinate (m_sGroupID, m_sArtifactID, m_aVersion, sNewClassifier);
+  }
+
+  @Nonnull
+  @Nonempty
+  public static String getAsSingleID (@Nonnull @Nonempty final String sGroupID,
+                                      @Nonnull @Nonempty final String sArtifactID,
+                                      @Nonnull @Nonempty final String sVersion,
+                                      @Nullable final String sClassifier)
+  {
+    String ret = sGroupID + PART_SEPARATOR + sArtifactID + PART_SEPARATOR + sVersion;
+    if (StringHelper.hasText (sClassifier))
+      ret += PART_SEPARATOR + sClassifier;
+    return ret;
   }
 
   @Nonnull
   @Nonempty
   public String getAsSingleID ()
   {
-    String ret = m_sGroupID + ID_SEPARATOR + m_sArtifactID + ID_SEPARATOR + getVersionString ();
-    if (hasClassifier ())
-      ret += ID_SEPARATOR + m_sClassifier;
-    return ret;
+    return getAsSingleID (m_sGroupID, m_sArtifactID, getVersionString (), m_sClassifier);
   }
 
-  public int compareTo (final DVRID aOther)
+  public static int compare (@Nonnull final DVRCoordinate aLeft, @Nonnull final DVRCoordinate aRight)
   {
-    int ret = m_sGroupID.compareTo (aOther.m_sGroupID);
+    int ret = aLeft.m_sGroupID.compareTo (aRight.m_sGroupID);
     if (ret == 0)
     {
-      ret = m_sArtifactID.compareTo (aOther.m_sArtifactID);
+      ret = aLeft.m_sArtifactID.compareTo (aRight.m_sArtifactID);
       if (ret == 0)
       {
-        ret = m_aVersion.compareTo (aOther.m_aVersion);
+        ret = aLeft.m_aVersion.compareTo (aRight.m_aVersion);
         if (ret == 0)
-          ret = CompareHelper.compare (m_sClassifier, aOther.m_sClassifier);
+        {
+          // Null-safe compare
+          ret = CompareHelper.compare (aLeft.m_sClassifier, aRight.m_sClassifier);
+        }
       }
     }
     return ret;
+  }
+
+  public int compareTo (@Nonnull final DVRCoordinate aOther)
+  {
+    return compare (this, aOther);
   }
 
   @Override
@@ -307,7 +302,7 @@ public final class DVRID implements Comparable <DVRID>
       return true;
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
-    final DVRID rhs = (DVRID) o;
+    final DVRCoordinate rhs = (DVRCoordinate) o;
     return m_sGroupID.equals (rhs.m_sGroupID) &&
            m_sArtifactID.equals (rhs.m_sArtifactID) &&
            m_aVersion.equals (rhs.m_aVersion) &&
@@ -319,11 +314,14 @@ public final class DVRID implements Comparable <DVRID>
   {
     int ret = m_nHashCode;
     if (ret == IHashCodeGenerator.ILLEGAL_HASHCODE)
+    {
+      // Cache for improved performance
       ret = m_nHashCode = new HashCodeGenerator (this).append (m_sGroupID)
                                                       .append (m_sArtifactID)
                                                       .append (m_aVersion)
                                                       .append (m_sClassifier)
                                                       .getHashCode ();
+    }
     return ret;
   }
 
@@ -337,26 +335,40 @@ public final class DVRID implements Comparable <DVRID>
                                        .getToString ();
   }
 
+  /**
+   * Try to parse the provided coordinates String. This is the reverse operation
+   * to {@link #getAsSingleID()}.
+   *
+   * @param sCoords
+   *        The coordinate string to parse. May be <code>null</code>.
+   * @return Never <code>null</code>
+   * @throws DVRCoordinateException
+   *         In case the layout is incorrect
+   * @throws DVRVersionException
+   *         In case the version is incorrect
+   */
   @Nonnull
-  public static DVRID parseID (@Nullable final String sDVRID) throws DVRIDException, DVRVersionException
+  public static DVRCoordinate parseOrThrow (@Nullable final String sCoords) throws DVRCoordinateException,
+                                                                            DVRVersionException
   {
-    final ICommonsList <String> aParts = StringHelper.getExploded (ID_SEPARATOR, sDVRID);
+    final ICommonsList <String> aParts = StringHelper.getExploded (PART_SEPARATOR, sCoords);
     final int nSize = aParts.size ();
     if (nSize >= 3 && nSize <= 4)
-      return new DVRID (aParts.get (0), aParts.get (1), aParts.get (2), nSize >= 4 ? aParts.get (3) : null);
+      return new DVRCoordinate (aParts.get (0), aParts.get (1), aParts.get (2), nSize >= 4 ? aParts.get (3) : null);
 
-    throw new DVRIDException ("Invalid DVRID '" + sDVRID + "' provided!");
+    throw new DVRCoordinateException ("Invalid DVR Coordinates '" + sCoords + "' provided!");
   }
 
   @Nullable
-  public static DVRID parseIDOrNull (@Nullable final String sCVRID)
+  public static DVRCoordinate parseOrNull (@Nullable final String sCoords)
   {
     try
     {
-      return parseID (sCVRID);
+      return parseOrThrow (sCoords);
     }
     catch (final DVRException | RuntimeException ex)
     {
+      LOGGER.warn (ex.getMessage ());
       return null;
     }
   }

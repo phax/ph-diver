@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.MustImplementComparable;
 import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.collection.impl.CommonsLinkedHashSet;
 import com.helger.commons.collection.impl.ICommonsSet;
 import com.helger.commons.equals.EqualsHelper;
@@ -33,11 +34,11 @@ import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.version.Version;
-import com.helger.diver.api.id.DVRID;
+import com.helger.diver.api.settings.DVRValidityHelper;
 
 /**
- * This class contains the version of a DVRID. This can either be a static
- * version or a pseudo version. This version type has a specific kind of
+ * This class contains the version of a DVR Coordinate. This can either be a
+ * static version or a pseudo version. This version type has a specific kind of
  * ordering, so that versions using the classifier "SNAPSHOT" are ordered BEFORE
  * respective release versions. Example order:
  * <ol>
@@ -56,7 +57,12 @@ import com.helger.diver.api.id.DVRID;
 @MustImplementEqualsAndHashcode
 public final class DVRVersion implements Comparable <DVRVersion>
 {
+  /** Specific qualifier for "SNAPSHOT" versions" */
   public static final String QUALIFIER_SNAPSHOT = "SNAPSHOT";
+  /** Separator between major and minor and between minor and micro version */
+  public static final char NUMERIC_VERSION_PART_SEPARATOR = '.';
+  /** Separate between classifier and the rest (if available) */
+  public static final char DEFAULT_CLASSIFIER_SEPARATOR = '-';
 
   private static final Logger LOGGER = LoggerFactory.getLogger (DVRVersion.class);
 
@@ -93,15 +99,26 @@ public final class DVRVersion implements Comparable <DVRVersion>
   }
 
   /**
+   * @param sQualifier
+   *        The qualifier to check. May be <code>null</code>.,
+   * @return <code>true</code> if the qualifier is "SNAPSHOT".
+   * @since 3.0.0
+   */
+  public static boolean isStaticSnapshotVersion (@Nullable final String sQualifier)
+  {
+    return QUALIFIER_SNAPSHOT.equals (sQualifier);
+  }
+
+  /**
    * @param aVer
    *        The version to check. May be <code>null</code>.,
-   * @return <code>true</code> if this is a static version, and if the qualifier
-   *         is "SNAPSHOT".
+   * @return <code>true</code> if the passed version has the the qualifier
+   *         "SNAPSHOT".
    * @since 1.0.1
    */
   public static boolean isStaticSnapshotVersion (@Nullable final Version aVer)
   {
-    return aVer != null && QUALIFIER_SNAPSHOT.equals (aVer.getQualifier ());
+    return aVer != null && isStaticSnapshotVersion (aVer.getQualifier ());
   }
 
   /**
@@ -157,30 +174,37 @@ public final class DVRVersion implements Comparable <DVRVersion>
     String ret = "";
     char cSep = cClassifierSep;
     boolean bMust = bEnforceAllNumbers;
+
+    // Start from the back: classifier
     if (aVersion.hasQualifier ())
       ret = aVersion.getQualifier ();
 
+    // Add micro version
     if (aVersion.getMicro () > 0 || bMust)
     {
       if (!ret.isEmpty ())
         ret = cSep + ret;
       ret = aVersion.getMicro () + ret;
-      cSep = '.';
+      // Change separator to number version separator
+      cSep = NUMERIC_VERSION_PART_SEPARATOR;
       bMust = true;
     }
 
     if (bEnforceAtLeastMinor)
       bMust = true;
 
+    // Add minor version
     if (aVersion.getMinor () > 0 || bMust)
     {
       if (!ret.isEmpty ())
         ret = cSep + ret;
       ret = aVersion.getMinor () + ret;
+      // Change separator to number version separator
       cSep = '.';
       bMust = true;
     }
 
+    // Add major version
     // Avoid empty string
     if (aVersion.getMajor () > 0 || bMust || ret.isEmpty ())
     {
@@ -195,10 +219,11 @@ public final class DVRVersion implements Comparable <DVRVersion>
   @Nonnull
   public static String getAsString (@Nonnull final Version aVersion)
   {
-    return _getAsString (aVersion, '-', false, false);
+    return _getAsString (aVersion, DEFAULT_CLASSIFIER_SEPARATOR, false, false);
   }
 
   @Nonnull
+  @Nonempty
   public static String getAsString (@Nonnull final IDVRPseudoVersion aPseudoVersion)
   {
     return aPseudoVersion.getID ();
@@ -236,7 +261,7 @@ public final class DVRVersion implements Comparable <DVRVersion>
       final int nCmp = aLhsClean.compareTo (aRhs);
       if (nCmp == 0)
       {
-        // Snapshots come before release
+        // Snapshots comes before release
         return -1;
       }
       return nCmp;
@@ -249,11 +274,13 @@ public final class DVRVersion implements Comparable <DVRVersion>
       final int nCmp = aLhs.compareTo (aRhsClean);
       if (nCmp == 0)
       {
-        // Snapshots come before release
+        // Snapshots comes before release
         return +1;
       }
       return nCmp;
     }
+
+    // No snapshot version contained
     return aLhs.compareTo (aRhs);
   }
 
@@ -269,6 +296,7 @@ public final class DVRVersion implements Comparable <DVRVersion>
   private static int _compareWithPseudoVersion (@Nonnull final Version aStaticVersion,
                                                 @Nonnull final IDVRPseudoVersion aPseudoVersion)
   {
+    // Change sign, due to calling order
     return -aPseudoVersion.compareToVersion (aStaticVersion);
   }
 
@@ -287,6 +315,8 @@ public final class DVRVersion implements Comparable <DVRVersion>
       // Invert result
       return -_compareWithPseudoVersion (rhs.m_aStaticVersion, m_aPseudoVersion);
     }
+
+    // Both are psudo versions
     return m_aPseudoVersion.compareToPseudoVersion (rhs.m_aPseudoVersion);
   }
 
@@ -355,8 +385,8 @@ public final class DVRVersion implements Comparable <DVRVersion>
     if (StringHelper.hasNoText (sVersion))
       return false;
 
-    // Must follow the DVRID constraints
-    if (!DVRID.isValidVersion (sVersion))
+    // Must follow the DVR Coordinate constraints
+    if (!DVRValidityHelper.isValidCoordinateVersion (sVersion))
       return false;
 
     // Parse to Version object

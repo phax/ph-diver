@@ -90,6 +90,6 @@ public class DVRPseudoVersion implements IDVRPseudoVersion
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (null).append ("ID", m_sID).getToString ();
+    return new ToStringGenerator (null).append ("ID", m_sID).append ("Comparable", m_aComparable).getToString ();
   }
 }

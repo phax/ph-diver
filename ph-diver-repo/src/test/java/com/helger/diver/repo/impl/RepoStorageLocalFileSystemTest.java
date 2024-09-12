@@ -32,7 +32,7 @@ import org.junit.Test;
 import com.helger.commons.io.file.FileOperationManager;
 import com.helger.commons.state.ESuccess;
 import com.helger.diver.api.DVRException;
-import com.helger.diver.api.id.DVRID;
+import com.helger.diver.api.coord.DVRCoordinate;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
@@ -62,18 +62,18 @@ public final class RepoStorageLocalFileSystemTest
   {
     final RepoStorageLocalFileSystem aRepo = _createRepo ();
 
-    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRID ("com.ecosio.test", "a", "1"),
+    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio.test", "a", "1"),
                                                                           ".txt"));
     assertNotNull (aItem);
     assertEquals ("A", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
-    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRID ("com.ecosio.test", "b", "1"), ".txt"));
+    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio.test", "b", "1"), ".txt"));
     assertNotNull (aItem);
     assertEquals ("B", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
-    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRID ("com.ecosio.test", "c", "1"), ".txt"));
+    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio.test", "c", "1"), ".txt"));
     assertNull (aItem);
   }
 
@@ -82,7 +82,7 @@ public final class RepoStorageLocalFileSystemTest
   {
     final RepoStorageLocalFileSystem aRepo = _createRepo ();
 
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRID ("com.ecosio.test", "fs-written", "1"),
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio.test", "fs-written", "1"),
                                                                        ".txt");
     // Ensure not existing
     assertNull (aRepo.read (aKey));

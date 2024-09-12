@@ -113,7 +113,7 @@ public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
 
   private static final Logger LOGGER = LoggerFactory.getLogger (DVRPseudoVersionRegistry.class);
 
-  private final ICommonsMap <String, IDVRPseudoVersion> m_aPVs = new CommonsHashMap <> ();
+  private final ICommonsMap <String, IDVRPseudoVersion> m_aMap = new CommonsHashMap <> ();
 
   private DVRPseudoVersionRegistry ()
   {
@@ -132,16 +132,19 @@ public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
       LOGGER.info ("Reinitializing the DVRPseudoVersionRegistry");
 
     // Remove existing
-    m_aPVs.clear ();
+    m_aMap.clear ();
 
     // Register all again
     for (final IDVRPseudoVersionRegistrarSPI aSPI : ServiceLoaderHelper.getAllSPIImplementations (IDVRPseudoVersionRegistrarSPI.class))
       aSPI.registerPseudoVersions (this);
 
     if (bLog)
-      LOGGER.info ("Finished reinitializing the DVRPseudoVersionRegistry with " + m_aPVs.size () + " entries");
+      LOGGER.info ("Finished reinitializing the DVRPseudoVersionRegistry with " + m_aMap.size () + " entries");
   }
 
+  /**
+   * Remove all existing registrations and re-run the SPI search
+   */
   public final void reinitialize ()
   {
     _reinitialize (true);
@@ -153,26 +156,26 @@ public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
     ValueEnforcer.notNull (aPseudoVersion, "PseudoVersion");
 
     final String sKey = aPseudoVersion.getID ();
-    if (m_aPVs.containsKey (sKey))
+    if (m_aMap.containsKey (sKey))
     {
       LOGGER.error ("Another pseudoversion with ID '" + sKey + "' is already registered");
       return EChange.UNCHANGED;
     }
-    m_aPVs.put (sKey, aPseudoVersion);
+    m_aMap.put (sKey, aPseudoVersion);
     return EChange.CHANGED;
   }
 
   @Nullable
   public IDVRPseudoVersion getFromIDOrNull (@Nullable final String sID)
   {
-    return m_aPVs.get (sID);
+    return m_aMap.get (sID);
   }
 
   @Nonnegative
   @VisibleForTesting
   final int size ()
   {
-    return m_aPVs.size ();
+    return m_aMap.size ();
   }
 
   @Override
@@ -183,18 +186,18 @@ public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
     final DVRPseudoVersionRegistry rhs = (DVRPseudoVersionRegistry) o;
-    return m_aPVs.equals (rhs.m_aPVs);
+    return m_aMap.equals (rhs.m_aMap);
   }
 
   @Override
   public int hashCode ()
   {
-    return new HashCodeGenerator (this).append (m_aPVs).getHashCode ();
+    return new HashCodeGenerator (this).append (m_aMap).getHashCode ();
   }
 
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (null).append ("Map", m_aPVs).getToString ();
+    return new ToStringGenerator (null).append ("Map", m_aMap).getToString ();
   }
 }

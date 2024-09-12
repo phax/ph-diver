@@ -29,7 +29,7 @@ import org.junit.Test;
 
 import com.helger.commons.state.ESuccess;
 import com.helger.diver.api.DVRException;
-import com.helger.diver.api.id.DVRID;
+import com.helger.diver.api.coord.DVRCoordinate;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
@@ -56,7 +56,7 @@ public final class RepoStorageInMemoryTest
     assertTrue (aRepo.canDelete ());
     assertTrue (aRepo.isEnableTocUpdates ());
 
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRID ("com.ecosio", "local", "1"), ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio", "local", "1"), ".txt");
     // Ensure not existing
     assertNull (aRepo.read (aKey));
 
@@ -111,7 +111,7 @@ public final class RepoStorageInMemoryTest
     assertFalse (aRepo.canDelete ());
     assertTrue (aRepo.isAllowOverwrite ());
 
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRID ("com.ecosio", "local", "1"), ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio", "local", "1"), ".txt");
     final String sUploadedPayload = "bla-" + ThreadLocalRandom.current ().nextInt ();
 
     // Register only payload, but no hash

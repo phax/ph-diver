@@ -31,7 +31,7 @@ import com.helger.commons.collection.impl.ICommonsSortedMap;
 import com.helger.commons.collection.impl.ICommonsSortedSet;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.StringHelper;
-import com.helger.diver.api.id.DVRID;
+import com.helger.diver.api.settings.DVRValidityHelper;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toptoc.jaxb.v10.ArtifactType;
 import com.helger.diver.repo.toptoc.jaxb.v10.GroupType;
@@ -59,7 +59,8 @@ public class RepoTopTocXML
     public Group (@Nonnull @Nonempty final String sName)
     {
       ValueEnforcer.notEmpty (sName, "Name");
-      ValueEnforcer.isTrue ( () -> DVRID.isValidGroupID (sName), "Name is not a valid group part");
+      ValueEnforcer.isTrue ( () -> DVRValidityHelper.isValidCoordinateGroupID (sName),
+                             "Name is not a valid group part");
       m_sName = sName;
     }
 
