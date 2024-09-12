@@ -129,7 +129,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
     if (aTocItem == null)
     {
       // Create a new one
-      aToc = new RepoToc (aKeyToc.getDVRID ().getGroupID (), aKeyToc.getDVRID ().getArtifactID ());
+      aToc = new RepoToc (aKeyToc.getCoordinate ().getGroupID (), aKeyToc.getCoordinate ().getArtifactID ());
     }
     else
     {
@@ -174,27 +174,27 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
     {
       // Update ToC
       return updateToc (aKey.getKeyToc (), toc -> {
-        final DVRCoordinate aDVRID = aKey.getDVRID ();
+        final DVRCoordinate aCoord = aKey.getCoordinate ();
         // Make sure a publication DT is present and always UTC
         final OffsetDateTime aRealPubDT = aPublicationDT != null ? aPublicationDT : PDTFactory
                                                                                               .getCurrentOffsetDateTimeUTC ();
 
         // Add new version
-        if (toc.addVersion (aDVRID.getVersionObj (), aRealPubDT).isUnchanged ())
+        if (toc.addVersion (aCoord.getVersionObj (), aRealPubDT).isUnchanged ())
         {
           // This is okay, if e.g. resource and DVR reside in the same folder
           if (LOGGER.isDebugEnabled ())
             LOGGER.debug ("Failed to add version '" +
-                          aDVRID.getAsSingleID () +
+                          aCoord.getAsSingleID () +
                           "' to ToC of because it is already contained");
         }
         else
         {
-          LOGGER.info ("Successfully added version '" + aDVRID.getAsSingleID () + "' to ToC");
+          LOGGER.info ("Successfully added version '" + aCoord.getAsSingleID () + "' to ToC");
         }
 
         // Update top-level ToC
-        getTopTocService ().registerGroupAndArtifact (aDVRID.getGroupID (), aDVRID.getArtifactID ());
+        getTopTocService ().registerGroupAndArtifact (aCoord.getGroupID (), aCoord.getArtifactID ());
       });
     }
 
@@ -209,17 +209,17 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
     {
       // Update ToC
       return updateToc (aKey.getKeyToc (), toc -> {
-        final DVRCoordinate aDVRID = aKey.getDVRID ();
+        final DVRCoordinate aCoord = aKey.getCoordinate ();
         // Remove deleted version
-        if (toc.removeVersion (aDVRID.getVersionObj ()).isUnchanged ())
+        if (toc.removeVersion (aCoord.getVersionObj ()).isUnchanged ())
         {
           LOGGER.warn ("Failed to delete version '" +
-                       aDVRID.getAsSingleID () +
+                       aCoord.getAsSingleID () +
                        "' from ToC because it is not contained");
         }
         else
         {
-          LOGGER.info ("Successfully deleted version '" + aDVRID.getAsSingleID () + "' from ToC");
+          LOGGER.info ("Successfully deleted version '" + aCoord.getAsSingleID () + "' from ToC");
         }
       });
     }

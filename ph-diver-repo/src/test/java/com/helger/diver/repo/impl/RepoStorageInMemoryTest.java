@@ -69,7 +69,7 @@ public final class RepoStorageInMemoryTest
       assertTrue (eSuccess.isSuccess ());
 
       {
-        final RepoToc aToc = aRepo.readTocModel (aKey.getDVRID ());
+        final RepoToc aToc = aRepo.readTocModel (aKey.getCoordinate ());
         assertNotNull (aToc);
         assertEquals (1, aToc.getVersionCount ());
       }
@@ -85,7 +85,7 @@ public final class RepoStorageInMemoryTest
       assertTrue (eSuccess.isSuccess ());
 
       {
-        final RepoToc aToc = aRepo.readTocModel (aKey.getDVRID ());
+        final RepoToc aToc = aRepo.readTocModel (aKey.getCoordinate ());
         assertNotNull (aToc);
         assertEquals (0, aToc.getVersionCount ());
       }

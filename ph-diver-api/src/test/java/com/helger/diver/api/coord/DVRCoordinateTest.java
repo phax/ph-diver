@@ -29,7 +29,7 @@ import com.helger.diver.api.DVRException;
  *
  * @author Philip Helger
  */
-public final class DVRIDTest
+public final class DVRCoordinateTest
 {
   @Test
   public void testBasic () throws DVRException

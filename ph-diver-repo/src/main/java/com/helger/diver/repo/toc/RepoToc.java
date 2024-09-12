@@ -81,11 +81,11 @@ public class RepoToc
    * Constructor
    *
    * @param sGroupID
-   *        DVRID Group ID of the ToC. May neither be <code>null</code> nor
-   *        empty.
+   *        DVR Coordinate Group ID of the ToC. May neither be <code>null</code>
+   *        nor empty.
    * @param sArtifactID
-   *        DVRID Artifact ID of the ToC. May neither be <code>null</code> nor
-   *        empty.
+   *        DVR Coordinate Artifact ID of the ToC. May neither be
+   *        <code>null</code> nor empty.
    */
   public RepoToc (@Nonnull @Nonempty final String sGroupID, @Nonnull @Nonempty final String sArtifactID)
   {
@@ -106,7 +106,7 @@ public class RepoToc
   }
 
   /**
-   * @return The DVRID Group ID as provided in the constructor. Neither
+   * @return The DVR Coordinate Group ID as provided in the constructor. Neither
    *         <code>null</code> nor empty.
    */
   @Nonnull
@@ -117,8 +117,8 @@ public class RepoToc
   }
 
   /**
-   * @return The DVRID Artefact ID as provided in the constructor. Neither
-   *         <code>null</code> nor empty.
+   * @return The DVR Coordinate Artefact ID as provided in the constructor.
+   *         Neither <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty

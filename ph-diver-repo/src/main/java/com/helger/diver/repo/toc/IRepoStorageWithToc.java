@@ -84,16 +84,16 @@ public interface IRepoStorageWithToc extends IRepoStorage
    * Read the ToC for the provided Group ID and Artefact ID and return the
    * parsed data.
    *
-   * @param aDVRID
-   *        DVRID to take Group ID and Artifact ID from. May not be
+   * @param aCoord
+   *        DVR Coordinate to take Group ID and Artifact ID from. May not be
    *        <code>null</code>.
    * @return <code>null</code> if either group or artifact do not exist, or if
    *         no ToC is present.
    */
   @Nullable
-  default RepoToc readTocModel (@Nonnull final DVRCoordinate aDVRID)
+  default RepoToc readTocModel (@Nonnull final DVRCoordinate aCoord)
   {
-    return readTocModel (aDVRID.getGroupID (), aDVRID.getArtifactID ());
+    return readTocModel (aCoord.getGroupID (), aCoord.getArtifactID ());
   }
 
   /**

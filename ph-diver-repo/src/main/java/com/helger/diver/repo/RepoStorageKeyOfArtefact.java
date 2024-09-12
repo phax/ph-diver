@@ -17,6 +17,7 @@
 package com.helger.diver.repo;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +26,14 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.hashcode.HashCodeGenerator;
+import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.diver.api.coord.DVRCoordinate;
 import com.helger.diver.api.version.DVRVersion;
 
 /**
- * This is a specific storage key that not just contains a path but also a DVRID
- * to uniquely identify the object.
+ * This is a specific storage key that not just contains a path but also a DVR
+ * Coordinate to uniquely identify the object.
  *
  * @author Philip Helger
  */
@@ -50,22 +52,22 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
   // Special fake version to be used by the ToC where we don't need any version
   private static final DVRVersion TOC_VERSION = DVRVersion.parseOrNull ("0");
 
-  private final DVRCoordinate m_aDVRID;
+  private final DVRCoordinate m_aCoord;
 
-  private RepoStorageKeyOfArtefact (@Nonnull final DVRCoordinate aDVRID, @Nonnull @Nonempty final String sPath)
+  private RepoStorageKeyOfArtefact (@Nonnull final DVRCoordinate aCoord, @Nonnull @Nonempty final String sPath)
   {
     super (sPath);
-    ValueEnforcer.notNull (aDVRID, "DVRID");
-    ValueEnforcer.isTrue (aDVRID.getVersionObj ().isStaticVersion (),
-                          "DVRID must use a static version to access a repository item");
+    ValueEnforcer.notNull (aCoord, "Coord");
+    ValueEnforcer.isTrue (aCoord.getVersionObj ().isStaticVersion (),
+                          "DVR Coordinate must use a static version to access a repository item");
 
-    m_aDVRID = aDVRID;
+    m_aCoord = aCoord;
   }
 
   @Nonnull
-  public final DVRCoordinate getDVRID ()
+  public final DVRCoordinate getCoordinate ()
   {
-    return m_aDVRID;
+    return m_aCoord;
   }
 
   @Override
@@ -81,14 +83,14 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
                    sPath +
                    "'");
     }
-    return new RepoStorageKeyOfArtefact (m_aDVRID, sPath + FILE_EXT_SHA256);
+    return new RepoStorageKeyOfArtefact (m_aCoord, sPath + FILE_EXT_SHA256);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public RepoStorageKeyOfArtefact getKeyToc ()
   {
-    return ofToc (m_aDVRID.getGroupID (), m_aDVRID.getArtifactID ());
+    return ofToc (m_aCoord.getGroupID (), m_aCoord.getArtifactID ());
   }
 
   @Override
@@ -99,19 +101,19 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
     if (o == null || !super.equals (o))
       return false;
     final RepoStorageKeyOfArtefact rhs = (RepoStorageKeyOfArtefact) o;
-    return m_aDVRID.equals (rhs.m_aDVRID);
+    return m_aCoord.equals (rhs.m_aCoord);
   }
 
   @Override
   public int hashCode ()
   {
-    return HashCodeGenerator.getDerived (super.hashCode ()).append (m_aDVRID).getHashCode ();
+    return HashCodeGenerator.getDerived (super.hashCode ()).append (m_aCoord).getHashCode ();
   }
 
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).append ("DVRID", m_aDVRID).getToString ();
+    return ToStringGenerator.getDerived (super.toString ()).append ("Coord", m_aCoord).getToString ();
   }
 
   /**
@@ -136,42 +138,84 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
   }
 
   /**
-   * Create a {@link RepoStorageKey} from the passed DVRID and the file
-   * extension. The algorithm is like this:
+   * Create the relative path for the passed DVR Coordinate elements and the
+   * file extension. The algorithm is like this:
    * <code>sGroupID.replace ('.', '/') + "/" + sArtifactID + "/" + sVersion + "/" + sArtifactID + "-" + sVersion [+ "-" + sClassifier] + sFileExt</code>
    * which is basically
    * <code>group/artifact/version/artifact-version[-classifier].fileExtension</code>
    *
-   * @param aDVRID
-   *        The DVRID to convert. Considers an optionally present classifier.
-   *        May not be <code>null</code>.
+   * @param sGroupID
+   *        The DVR Coordinate group ID. May neither be <code>null</code> nor
+   *        empty.
+   * @param sArtifactID
+   *        The DVR Coordinate artifact ID. May neither be <code>null</code> nor
+   *        empty.
+   * @param sVersion
+   *        The DVR Coordinate version. May neither be <code>null</code> nor
+   *        empty.
+   * @param sClassifier
+   *        The DVR Coordinate classifier. If present, MUST NOT start with "-".
+   *        May be <code>null</code>.
    * @param sFileExt
    *        The file extension to use. Must start with ".". May not be
    *        <code>null</code>.
    * @return Never <code>null</code>.
+   * @see #getPathOfGroupIDAndArtifactID(String, String)
    */
   @Nonnull
-  public static RepoStorageKeyOfArtefact of (@Nonnull final DVRCoordinate aDVRID, @Nonnull @Nonempty final String sFileExt)
+  @Nonempty
+  public static String getFilename (@Nonnull @Nonempty final String sGroupID,
+                                    @Nonnull @Nonempty final String sArtifactID,
+                                    @Nonnull @Nonempty final String sVersion,
+                                    @Nullable final String sClassifier,
+                                    @Nonnull @Nonempty final String sFileExt)
   {
-    ValueEnforcer.notNull (aDVRID, "DVRID");
-    ValueEnforcer.isTrue (aDVRID.getVersionObj ().isStaticVersion (),
-                          "DVRID must use a static version to access a repository item");
+    ValueEnforcer.notEmpty (sGroupID, "GroupID");
+    ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
+    ValueEnforcer.notEmpty (sVersion, "Version");
+    ValueEnforcer.notEmpty (sFileExt, "FileExt");
+
+    final String sRealClassifier = StringHelper.hasText (sClassifier) ? DVRVersion.DEFAULT_CLASSIFIER_SEPARATOR +
+                                                                        sClassifier : "";
+    return getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
+           sVersion +
+           "/" +
+           sArtifactID +
+           "-" +
+           sVersion +
+           sRealClassifier +
+           sFileExt;
+  }
+
+  /**
+   * Create a {@link RepoStorageKey} from the passed DVR Coordinate and the file
+   * extension.
+   *
+   * @param aCoord
+   *        The DVR Coordinate to convert. Considers an optionally present
+   *        classifier. May not be <code>null</code>.
+   * @param sFileExt
+   *        The file extension to use. Must start with ".". May not be
+   *        <code>null</code>.
+   * @return Never <code>null</code>.
+   * @see #getFilename(String, String, String, String, String)
+   */
+  @Nonnull
+  public static RepoStorageKeyOfArtefact of (@Nonnull final DVRCoordinate aCoord,
+                                             @Nonnull @Nonempty final String sFileExt)
+  {
+    ValueEnforcer.notNull (aCoord, "Coord");
+    ValueEnforcer.isTrue (aCoord.getVersionObj ().isStaticVersion (),
+                          "DVR Coordinate must use a static version to access a repository item");
     ValueEnforcer.notEmpty (sFileExt, "FileExt");
     ValueEnforcer.isTrue ( () -> sFileExt.startsWith ("."), "FileExt must start with a dot");
 
-    final String sGroupID = aDVRID.getGroupID ();
-    final String sArtifactID = aDVRID.getArtifactID ();
-    final String sVersion = aDVRID.getVersionString ();
-    final String sClassifier = aDVRID.hasClassifier () ? "-" + aDVRID.getClassifier () : "";
-    return new RepoStorageKeyOfArtefact (aDVRID,
-                                         getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
-                                                 sVersion +
-                                                 "/" +
-                                                 sArtifactID +
-                                                 "-" +
-                                                 sVersion +
-                                                 sClassifier +
-                                                 sFileExt);
+    return new RepoStorageKeyOfArtefact (aCoord,
+                                         getFilename (aCoord.getGroupID (),
+                                                      aCoord.getArtifactID (),
+                                                      aCoord.getVersionString (),
+                                                      aCoord.getClassifier (),
+                                                      sFileExt));
   }
 
   @Nonnull
@@ -184,7 +228,7 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
     // ToC per group and artifact
     return new RepoStorageKeyOfArtefact (new DVRCoordinate (sGroupID, sArtifactID, TOC_VERSION),
                                          getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
-                                                                                         FILENAME_TOC_DIVER_XML);
+                                                                                                 FILENAME_TOC_DIVER_XML);
   }
 
 }
