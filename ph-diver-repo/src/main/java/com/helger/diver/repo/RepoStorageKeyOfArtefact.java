@@ -170,10 +170,9 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
                                     @Nullable final String sClassifier,
                                     @Nonnull @Nonempty final String sFileExt)
   {
-    ValueEnforcer.notEmpty (sGroupID, "GroupID");
-    ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
     ValueEnforcer.notEmpty (sVersion, "Version");
     ValueEnforcer.notEmpty (sFileExt, "FileExt");
+    ValueEnforcer.isTrue ( () -> sFileExt.startsWith ("."), "FileExt must start with a dot");
 
     final String sRealClassifier = StringHelper.hasText (sClassifier) ? DVRVersion.DEFAULT_CLASSIFIER_SEPARATOR +
                                                                         sClassifier : "";
@@ -207,8 +206,6 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
     ValueEnforcer.notNull (aCoord, "Coord");
     ValueEnforcer.isTrue (aCoord.getVersionObj ().isStaticVersion (),
                           "DVR Coordinate must use a static version to access a repository item");
-    ValueEnforcer.notEmpty (sFileExt, "FileExt");
-    ValueEnforcer.isTrue ( () -> sFileExt.startsWith ("."), "FileExt must start with a dot");
 
     return new RepoStorageKeyOfArtefact (aCoord,
                                          getFilename (aCoord.getGroupID (),
@@ -230,5 +227,4 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
                                          getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
                                                                                                  FILENAME_TOC_DIVER_XML);
   }
-
 }
