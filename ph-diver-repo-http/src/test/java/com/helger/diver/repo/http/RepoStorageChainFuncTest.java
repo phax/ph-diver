@@ -73,8 +73,9 @@ public final class RepoStorageChainFuncTest
   @Test
   public void testReadAndCacheAndRead () throws DVRException
   {
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio", "http-only", "1"),
-                                                                       ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio",
+                                                                                          "http-only",
+                                                                                          "1"), ".txt");
 
     final RepoStorageInMemory aRepoInMemory = RepoStorageInMemory.createDefault ("unittest-local",
                                                                                  ERepoWritable.WITH_WRITE,
@@ -154,8 +155,9 @@ public final class RepoStorageChainFuncTest
   @Test
   public void testReadNoCacheAndRead () throws DVRException
   {
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio", "http-only", "1"),
-                                                                       ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio",
+                                                                                          "http-only",
+                                                                                          "1"), ".txt");
 
     final RepoStorageInMemory aInMemory = RepoStorageInMemory.createDefault ("unittest-local",
                                                                              ERepoWritable.WITH_WRITE,
