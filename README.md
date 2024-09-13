@@ -110,7 +110,10 @@ Alternate usage as a Maven BOM:
 
 # News and Noteworthy
 
-* v2.0.0 - work in progress
+* v3.0.0 - 2024-09-13
+    * Renamed `DVRID` to `DVRCoordinate`
+    * Made a lot of API changes and extension on the API part. Now it is stable.
+* v2.0.0 - 2024-09-11
     * Renamed `*VESID*` to `*DVRID*`
     * Renamed `IVES*` to `IDVR*`
     * Renamed `IPseudoVersionComparable` to `IDVRPseudoVersionComparable`
