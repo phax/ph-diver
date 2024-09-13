@@ -34,38 +34,38 @@ public final class DVRCoordinateTest
   @Test
   public void testBasic () throws DVRVersionException
   {
-    final DVRCoordinate aID1 = new DVRCoordinate ("com.helger", "phive", "3.0.0.SNAPSHOT");
+    final DVRCoordinate aID1 = DVRCoordinate.create ("com.helger", "phive", "3.0.0.SNAPSHOT");
     assertEquals ("com.helger", aID1.getGroupID ());
     assertEquals ("phive", aID1.getArtifactID ());
     assertEquals ("3-SNAPSHOT", aID1.getVersionString ());
     assertNull (aID1.getClassifier ());
     CommonsTestHelper.testEqualsImplementationWithEqualContentObject (aID1,
-                                                                      new DVRCoordinate ("com.helger",
-                                                                                         "phive",
-                                                                                         "3.0.0.SNAPSHOT"));
+                                                                      DVRCoordinate.create ("com.helger",
+                                                                                            "phive",
+                                                                                            "3.0.0.SNAPSHOT"));
     CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (aID1,
-                                                                          new DVRCoordinate ("com.holger",
-                                                                                             "phive",
-                                                                                             "3.0.0.SNAPSHOT"));
+                                                                          DVRCoordinate.create ("com.holger",
+                                                                                                "phive",
+                                                                                                "3.0.0.SNAPSHOT"));
     CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (aID1,
-                                                                          new DVRCoordinate ("com.helger",
-                                                                                             "phivengine",
-                                                                                             "3.0.0.SNAPSHOT"));
+                                                                          DVRCoordinate.create ("com.helger",
+                                                                                                "phivengine",
+                                                                                                "3.0.0.SNAPSHOT"));
     CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (aID1,
-                                                                          new DVRCoordinate ("com.helger",
-                                                                                             "phive",
-                                                                                             "3.0.0"));
+                                                                          DVRCoordinate.create ("com.helger",
+                                                                                                "phive",
+                                                                                                "3.0.0"));
     CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (aID1,
-                                                                          new DVRCoordinate ("com.helger",
-                                                                                             "phive",
-                                                                                             "3.0.0.SNAPSHOT",
-                                                                                             "src"));
+                                                                          DVRCoordinate.create ("com.helger",
+                                                                                                "phive",
+                                                                                                "3.0.0.SNAPSHOT",
+                                                                                                "src"));
   }
 
   @Test
   public void testParseID () throws DVRVersionException
   {
-    final DVRCoordinate aID1 = new DVRCoordinate ("com.helger", "phive", "3.0.0.SNAPSHOT");
+    final DVRCoordinate aID1 = DVRCoordinate.create ("com.helger", "phive", "3.0.0.SNAPSHOT");
     assertEquals ("com.helger", aID1.getGroupID ());
     assertEquals ("phive", aID1.getArtifactID ());
     assertEquals ("3-SNAPSHOT", aID1.getVersionString ());

@@ -62,19 +62,19 @@ public final class RepoStorageLocalFileSystemTest
   {
     final RepoStorageLocalFileSystem aRepo = _createRepo ();
 
-    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio.test",
-                                                                                             "a",
-                                                                                             "1"), ".txt"));
+    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio.test",
+                                                                                                "a",
+                                                                                                "1"), ".txt"));
     assertNotNull (aItem);
     assertEquals ("A", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
-    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio.test", "b", "1"), ".txt"));
+    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio.test", "b", "1"), ".txt"));
     assertNotNull (aItem);
     assertEquals ("B", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
-    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio.test", "c", "1"), ".txt"));
+    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio.test", "c", "1"), ".txt"));
     assertNull (aItem);
   }
 
@@ -83,9 +83,9 @@ public final class RepoStorageLocalFileSystemTest
   {
     final RepoStorageLocalFileSystem aRepo = _createRepo ();
 
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio.test",
-                                                                                          "fs-written",
-                                                                                          "1"), ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio.test",
+                                                                                             "fs-written",
+                                                                                             "1"), ".txt");
     // Ensure not existing
     assertNull (aRepo.read (aKey));
 

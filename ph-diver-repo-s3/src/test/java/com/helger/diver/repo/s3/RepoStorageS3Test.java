@@ -126,14 +126,14 @@ public final class RepoStorageS3Test
     assertTrue (aRepo.canWrite ());
 
     // Existing only in "local fs" repo but not in S3
-    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio",
-                                                                                             "local",
-                                                                                             "1"), ".txt"));
+    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio",
+                                                                                                "local",
+                                                                                                "1"), ".txt"));
     assertNull (aItem);
 
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio",
-                                                                                          "s3-written",
-                                                                                          "1"), ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio",
+                                                                                             "s3-written",
+                                                                                             "1"), ".txt");
     boolean bS3Available = true;
 
     try

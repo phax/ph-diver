@@ -56,8 +56,9 @@ public final class RepoStorageInMemoryTest
     assertTrue (aRepo.canDelete ());
     assertTrue (aRepo.isEnableTocUpdates ());
 
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio", "local", "1"),
-                                                                       ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio",
+                                                                                             "local",
+                                                                                             "1"), ".txt");
     // Ensure not existing
     assertNull (aRepo.read (aKey));
 
@@ -112,8 +113,9 @@ public final class RepoStorageInMemoryTest
     assertFalse (aRepo.canDelete ());
     assertTrue (aRepo.isAllowOverwrite ());
 
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio", "local", "1"),
-                                                                       ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio",
+                                                                                             "local",
+                                                                                             "1"), ".txt");
     final String sUploadedPayload = "bla-" + ThreadLocalRandom.current ().nextInt ();
 
     // Register only payload, but no hash

@@ -68,54 +68,6 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
   private transient int m_nHashCode = IHashCodeGenerator.ILLEGAL_HASHCODE;
 
   /**
-   * Constructor without classifier. All parameters must match the constraints
-   * from {@link DVRValidityHelper#isValidCoordinateGroupID(String)},
-   * {@link DVRValidityHelper#isValidCoordinateArtifactID(String)} and
-   * {@link DVRValidityHelper#isValidCoordinateVersion(String)}.
-   *
-   * @param sGroupID
-   *        Group ID. May neither be <code>null</code> nor empty.
-   * @param sArtifactID
-   *        Artifact ID. May neither be <code>null</code> nor empty.
-   * @param sVersion
-   *        Version string. May neither be <code>null</code> nor empty.
-   * @throws DVRVersionException
-   *         if the provided version is invalid
-   */
-  public DVRCoordinate (@Nonnull @Nonempty final String sGroupID,
-                        @Nonnull @Nonempty final String sArtifactID,
-                        @Nonnull @Nonempty final String sVersion) throws DVRVersionException
-  {
-    this (sGroupID, sArtifactID, sVersion, (String) null);
-  }
-
-  /**
-   * Constructor. All parameters must match the constraints from
-   * {@link DVRValidityHelper#isValidCoordinateGroupID(String)},
-   * {@link DVRValidityHelper#isValidCoordinateArtifactID(String)},
-   * {@link DVRValidityHelper#isValidCoordinateVersion(String)} and
-   * {@link DVRValidityHelper#isValidCoordinateClassifier(String)}.
-   *
-   * @param sGroupID
-   *        Group ID. May neither be <code>null</code> nor empty.
-   * @param sArtifactID
-   *        Artifact ID. May neither be <code>null</code> nor empty.
-   * @param sVersion
-   *        Version string. May neither be <code>null</code> nor empty.
-   * @param sClassifier
-   *        Classifier. May be <code>null</code>.
-   * @throws DVRVersionException
-   *         if the provided version is invalid
-   */
-  public DVRCoordinate (@Nonnull @Nonempty final String sGroupID,
-                        @Nonnull @Nonempty final String sArtifactID,
-                        @Nonnull @Nonempty final String sVersion,
-                        @Nullable final String sClassifier) throws DVRVersionException
-  {
-    this (sGroupID, sArtifactID, DVRVersion.parseOrThrow (sVersion), sClassifier);
-  }
-
-  /**
    * Constructor. All parameters must match the constraints from
    * {@link DVRValidityHelper#isValidCoordinateGroupID(String)},
    * {@link DVRValidityHelper#isValidCoordinateArtifactID(String)} and
@@ -336,6 +288,60 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
   }
 
   /**
+   * Factory method without classifier. All parameters must match the
+   * constraints from
+   * {@link DVRValidityHelper#isValidCoordinateGroupID(String)},
+   * {@link DVRValidityHelper#isValidCoordinateArtifactID(String)} and
+   * {@link DVRValidityHelper#isValidCoordinateVersion(String)}.
+   *
+   * @param sGroupID
+   *        Group ID. May neither be <code>null</code> nor empty.
+   * @param sArtifactID
+   *        Artifact ID. May neither be <code>null</code> nor empty.
+   * @param sVersion
+   *        Version string. May neither be <code>null</code> nor empty.
+   * @return The created {@link DVRCoordinate} and never <code>null</code>.
+   * @throws DVRVersionException
+   *         if the provided version is invalid
+   */
+  @Nonnull
+  public static DVRCoordinate create (@Nonnull @Nonempty final String sGroupID,
+                                      @Nonnull @Nonempty final String sArtifactID,
+                                      @Nonnull @Nonempty final String sVersion) throws DVRVersionException
+  {
+    return create (sGroupID, sArtifactID, sVersion, (String) null);
+  }
+
+  /**
+   * Factory method for DVR coordinates. All parameters must match the
+   * constraints from
+   * {@link DVRValidityHelper#isValidCoordinateGroupID(String)},
+   * {@link DVRValidityHelper#isValidCoordinateArtifactID(String)},
+   * {@link DVRValidityHelper#isValidCoordinateVersion(String)} and
+   * {@link DVRValidityHelper#isValidCoordinateClassifier(String)}.
+   *
+   * @param sGroupID
+   *        Group ID. May neither be <code>null</code> nor empty.
+   * @param sArtifactID
+   *        Artifact ID. May neither be <code>null</code> nor empty.
+   * @param sVersion
+   *        Version string. May neither be <code>null</code> nor empty.
+   * @param sClassifier
+   *        Classifier. May be <code>null</code>.
+   * @return The created {@link DVRCoordinate} and never <code>null</code>.
+   * @throws DVRVersionException
+   *         if the provided version is invalid
+   */
+  @Nonnull
+  public static DVRCoordinate create (@Nonnull @Nonempty final String sGroupID,
+                                      @Nonnull @Nonempty final String sArtifactID,
+                                      @Nonnull @Nonempty final String sVersion,
+                                      @Nullable final String sClassifier) throws DVRVersionException
+  {
+    return new DVRCoordinate (sGroupID, sArtifactID, DVRVersion.parseOrThrow (sVersion), sClassifier);
+  }
+
+  /**
    * Try to parse the provided coordinates String. This is the reverse operation
    * to {@link #getAsSingleID()}.
    *
@@ -354,7 +360,7 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
     final ICommonsList <String> aParts = StringHelper.getExploded (PART_SEPARATOR, sCoords);
     final int nSize = aParts.size ();
     if (nSize >= 3 && nSize <= 4)
-      return new DVRCoordinate (aParts.get (0), aParts.get (1), aParts.get (2), nSize >= 4 ? aParts.get (3) : null);
+      return create (aParts.get (0), aParts.get (1), aParts.get (2), nSize >= 4 ? aParts.get (3) : null);
 
     throw new DVRCoordinateException ("Invalid DVR Coordinates '" + sCoords + "' provided!");
   }

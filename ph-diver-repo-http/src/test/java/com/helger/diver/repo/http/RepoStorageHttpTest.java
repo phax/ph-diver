@@ -88,13 +88,13 @@ public final class RepoStorageHttpTest
     assertFalse (aRepo.canWrite ());
 
     // Existing only in "local fs" repo but not in http repo
-    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio",
-                                                                                             "local",
-                                                                                             "1"), ".txt"));
+    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio",
+                                                                                                "local",
+                                                                                                "1"), ".txt"));
     assertNull (aItem);
 
     // This one exists
-    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio", "http-only", "1"), ".txt"));
+    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio", "http-only", "1"), ".txt"));
     assertNotNull (aItem);
     assertEquals ("This file is on HTTP native", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
@@ -117,15 +117,15 @@ public final class RepoStorageHttpTest
     final RepoStorageHttp aRepo = _createRepoWritable ();
     assertTrue (aRepo.canWrite ());
 
-    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio",
-                                                                                             "http-only",
-                                                                                             "1"), ".txt"));
+    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio",
+                                                                                                "http-only",
+                                                                                                "1"), ".txt"));
     assertNotNull (aItem);
     assertEquals ("This file is on HTTP native", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
     // Ensure the one written below, is not existing
-    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio", "http-written", "1"), ".txt"));
+    aItem = aRepo.read (RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio", "http-written", "1"), ".txt"));
     assertNull (aItem);
   }
 
@@ -135,9 +135,9 @@ public final class RepoStorageHttpTest
     final RepoStorageHttp aRepoHttp = _createRepoWritable ();
     assertTrue (aRepoHttp.canWrite ());
 
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio",
-                                                                                          "http-written",
-                                                                                          "1"), ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio",
+                                                                                             "http-written",
+                                                                                             "1"), ".txt");
 
     try
     {
