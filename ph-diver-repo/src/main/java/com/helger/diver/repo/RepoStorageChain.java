@@ -209,7 +209,10 @@ public class RepoStorageChain implements IRepoStorageBase
     ValueEnforcer.notNullNoNullValue (aStorages, "Storages");
 
     final ICommonsList <IRepoStorage> aAll = new CommonsArrayList <> (aStorages);
+
+    // Determine all writable ones
     final ICommonsList <IRepoStorage> aWritableOnes = aAll.getAll (IRepoStorage::canWrite);
+
     return of (aAll, aWritableOnes);
   }
 

@@ -49,8 +49,8 @@ public class RepoStorageKey
   public RepoStorageKey (@Nonnull @Nonempty final String sPath)
   {
     ValueEnforcer.notEmpty (sPath, "Path");
-    ValueEnforcer.isFalse (sPath.startsWith ("/"), "Path should not start with a Slash");
-    ValueEnforcer.isFalse (sPath.endsWith ("/"), "Path should not end with a Slash");
+    ValueEnforcer.isFalse ( () -> sPath.startsWith ("/"), "Path should not start with a Slash");
+    ValueEnforcer.isFalse ( () -> sPath.endsWith ("/"), "Path should not end with a Slash");
 
     m_sPath = sPath;
   }

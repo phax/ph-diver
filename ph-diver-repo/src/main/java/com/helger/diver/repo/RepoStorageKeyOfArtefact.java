@@ -47,6 +47,8 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
 
   public static final char GROUP_LEVEL_SEPARATOR = '.';
 
+  public static final char PATH_SEPARATOR = '/';
+
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageKeyOfArtefact.class);
 
   // Special fake version to be used by the ToC where we don't need any version
@@ -54,16 +56,20 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
 
   private final DVRCoordinate m_aCoord;
 
-  private RepoStorageKeyOfArtefact (@Nonnull final DVRCoordinate aCoord, @Nonnull @Nonempty final String sPath)
+  protected RepoStorageKeyOfArtefact (@Nonnull final DVRCoordinate aCoord, @Nonnull @Nonempty final String sPath)
   {
     super (sPath);
     ValueEnforcer.notNull (aCoord, "Coord");
-    ValueEnforcer.isTrue (aCoord.getVersionObj ().isStaticVersion (),
-                          "DVR Coordinate must use a static version to access a repository item");
+    ValueEnforcer.isTrue ( () -> aCoord.getVersionObj ().isStaticVersion (),
+                           "DVR Coordinate must use a static version to access a repository item");
 
     m_aCoord = aCoord;
   }
 
+  /**
+   * @return The DVR coordinates as provided in the constructor. Never
+   *         <code>null</code>.
+   */
   @Nonnull
   public final DVRCoordinate getCoordinate ()
   {
@@ -134,7 +140,7 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
 
-    return sGroupID.replace (GROUP_LEVEL_SEPARATOR, '/') + "/" + sArtifactID + "/";
+    return sGroupID.replace (GROUP_LEVEL_SEPARATOR, PATH_SEPARATOR) + PATH_SEPARATOR + sArtifactID + PATH_SEPARATOR;
   }
 
   /**
@@ -178,9 +184,9 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
                                                                         sClassifier : "";
     return getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
            sVersion +
-           "/" +
+           PATH_SEPARATOR +
            sArtifactID +
-           "-" +
+           '-' +
            sVersion +
            sRealClassifier +
            sFileExt;

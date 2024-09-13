@@ -33,8 +33,8 @@ public interface IRepoStorageType extends IHasID <String>
 
   /**
    * @return <code>true</code> if the repository is accessed using network
-   *         technology, <code>false</code> if it is a local source.
+   *         technology, <code>false</code> if it is a local source. In offline
+   *         mode, remote repositories cannot be accessed.
    */
   boolean isRemote ();
-
 }
