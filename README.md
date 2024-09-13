@@ -17,19 +17,19 @@ This library consists of the following submodules:
 The reason why the several types of repositories are separated, is mainly because of specific runtime dependencies needed, and to 
   avoid that your dependencies are bloated if you only need a specific kind of repository.
 
-# DVRID
+# DVR Coordinate
 
-The DVRID, short for Digitally Version Resource ID, is an identifier for any technical artefact (file) 
+The DVR Coordinate, short for Digitally Version Resource Coordinate, is an identifier for any technical artefact (file) 
   very similar to [Maven coordinates](https://maven.apache.org/pom.html#Maven_Coordinates).
 
-The original term was "VESID" which was very much focused on validation artefacts. 
-   Each VESID is a DVRID, but not vice versa.
-   DVRID defines the syntax constraints required to be adhered to by all applications.
-   The terminology was changed for version 2.0.0 of the library. 
+Hint: The original term was "VESID" which was very much focused on validation artefacts. 
+   Each VESID is a DVR Coordinate, but not vice versa.
+   DVR Coordinate defines the syntax constraints required to be adhered to by all applications.
+   The terminology was changed for version 2 (DVRID) and version 3 of the library. 
 
-## DVRID contents
+## DVR Coordinate Contents
 
-Each DVRID consists of:
+Each DVR Coordinate consists of a combination of:
 * Mandatory **Group ID** 
     * Represents an organisation or group that provides a set of artefacts. That must be using the reverse domain name notation (as in `com.helger`)
     * It MUST NOT be empty and follow the regular expression `[a-zA-Z0-9_\-\.]{1,64}`
@@ -51,9 +51,9 @@ Each DVRID consists of:
 
 The limitations in the allowed characters for the different parts are meant to allow an easy representation on file systems. 
 
-## DVRID string representation
+## DVR Coordinate string representation
 
-Each DVRID can be represented in a single string in the form `groupID:artifactID:version[:classifier]`.
+Each DVR Coordinate can be represented in a single string in the form `groupID:artifactID:version[:classifier]`.
 
 The string representation of version numbers is a bit tricky, because `1`, `1.0` and `1.0.0` are all semantically equivalent.
   Thats why it was decided, that trailing zeroes for minor and micro versions are NOT contained in the string representation, to be as brief as possible
