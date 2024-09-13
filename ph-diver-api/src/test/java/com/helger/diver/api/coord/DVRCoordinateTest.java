@@ -22,7 +22,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import com.helger.commons.mock.CommonsTestHelper;
-import com.helger.diver.api.DVRException;
+import com.helger.diver.api.version.DVRVersionException;
 
 /**
  * Test class for class {@link DVRCoordinate}.
@@ -32,7 +32,7 @@ import com.helger.diver.api.DVRException;
 public final class DVRCoordinateTest
 {
   @Test
-  public void testBasic () throws DVRException
+  public void testBasic () throws DVRVersionException
   {
     final DVRCoordinate aID1 = new DVRCoordinate ("com.helger", "phive", "3.0.0.SNAPSHOT");
     assertEquals ("com.helger", aID1.getGroupID ());
@@ -63,7 +63,7 @@ public final class DVRCoordinateTest
   }
 
   @Test
-  public void testParseID () throws DVRException
+  public void testParseID () throws DVRVersionException
   {
     final DVRCoordinate aID1 = new DVRCoordinate ("com.helger", "phive", "3.0.0.SNAPSHOT");
     assertEquals ("com.helger", aID1.getGroupID ());

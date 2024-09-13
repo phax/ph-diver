@@ -31,8 +31,8 @@ import org.junit.Test;
 
 import com.helger.commons.io.file.FileOperationManager;
 import com.helger.commons.state.ESuccess;
-import com.helger.diver.api.DVRException;
 import com.helger.diver.api.coord.DVRCoordinate;
+import com.helger.diver.api.version.DVRVersionException;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
@@ -58,12 +58,13 @@ public final class RepoStorageLocalFileSystemTest
   }
 
   @Test
-  public void testRead () throws DVRException
+  public void testRead () throws DVRVersionException
   {
     final RepoStorageLocalFileSystem aRepo = _createRepo ();
 
-    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio.test", "a", "1"),
-                                                                          ".txt"));
+    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio.test",
+                                                                                             "a",
+                                                                                             "1"), ".txt"));
     assertNotNull (aItem);
     assertEquals ("A", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
@@ -78,12 +79,13 @@ public final class RepoStorageLocalFileSystemTest
   }
 
   @Test
-  public void testWrite () throws DVRException
+  public void testWrite () throws DVRVersionException
   {
     final RepoStorageLocalFileSystem aRepo = _createRepo ();
 
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio.test", "fs-written", "1"),
-                                                                       ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio.test",
+                                                                                          "fs-written",
+                                                                                          "1"), ".txt");
     // Ensure not existing
     assertNull (aRepo.read (aKey));
 

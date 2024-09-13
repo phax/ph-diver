@@ -34,8 +34,8 @@ import org.junit.Test;
 
 import com.helger.commons.io.file.FileOperationManager;
 import com.helger.commons.state.ESuccess;
-import com.helger.diver.api.DVRException;
 import com.helger.diver.api.coord.DVRCoordinate;
+import com.helger.diver.api.version.DVRVersionException;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
@@ -82,14 +82,15 @@ public final class RepoStorageHttpTest
   }
 
   @Test
-  public void testReadOnlyRead () throws DVRException
+  public void testReadOnlyRead () throws DVRVersionException
   {
     final RepoStorageHttp aRepo = _createRepoReadOnly ();
     assertFalse (aRepo.canWrite ());
 
     // Existing only in "local fs" repo but not in http repo
-    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio", "local", "1"),
-                                                                          ".txt"));
+    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio",
+                                                                                             "local",
+                                                                                             "1"), ".txt"));
     assertNull (aItem);
 
     // This one exists
@@ -111,13 +112,14 @@ public final class RepoStorageHttpTest
   }
 
   @Test
-  public void testWritableRead () throws DVRException
+  public void testWritableRead () throws DVRVersionException
   {
     final RepoStorageHttp aRepo = _createRepoWritable ();
     assertTrue (aRepo.canWrite ());
 
-    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio", "http-only", "1"),
-                                                                          ".txt"));
+    IRepoStorageReadItem aItem = aRepo.read (RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio",
+                                                                                             "http-only",
+                                                                                             "1"), ".txt"));
     assertNotNull (aItem);
     assertEquals ("This file is on HTTP native", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
@@ -128,13 +130,14 @@ public final class RepoStorageHttpTest
   }
 
   @Test
-  public void testWritableWriteAndRead () throws DVRException
+  public void testWritableWriteAndRead () throws DVRVersionException
   {
     final RepoStorageHttp aRepoHttp = _createRepoWritable ();
     assertTrue (aRepoHttp.canWrite ());
 
-    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio", "http-written", "1"),
-                                                                       ".txt");
+    final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio",
+                                                                                          "http-written",
+                                                                                          "1"), ".txt");
 
     try
     {

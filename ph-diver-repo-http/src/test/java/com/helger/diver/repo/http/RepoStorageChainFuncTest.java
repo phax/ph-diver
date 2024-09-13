@@ -31,8 +31,8 @@ import org.junit.Test;
 
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.io.file.FileOperationManager;
-import com.helger.diver.api.DVRException;
 import com.helger.diver.api.coord.DVRCoordinate;
+import com.helger.diver.api.version.DVRVersionException;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoHashState;
 import com.helger.diver.repo.ERepoWritable;
@@ -71,7 +71,7 @@ public final class RepoStorageChainFuncTest
   }
 
   @Test
-  public void testReadAndCacheAndRead () throws DVRException
+  public void testReadAndCacheAndRead () throws DVRVersionException
   {
     final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio",
                                                                                           "http-only",
@@ -153,7 +153,7 @@ public final class RepoStorageChainFuncTest
   }
 
   @Test
-  public void testReadNoCacheAndRead () throws DVRException
+  public void testReadNoCacheAndRead () throws DVRVersionException
   {
     final RepoStorageKeyOfArtefact aKey = RepoStorageKeyOfArtefact.of (new DVRCoordinate ("com.ecosio",
                                                                                           "http-only",
