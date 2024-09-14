@@ -110,7 +110,7 @@ Alternate usage as a Maven BOM:
 
 # News and Noteworthy
 
-* v3.0.1 - work in progress
+* v3.0.1 - 2024-09-15
     * Moved classes `RepoToc1Marshaller` and `RepoTopToc1Marshaller` to sub-package `jaxb`
     * Added new method `DVRVersion.getStaticVersionAcceptor`
 * v3.0.0 - 2024-09-13
