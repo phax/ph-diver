@@ -40,6 +40,14 @@ public class RepoStorageReadableResource implements IReadableResource
   private final RepoStorageKey m_aKey;
   private final IRepoStorageContent m_aContent;
 
+  /**
+   * Constructor.
+   *
+   * @param aKey
+   *        The repository key that was read. May not be <code>null</code>.
+   * @param aContent
+   *        The repository content that was read. May not be <code>null</code>.
+   */
   public RepoStorageReadableResource (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
   {
     ValueEnforcer.notNull (aKey, "Key");
