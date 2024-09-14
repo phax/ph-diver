@@ -16,6 +16,9 @@
  */
 package com.helger.diver.api.version;
 
+import java.util.Set;
+import java.util.function.Predicate;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -27,8 +30,9 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.MustImplementComparable;
 import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.impl.CommonsLinkedHashSet;
-import com.helger.commons.collection.impl.ICommonsSet;
+import com.helger.commons.collection.impl.ICommonsOrderedSet;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.StringHelper;
@@ -397,15 +401,18 @@ public final class DVRVersion implements Comparable <DVRVersion>
     // Check if the parsing result equals the original in a way
     // This section clearly would win the price for ugly coding - but the
     // positive effect on consistency is even more valuable :)
-    final ICommonsSet <String> aPossibleVersions = new CommonsLinkedHashSet <> ();
+    final ICommonsOrderedSet <String> aPossibleVersions = new CommonsLinkedHashSet <> ();
     // Check different separators
-    for (final char c : "-.".toCharArray ())
+    for (final char cClassifierSep : "-.".toCharArray ())
       for (final boolean bEnforceAllNumbers : new boolean [] { true, false })
         for (final boolean bEnforceMinor : new boolean [] { true, false })
         {
-          final String sText = _getAsString (aParsedVersion, c, bEnforceAllNumbers, bEnforceMinor);
+          final String sText = _getAsString (aParsedVersion, cClassifierSep, bEnforceAllNumbers, bEnforceMinor);
           if (sVersion.equals (sText))
+          {
+            // We found a match
             return true;
+          }
           aPossibleVersions.add (sText);
         }
 
@@ -418,7 +425,7 @@ public final class DVRVersion implements Comparable <DVRVersion>
                                 .separator (" or ")
                                 .build ());
 
-    // Nope
+    // Nope, invalid version
     return false;
   }
 
@@ -454,5 +461,48 @@ public final class DVRVersion implements Comparable <DVRVersion>
       LOGGER.warn (ex.getMessage ());
       return null;
     }
+  }
+
+  /**
+   * Create a {@link Predicate} that can be used to filter static DVR versions.
+   * The returned predicate may be used as a filter when iterating over entries.
+   * This method is only meant to work with static versions and does not
+   * consider pseudo versions.
+   *
+   * @param aVersionsToIgnore
+   *        Optional set of specific versions to ignore. This may be handy to
+   *        explicitly rule out illegal versions. May be <code>null</code> or
+   *        empty to indicate that no version should be ignored.
+   * @param bIncludeSnapshots
+   *        <code>true</code> if SNAPSHOT versions should be allowed by the
+   *        resulting predicate.
+   * @return Never <code>null</code>.
+   */
+  @Nonnull
+  public static Predicate <DVRVersion> getStaticVersionAcceptor (@Nullable final Set <String> aVersionsToIgnore,
+                                                                 final boolean bIncludeSnapshots)
+  {
+    if (CollectionHelper.isEmpty (aVersionsToIgnore))
+    {
+      if (bIncludeSnapshots)
+      {
+        // We take all
+        return x -> true;
+      }
+
+      // We take everything except static snapshot versions
+      return x -> !x.isStaticSnapshotVersion ();
+    }
+
+    // We have something to ignore
+    if (bIncludeSnapshots)
+    {
+      // We take all, except for the ignored versions
+      return x -> !aVersionsToIgnore.contains (x.getAsString ());
+    }
+
+    // We take all except static snapshot versions and except for the ignored
+    // versions
+    return x -> !x.isStaticSnapshotVersion () && !aVersionsToIgnore.contains (x.getAsString ());
   }
 }

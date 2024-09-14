@@ -112,6 +112,7 @@ Alternate usage as a Maven BOM:
 
 * v3.0.1 - work in progress
     * Moved classes `RepoToc1Marshaller` and `RepoTopToc1Marshaller` to sub-package `jaxb`
+    * Added new method `DVRVersion.getStaticVersionAcceptor`
 * v3.0.0 - 2024-09-13
     * Renamed `DVRID` to `DVRCoordinate`
     * Made a lot of API changes and extension on the API part. Now it is stable.
