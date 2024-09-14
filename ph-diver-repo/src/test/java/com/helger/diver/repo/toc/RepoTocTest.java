@@ -37,6 +37,7 @@ import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.mock.CommonsTestHelper;
 import com.helger.diver.api.DVRException;
 import com.helger.diver.api.version.DVRVersion;
+import com.helger.diver.repo.toc.jaxb.RepoToc1Marshaller;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 
 /**

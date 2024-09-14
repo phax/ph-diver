@@ -25,6 +25,7 @@ import com.helger.diver.api.version.DVRVersion;
 import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.IRepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
+import com.helger.diver.repo.toc.jaxb.RepoToc1Marshaller;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 
 /**

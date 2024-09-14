@@ -44,7 +44,7 @@ import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.IRepoStorageWithToc;
 import com.helger.diver.repo.toc.IRepoTopTocService;
 import com.helger.diver.repo.toc.RepoToc;
-import com.helger.diver.repo.toc.RepoToc1Marshaller;
+import com.helger.diver.repo.toc.jaxb.RepoToc1Marshaller;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 
 /**
