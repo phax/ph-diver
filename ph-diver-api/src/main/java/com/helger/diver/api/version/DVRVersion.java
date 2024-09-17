@@ -365,6 +365,24 @@ public final class DVRVersion implements Comparable <DVRVersion>
   }
 
   /**
+   * @return A new {@link DVRVersion} using the pseudo version "latest".
+   */
+  @Nonnull
+  public static DVRVersion latest ()
+  {
+    return of (DVRPseudoVersionRegistry.LATEST);
+  }
+
+  /**
+   * @return A new {@link DVRVersion} using the pseudo version "latest-release".
+   */
+  @Nonnull
+  public static DVRVersion latestRelease ()
+  {
+    return of (DVRPseudoVersionRegistry.LATEST_RELEASE);
+  }
+
+  /**
    * Checks if the provided version is a valid static version.
    * <ul>
    * <li>1.0.0</li>
