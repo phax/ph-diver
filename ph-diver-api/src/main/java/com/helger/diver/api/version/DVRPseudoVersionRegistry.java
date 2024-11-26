@@ -60,6 +60,12 @@ public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
       // OLDEST is always smaller
       return -1;
     }
+
+    @Override
+    public String toString ()
+    {
+      return "OLDEST";
+    }
   });
 
   /**
@@ -78,12 +84,20 @@ public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
       // LATEST is always greater
       return +1;
     }
+
+    @Override
+    public String toString ()
+    {
+      return "LATEST";
+    }
   });
 
   /**
    * Latest indicates the very latest version (excluding snapshot).
    */
   public static final IDVRPseudoVersion LATEST_RELEASE;
+
+  // Inside the static block for best formatting :)
   static
   {
     LATEST_RELEASE = new DVRPseudoVersion ("latest-release", new IDVRPseudoVersionComparable ()
@@ -102,6 +116,12 @@ public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
       {
         // LATEST_RELEASE is always greater
         return +1;
+      }
+
+      @Override
+      public String toString ()
+      {
+        return "LATEST_RELEASE";
       }
     });
   }
