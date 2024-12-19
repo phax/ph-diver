@@ -50,6 +50,17 @@ public class DVRPseudoVersion implements IDVRPseudoVersion
     return m_sID;
   }
 
+  /**
+   * @return Get the comparable object provided in the constructor. Never
+   *         <code>null</code>.
+   * @since 3.0.2
+   */
+  @Nonnull
+  public final IDVRPseudoVersionComparable getPseudoVersionComparable ()
+  {
+    return m_aComparable;
+  }
+
   public int compareToPseudoVersion (@Nonnull final IDVRPseudoVersion aOtherPseudoVersion)
   {
     ValueEnforcer.notNull (aOtherPseudoVersion, "OtherPseudoVersion");
