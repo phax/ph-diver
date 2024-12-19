@@ -60,7 +60,24 @@ The string representation of version numbers is a bit tricky, because `1`, `1.0`
   So e.g., for version `1.0.0` the string representation must be `1`; for version `3.2.0`, the string representation must be `3.2`.
   Versions using a classifier like `3.0.0-SNAPSHOT` are represented as `3-SNAPSHOT`.
   Versions that only consist of a classifier like `0.0.0-XYZ` are represented only as the classifier `XYZ`.
-  That is a work around to be able to handle all kind of versions, but they are treated with a major version of 0, a minor version of 0 and a micro version of 0. 
+  That is a work around to be able to handle all kind of versions, but they are treated with a major version of 0, a minor version of 0 and a micro version of 0.
+  
+## DVR Pseudo Versions
+
+There are use cases, where the usage of a specific version number (like `1.0.5`) is not suitable and instead a more generic approach is needed.
+That's the reason to introduce so called "pseudo versions".
+Pseudo versions can be used in all places where specific versions are unknown.
+However, pseudo version MUST always be resolved to actual versions before they can be used effectively.
+
+All the pseudo versions supported by *ph-diver* are registered in class `DVRPseudoVersionRegistry` and are:
+* `oldest` - always refer to the oldest version of an artefact. This includes snapshot and non-snapshot versions.
+* `latest` - always refer to the latest version of an artefact. This includes snapshot and non-snapshot versions.
+* `latest-release` - always refer to the latest version of an artefact. This includes only non-snapshot versions.
+
+Other components might define their own pseudo versions by
+1. implementing the interface `IDVRPseudoVersion` and
+1. implementing the SPI interface `IDVRPseudoVersionRegistrarSPI` and
+1. in this implementation registering all pseudo version definitions
 
 # Repository
 
