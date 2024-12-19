@@ -79,6 +79,8 @@ Other components might define their own pseudo versions by
 1. implementing the SPI interface `IDVRPseudoVersionRegistrarSPI` and
 1. in this implementation registering all pseudo version definitions
 
+Note: the resolution logic is not implemented in this project. This is e.g. provided by the [phive](https://github.com/phax/phive) project.
+
 # Repository
 
 A repository is an abstract tree like structure to act as the source for artefacts (files).
