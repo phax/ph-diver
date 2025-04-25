@@ -68,7 +68,7 @@
     <jaxb-plugin.version>4.0.9</jaxb-plugin.version>
     <ph-jaxb-plugin.version>4.0.3</ph-jaxb-plugin.version>
     <jetty.version>11.0.25</jetty.version>
-    <awssdk-version>2.31.21</awssdk-version>
+    <awssdk-version>2.31.28</awssdk-version>
   </properties>
   
   <dependencyManagement>
@@ -83,7 +83,7 @@
       <dependency>
         <groupId>com.helger.web</groupId>
         <artifactId>ph-web-parent-pom</artifactId>
-        <version>10.4.1</version>
+        <version>10.4.2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
