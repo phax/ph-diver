@@ -68,7 +68,7 @@
     <jaxb-plugin.version>4.0.9</jaxb-plugin.version>
     <ph-jaxb-plugin.version>4.0.3</ph-jaxb-plugin.version>
     <jetty.version>11.0.25</jetty.version>
-    <awssdk-version>2.31.34</awssdk-version>
+    <awssdk-version>2.31.40</awssdk-version>
   </properties>
   
   <dependencyManagement>
