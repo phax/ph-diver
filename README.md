@@ -58,9 +58,9 @@ Each DVR Coordinate can be represented in a single string in the form `groupID:a
 The string representation of version numbers is a bit tricky, because `1`, `1.0` and `1.0.0` are all semantically equivalent.
   Thats why it was decided, that trailing zeroes for minor and micro versions are NOT contained in the string representation, to be as brief as possible
   So e.g., for version `1.0.0` the string representation must be `1`; for version `3.2.0`, the string representation must be `3.2`.
-  Versions using a classifier like `3.0.0-SNAPSHOT` are represented as `3-SNAPSHOT`.
-  Versions that only consist of a classifier like `0.0.0-XYZ` are represented only as the classifier `XYZ`.
-  That is a work around to be able to handle all kind of versions, but they are treated with a major version of 0, a minor version of 0 and a micro version of 0.
+  Versions using a version classifier like `3.0.0-SNAPSHOT` are represented as `3-SNAPSHOT`.
+  Versions that only consist of a version classifier like `0.0.0-XYZ` are represented only as the version  classifier `XYZ`.
+  That is a work around to be able to handle all kind of versions, but they are treated with a major version of `0`, a minor version of `0` and a micro version of `0`.
   
 ## DVR Pseudo Versions
 
