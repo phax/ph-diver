@@ -16,12 +16,12 @@
  */
 package com.helger.diver.api.version.spi;
 
-import javax.annotation.Nonnull;
-
-import com.helger.commons.annotation.IsSPIImplementation;
-import com.helger.commons.annotation.UsedViaReflection;
+import com.helger.annotation.style.IsSPIImplementation;
+import com.helger.annotation.style.UsedViaReflection;
 import com.helger.diver.api.version.DVRPseudoVersionRegistry;
 import com.helger.diver.api.version.IDVRPseudoVersionRegistry;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Default pseudo version registrar

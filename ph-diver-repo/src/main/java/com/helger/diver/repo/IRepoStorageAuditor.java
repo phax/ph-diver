@@ -16,9 +16,9 @@
  */
 package com.helger.diver.repo;
 
-import javax.annotation.Nonnull;
+import com.helger.base.state.ESuccess;
 
-import com.helger.commons.state.ESuccess;
+import jakarta.annotation.Nonnull;
 
 /**
  * Callback interface for a repository storage auditor. Implementations of this

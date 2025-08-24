@@ -18,10 +18,10 @@ package com.helger.diver.repo;
 
 import java.nio.charset.StandardCharsets;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.io.stream.StreamHelper;
 
-import com.helger.commons.io.stream.StreamHelper;
+import jakarta.annotation.Nullable;
 
 /**
  * Utility class

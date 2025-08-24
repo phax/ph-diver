@@ -16,8 +16,8 @@
  */
 package com.helger.diver.repo;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Defines an abstract way to read from a chain of repositories.

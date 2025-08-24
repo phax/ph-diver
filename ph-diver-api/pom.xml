@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.diver</groupId>
     <artifactId>ph-diver-parent-pom</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-diver-api</artifactId>
   <packaging>bundle</packaging>
@@ -56,7 +56,11 @@
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
-      <artifactId>ph-commons</artifactId>
+      <artifactId>ph-collection</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-cache</artifactId>
     </dependency>
     
     <dependency>

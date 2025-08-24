@@ -21,10 +21,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.WillNotClose;
-
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
@@ -33,12 +29,14 @@ import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.io.file.FilenameHelper;
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
-import com.helger.commons.state.ESuccess;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.WillNotClose;
+import com.helger.base.array.ArrayHelper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
+import com.helger.base.log.ConditionalLogger;
+import com.helger.base.state.ESuccess;
+import com.helger.base.tostring.ToStringGenerator;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
@@ -49,16 +47,21 @@ import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
 import com.helger.diver.repo.toc.IRepoTopTocService;
 import com.helger.httpclient.HttpClientManager;
 import com.helger.httpclient.response.ResponseHandlerByteArray;
+import com.helger.io.file.FilenameHelper;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
- * Base implementation of {@link IRepoStorage} for arbitrary HTTP connections.
- * Supports HTTP GET, PUT and DELETE.
+ * Base implementation of {@link IRepoStorage} for arbitrary HTTP connections. Supports HTTP GET,
+ * PUT and DELETE.
  *
  * @author Philip Helger
  */
 public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp>
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageHttp.class);
+  private static final ConditionalLogger CONDLOG = new ConditionalLogger (LOGGER);
 
   protected final HttpClientManager m_aHttpClient;
   protected final String m_sURLPrefix;
@@ -79,6 +82,28 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     ValueEnforcer.notEmpty (sURLPrefix, "URLPrefix");
     m_aHttpClient = aHttpClient;
     m_sURLPrefix = sURLPrefix;
+  }
+
+  /**
+   * @return <code>true</code> if logging is disabled, <code>false</code> if it is enabled.
+   * @since 4.0.0
+   */
+  public static boolean isSilentMode ()
+  {
+    return CONDLOG.isDisabled ();
+  }
+
+  /**
+   * Enable or disable certain regular log messages.
+   *
+   * @param bSilentMode
+   *        <code>true</code> to disable logging, <code>false</code> to enable logging
+   * @return The previous value of the silent mode.
+   * @since 4.0.0
+   */
+  public static boolean setSilentMode (final boolean bSilentMode)
+  {
+    return !CONDLOG.setEnabled (!bSilentMode);
   }
 
   @Nullable
@@ -133,8 +158,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
   protected InputStream getInputStream (@Nonnull final RepoStorageKey aKey)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Reading from HTTP '" + sURL + "'");
+    CONDLOG.info ( () -> "Reading from HTTP '" + sURL + "'");
 
     try
     {
@@ -148,14 +172,12 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
 
       final byte [] aResponse = m_aHttpClient.execute (aGet, new ResponseHandlerByteArray ());
 
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Found on HTTP '" + sURL + "'");
+      CONDLOG.info ( () -> "Found on HTTP '" + sURL + "' for " + ArrayHelper.getSize (aResponse) + " bytes");
       return new NonBlockingByteArrayInputStream (aResponse);
     }
     catch (final IOException ex)
     {
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Failed to read from HTTP '" + sURL + "': " + ex.getMessage ());
+      CONDLOG.warn ( () -> "Failed to read from HTTP '" + sURL + "': " + ex.getMessage ());
       return null;
     }
   }
@@ -165,8 +187,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
   protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("Writing to HTTP '" + sURL + "'");
+    CONDLOG.info ( () -> "Writing to HTTP '" + sURL + "'");
 
     try
     {
@@ -189,13 +210,11 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     }
     catch (final IOException ex)
     {
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Failed to write to HTTP '" + sURL + "': " + ex.getMessage ());
+      CONDLOG.warn ( () -> "Failed to write to HTTP '" + sURL + "': " + ex.getMessage ());
       return ESuccess.FAILURE;
     }
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Successfully wrote to HTTP '" + sURL + "'");
+    CONDLOG.info ( () -> "Successfully wrote to HTTP '" + sURL + "'");
     return ESuccess.SUCCESS;
   }
 
@@ -204,8 +223,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
   protected ESuccess deleteObject (@Nonnull final RepoStorageKey aKey)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("Deleting from HTTP '" + sURL + "'");
+    CONDLOG.info ( () -> "Deleting from HTTP '" + sURL + "'");
 
     try
     {
@@ -225,13 +243,11 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     }
     catch (final IOException ex)
     {
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Failed to delete from HTTP '" + sURL + "': " + ex.getMessage ());
+      CONDLOG.warn ( () -> "Failed to delete from HTTP '" + sURL + "': " + ex.getMessage ());
       return ESuccess.FAILURE;
     }
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Successfully deleted from HTTP '" + sURL + "'");
+    CONDLOG.info ( () -> "Successfully deleted from HTTP '" + sURL + "'");
     return ESuccess.SUCCESS;
   }
 

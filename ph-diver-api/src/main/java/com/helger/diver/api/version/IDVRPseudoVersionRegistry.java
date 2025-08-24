@@ -16,11 +16,11 @@
  */
 package com.helger.diver.api.version;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.state.EChange;
 
-import com.helger.commons.state.EChange;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Base interface for a Pseudo version registry.

@@ -16,7 +16,7 @@
  */
 package com.helger.diver.repo;
 
-import com.helger.commons.id.IHasID;
+import com.helger.base.id.IHasID;
 
 /**
  * Read-only interface to classify a repository storage type

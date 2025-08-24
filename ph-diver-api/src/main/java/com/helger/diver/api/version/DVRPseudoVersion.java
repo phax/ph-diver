@@ -16,13 +16,13 @@
  */
 package com.helger.diver.api.version;
 
-import javax.annotation.Nonnull;
+import com.helger.annotation.Nonempty;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.hashcode.HashCodeGenerator;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.base.version.Version;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.hashcode.HashCodeGenerator;
-import com.helger.commons.string.ToStringGenerator;
-import com.helger.commons.version.Version;
+import jakarta.annotation.Nonnull;
 
 /**
  * Default implementation of {@link IDVRPseudoVersion}
@@ -51,8 +51,7 @@ public class DVRPseudoVersion implements IDVRPseudoVersion
   }
 
   /**
-   * @return Get the comparable object provided in the constructor. Never
-   *         <code>null</code>.
+   * @return Get the comparable object provided in the constructor. Never <code>null</code>.
    * @since 3.0.2
    */
   @Nonnull

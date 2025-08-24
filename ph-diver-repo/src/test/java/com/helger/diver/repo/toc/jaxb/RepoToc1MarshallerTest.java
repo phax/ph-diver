@@ -21,12 +21,12 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import com.helger.commons.datetime.PDTWebDateHelper;
-import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.datetime.web.PDTWebDateHelper;
 import com.helger.diver.repo.toc.jaxb.v10.RTVersionListType;
 import com.helger.diver.repo.toc.jaxb.v10.RTVersionType;
 import com.helger.diver.repo.toc.jaxb.v10.RTVersioningType;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
+import com.helger.io.resource.ClassPathResource;
 
 /**
  * Test class for class {@link RepoToc1Marshaller}.

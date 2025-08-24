@@ -29,8 +29,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.io.file.FileOperationManager;
+import com.helger.collection.commons.CommonsArrayList;
 import com.helger.diver.api.coord.DVRCoordinate;
 import com.helger.diver.api.version.DVRVersionException;
 import com.helger.diver.repo.ERepoDeletable;
@@ -47,6 +46,7 @@ import com.helger.diver.repo.impl.RepoStorageInMemory;
 import com.helger.diver.repo.impl.RepoStorageLocalFileSystem;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 import com.helger.httpclient.HttpClientManager;
+import com.helger.io.file.FileOperationManager;
 
 /**
  * Test class for class {@link RepoStorageChain}.

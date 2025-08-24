@@ -27,7 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
 
-import com.helger.commons.state.ESuccess;
+import com.helger.base.state.ESuccess;
 import com.helger.diver.api.coord.DVRCoordinate;
 import com.helger.diver.api.version.DVRVersionException;
 import com.helger.diver.repo.ERepoDeletable;

@@ -129,45 +129,56 @@ Alternate usage as a Maven BOM:
 
 # News and Noteworthy
 
-* v3.0.2 - work in progress
-    * Added new method `DVRPseudoVersion.getPseudoVersionComparable`
-* v3.0.1 - 2024-09-15
-    * Moved classes `RepoToc1Marshaller` and `RepoTopToc1Marshaller` to sub-package `jaxb`
-    * Added new method `DVRVersion.getStaticVersionAcceptor`
-* v3.0.0 - 2024-09-13
-    * Renamed `DVRID` to `DVRCoordinate`
-    * Made a lot of API changes and extension on the API part. Now it is stable.
-* v2.0.0 - 2024-09-12
-    * Renamed `*VESID*` to `*DVRID*`
-    * Renamed `IVES*` to `IDVR*`
-    * Renamed `IPseudoVersionComparable` to `IDVRPseudoVersionComparable`
-    * Removed all deprecated APIs marked for removal
-    * Moved `DVRID` related classes in package `com.helger.diver.api.id`
-    * Added class `DVRException`
-* v1.2.0 - 2024-04-25
-    * Extended the API of `IRepoStorageWithToc` with `getLatest(Release)Version`
-    * Extended the API of `RepoToc`
-    * Replaced the enum `EVESPseudoVersion` with `IVESPseudoVersion` and `VESPseudoVersionRegistry`
-    * Now supporting the following pseudo versions: `oldest`, `latest` and `latest-release`
-* v1.1.1 - 2024-03-29
-    * Updated to ph-commons 11.1.5
-    * Ensured Java 21 compatibility
-* v1.1.0 - 2024-03-09
-    * Extracted `RepoStorageKeyOfArtefact` from `RepoStorageKey` [backwards incompatible change]
-    * Class `RepoStorageHttp` got an API extension, so that the used HTTP requests can be customized
-    * Added a top-level table of contents (ToC) service that contains all groups and the artefacts of all groups (via `IRepoTopTocService`) and an XML based implementation (class `RepoTopTocServiceRepoBasedXML`)
-    * Added a new interface `IRepoStorageAuditor` to be able to handle accesses to the repository 
-    * Extended `RepoToc` API
-    * Renamed `RepoTopToc` to `RepoTopTocXML`
-    * Reworked `RepoStorageItem` to `RepoStorageContentByteArray` and `RepoStorageReadItem` and extracted interfaces for both of them
-    * Changed the writable repo API to use `IRepoStorageContent` instead of `byte[]` for stream based activities
-    * Extracted `IRepoStorageType` interface
-* v1.0.2 - 2023-12-12
-    * Restricted VESID part maximum lengths - defaults to 64 but customizable via `VESIDSettings`.
-* v1.0.1 - 2023-11-07
-    * Added support for a "Table of contents" per Group ID and Artefact ID.
-* v1.0.0 - 2023-09-13
-    * Initial version with support for in-memory, file system, HTTP and S3 repositories
+v4.0.0 - work in progress
+* Requires Java 17 as the minimum version
+* Updated to ph-commons 12.0.0
+* Added new method `DVRPseudoVersion.getPseudoVersionComparable`
+
+v3.0.1 - 2024-09-15
+* Moved classes `RepoToc1Marshaller` and `RepoTopToc1Marshaller` to sub-package `jaxb`
+* Added new method `DVRVersion.getStaticVersionAcceptor`
+
+v3.0.0 - 2024-09-13
+* Renamed `DVRID` to `DVRCoordinate`
+* Made a lot of API changes and extension on the API part. Now it is stable.
+
+v2.0.0 - 2024-09-12
+* Renamed `*VESID*` to `*DVRID*`
+* Renamed `IVES*` to `IDVR*`
+* Renamed `IPseudoVersionComparable` to `IDVRPseudoVersionComparable`
+* Removed all deprecated APIs marked for removal
+* Moved `DVRID` related classes in package `com.helger.diver.api.id`
+* Added class `DVRException`
+
+v1.2.0 - 2024-04-25
+* Extended the API of `IRepoStorageWithToc` with `getLatest(Release)Version`
+* Extended the API of `RepoToc`
+* Replaced the enum `EVESPseudoVersion` with `IVESPseudoVersion` and `VESPseudoVersionRegistry`
+* Now supporting the following pseudo versions: `oldest`, `latest` and `latest-release`
+
+v1.1.1 - 2024-03-29
+* Updated to ph-commons 11.1.5
+* Ensured Java 21 compatibility
+
+v1.1.0 - 2024-03-09
+* Extracted `RepoStorageKeyOfArtefact` from `RepoStorageKey` [backwards incompatible change]
+* Class `RepoStorageHttp` got an API extension, so that the used HTTP requests can be customized
+* Added a top-level table of contents (ToC) service that contains all groups and the artefacts of all groups (via `IRepoTopTocService`) and an XML based implementation (class `RepoTopTocServiceRepoBasedXML`)
+* Added a new interface `IRepoStorageAuditor` to be able to handle accesses to the repository 
+* Extended `RepoToc` API
+* Renamed `RepoTopToc` to `RepoTopTocXML`
+* Reworked `RepoStorageItem` to `RepoStorageContentByteArray` and `RepoStorageReadItem` and extracted interfaces for both of them
+* Changed the writable repo API to use `IRepoStorageContent` instead of `byte[]` for stream based activities
+* Extracted `IRepoStorageType` interface
+
+v1.0.2 - 2023-12-12
+* Restricted VESID part maximum lengths - defaults to 64 but customizable via `VESIDSettings`.
+
+v1.0.1 - 2023-11-07
+* Added support for a "Table of contents" per Group ID and Artefact ID.
+
+v1.0.0 - 2023-09-13
+* Initial version with support for in-memory, file system, HTTP and S3 repositories
 
 ---
 

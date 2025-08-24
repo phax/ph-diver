@@ -21,9 +21,9 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.diver.repo.toptoc.jaxb.v10.GroupType;
 import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
+import com.helger.io.resource.ClassPathResource;
 
 /**
  * Test class for class {@link RepoTopToc1Marshaller}.

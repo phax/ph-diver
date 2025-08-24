@@ -18,31 +18,35 @@ package com.helger.diver.repo.http.mock;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.util.Callback;
+import org.eclipse.jetty.util.resource.PathResourceFactory;
+import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.http.EHttpMethod;
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.io.file.FileOperationManager;
+import com.helger.annotation.Nonnegative;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.base.numeric.mutable.MutableLong;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
+import com.helger.http.EHttpMethod;
+import com.helger.io.file.FileHelper;
+import com.helger.io.file.FileOperationManager;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class LocalJettyRunner
@@ -64,75 +68,129 @@ public class LocalJettyRunner
     LOGGER.info ("Starting Jetty with resource base dir '" + aResourceBase.getAbsolutePath () + "'");
     m_aServer = new Server (nPort);
 
-    final AbstractHandler putHandler = new AbstractHandler ()
+    final Handler.Abstract putHandler = new Handler.Abstract ()
     {
-      @Override
-      public void handle (final String target,
-                          final Request baseRequest,
-                          final HttpServletRequest request,
-                          final HttpServletResponse response) throws IOException
+      public boolean handle (final Request request, final Response response, final Callback callback) throws Exception
       {
         if (request.getMethod ().equals (EHttpMethod.PUT.getName ()))
         {
-          final File targetFile = new File (aResourceBase, target);
-          LOGGER.info ("Jetty PUT '" + targetFile.getAbsolutePath () + "'");
+          final File targetFile = new File (aResourceBase, request.getHttpURI ().getPath ());
+          LOGGER.info ("Jetty PUT '" +
+                       targetFile.getAbsolutePath () +
+                       "' for " +
+                       request.getHeaders ().getLongField (HttpHeader.CONTENT_LENGTH) +
+                       " bytes");
 
           FileHelper.ensureParentDirectoryIsPresent (targetFile);
-          try (FileOutputStream outputStream = new FileOutputStream (targetFile, false))
+          try (final FileOutputStream outputStream = new FileOutputStream (targetFile, false))
           {
-            int nBytesWritten = 0;
-            int nBytesRead;
-            final byte [] aBuffer = new byte [8192];
-            while ((nBytesRead = baseRequest.getInputStream ().read (aBuffer)) != -1)
-            {
-              outputStream.write (aBuffer, 0, nBytesRead);
-              nBytesWritten += nBytesRead;
-            }
+            final InputStream aIS = Content.Source.asInputStream (request);
+            final MutableLong aCounter = new MutableLong (0);
+            StreamHelper.copyByteStream ()
+                        .from (aIS)
+                        .closeFrom (false)
+                        .to (outputStream)
+                        .closeTo (true)
+                        .copyByteCount (aCounter)
+                        .build ();
             LOGGER.info ("Jetty successfully PUT " +
-                         nBytesWritten +
+                         aCounter.longValue () +
                          " bytes to file '" +
                          targetFile.getAbsolutePath () +
                          "'");
           }
 
-          response.setStatus (HttpServletResponse.SC_OK);
-          baseRequest.setHandled (true);
+          // Status before payload!
+          response.setStatus (HttpServletResponse.SC_NO_CONTENT);
+
+          // Important to write something empty
+          response.write (true, StandardCharsets.UTF_8.encode (""), callback);
+          return true;
         }
+        return false;
       }
     };
 
-    final AbstractHandler deleteHandler = new AbstractHandler ()
+    final Handler.Abstract deleteHandler = new Handler.Abstract ()
     {
-      @Override
-      public void handle (final String target,
-                          final Request baseRequest,
-                          final HttpServletRequest request,
-                          final HttpServletResponse response) throws IOException
+      public boolean handle (final Request request, final Response response, final Callback callback) throws Exception
       {
         if (request.getMethod ().equals (EHttpMethod.DELETE.getName ()))
         {
-          final File targetFile = new File (aResourceBase, target);
+          final File targetFile = new File (aResourceBase, request.getHttpURI ().getPath ());
           LOGGER.info ("Jetty DELETE '" + targetFile.getAbsolutePath () + "'");
           FileOperationManager.INSTANCE.deleteFileIfExisting (targetFile);
 
-          response.setStatus (HttpServletResponse.SC_OK);
-          baseRequest.setHandled (true);
+          // Status before payload!
+          response.setStatus (HttpServletResponse.SC_NO_CONTENT);
+
+          // Important to write something empty
+          response.write (true, StandardCharsets.UTF_8.encode (""), callback);
+          return true;
         }
+        return false;
       }
     };
 
-    final ResourceHandler resourceHandler = new ResourceHandler ();
-    resourceHandler.setBaseResource (Resource.newResource (aResourceBase));
+    final Handler.Abstract getHandler = new Handler.Abstract ()
+    {
+      public boolean handle (final Request request, final Response response, final Callback callback) throws Exception
+      {
+        if (request.getMethod ().equals (EHttpMethod.GET.getName ()))
+        {
+          final File targetFile = new File (aResourceBase, request.getHttpURI ().getPath ());
+          if (targetFile.isFile ())
+          {
+            LOGGER.info ("Jetty GET [found] '" + targetFile.getAbsolutePath () + "'");
 
-    final ICommonsList <Handler> aHandlers = new CommonsArrayList <> ();
+            // Status before payload!
+            response.setStatus (HttpServletResponse.SC_OK);
+            response.write (true, ByteBuffer.wrap (Files.readAllBytes (targetFile.toPath ())), callback);
+          }
+          else
+          {
+            // Important to write something empty
+            LOGGER.info ("Jetty GET [not found] '" + targetFile.getAbsolutePath () + "'");
+
+            // Status before payload!
+            response.setStatus (HttpServletResponse.SC_NOT_FOUND);
+            response.write (true, StandardCharsets.UTF_8.encode (""), callback);
+          }
+          return true;
+        }
+        return false;
+      }
+    };
+
+    final Handler.Sequence sequence = new Handler.Sequence ();
+
+    // Write handler
     if (eWriteEnabled.isWriteEnabled ())
-      aHandlers.add (putHandler);
-    if (eDeleteEnabled.isDeleteEnabled ())
-      aHandlers.add (deleteHandler);
-    aHandlers.addAll (resourceHandler, new DefaultHandler ());
+      sequence.addHandler (putHandler);
 
-    final HandlerList handlers = new HandlerList (aHandlers.toArray (new Handler [0]));
-    m_aServer.setHandler (handlers);
+    // Delete handler
+    if (eDeleteEnabled.isDeleteEnabled ())
+      sequence.addHandler (deleteHandler);
+
+    // Read handler
+    sequence.addHandler (getHandler);
+
+    // Built-in read handler
+    if (false)
+    {
+      final ResourceHandler resourceHandler = new ResourceHandler ();
+      final ResourceFactory m_aRF = new PathResourceFactory ();
+      final var aBase = m_aRF.newResource (aResourceBase.getAbsoluteFile ().toURI ());
+      LOGGER.info ("Using base path " + aBase);
+      resourceHandler.setBaseResource (aBase);
+      sequence.addHandler (resourceHandler);
+    }
+
+    // Rest handler
+    if (false)
+      sequence.addHandler (new DefaultHandler ());
+
+    m_aServer.setHandler (sequence);
   }
 
   public void startJetty () throws Exception

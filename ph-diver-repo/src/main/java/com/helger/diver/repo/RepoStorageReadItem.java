@@ -16,20 +16,20 @@
  */
 package com.helger.diver.repo;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.array.ArrayHelper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.base.type.ObjectType;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ArrayHelper;
-import com.helger.commons.string.ToStringGenerator;
-import com.helger.commons.type.ObjectType;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
- * This is an abstract representation of a file retrieved from a repository. It
- * contains the content and a hashing status. It does not contain information of
- * a folder or filename - that may be taken from {@link RepoStorageKey}.
+ * This is an abstract representation of a file retrieved from a repository. It contains the content
+ * and a hashing status. It does not contain information of a folder or filename - that may be taken
+ * from {@link RepoStorageKey}.
  *
  * @author Philip Helger
  */

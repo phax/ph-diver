@@ -16,10 +16,10 @@
  */
 package com.helger.diver.repo;
 
-import javax.annotation.Nonnull;
+import com.helger.annotation.Nonempty;
+import com.helger.base.name.IHasDisplayName;
 
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.name.IHasDisplayName;
+import jakarta.annotation.Nonnull;
 
 /**
  * This enum contains the hash comparison result when reading from the

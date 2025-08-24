@@ -16,10 +16,10 @@
  */
 package com.helger.diver.repo.toc.jaxb;
 
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.collection.commons.CommonsArrayList;
 import com.helger.diver.repo.toc.jaxb.v10.ObjectFactory;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
+import com.helger.io.resource.ClassPathResource;
 import com.helger.jaxb.GenericJAXBMarshaller;
 
 /**

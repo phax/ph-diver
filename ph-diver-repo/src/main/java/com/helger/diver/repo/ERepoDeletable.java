@@ -16,7 +16,7 @@
  */
 package com.helger.diver.repo;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * Defines if a repository supports the action of deleting elements or not.

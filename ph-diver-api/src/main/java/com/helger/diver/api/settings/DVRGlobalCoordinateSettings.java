@@ -16,13 +16,12 @@
  */
 package com.helger.diver.api.settings;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.concurrent.NotThreadSafe;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
+import com.helger.annotation.Nonnegative;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.enforce.ValueEnforcer;
 
 /**
  * This class contains global settings for every DVR coordinate used. Modifies

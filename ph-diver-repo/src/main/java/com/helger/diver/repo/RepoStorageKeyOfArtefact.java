@@ -16,32 +16,31 @@
  */
 package com.helger.diver.repo;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.hashcode.HashCodeGenerator;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.hashcode.HashCodeGenerator;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
 import com.helger.diver.api.coord.DVRCoordinate;
 import com.helger.diver.api.version.DVRVersion;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
- * This is a specific storage key that not just contains a path but also a DVR
- * Coordinate to uniquely identify the object.
+ * This is a specific storage key that not just contains a path but also a DVR Coordinate to
+ * uniquely identify the object.
  *
  * @author Philip Helger
  */
 public class RepoStorageKeyOfArtefact extends RepoStorageKey
 {
   /**
-   * The default filename for the table of contents per group ID and artifact
-   * ID.
+   * The default filename for the table of contents per group ID and artifact ID.
    */
   public static final String FILENAME_TOC_DIVER_XML = "toc-diver.xml";
 
@@ -67,8 +66,7 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
   }
 
   /**
-   * @return The DVR coordinates as provided in the constructor. Never
-   *         <code>null</code>.
+   * @return The DVR coordinates as provided in the constructor. Never <code>null</code>.
    */
   @Nonnull
   public final DVRCoordinate getCoordinate ()
@@ -129,8 +127,8 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
    *        Group ID. May neither be <code>null</code> nor empty.
    * @param sArtifactID
    *        Artifact ID. May neither be <code>null</code> nor empty.
-   * @return A path from group ID and artifact ID, ending with a trailing slash.
-   *         Can never be <code>null</code> or empty.
+   * @return A path from group ID and artifact ID, ending with a trailing slash. Can never be
+   *         <code>null</code> or empty.
    */
   @Nonnull
   @Nonempty
@@ -144,27 +142,23 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
   }
 
   /**
-   * Create the relative path for the passed DVR Coordinate elements and the
-   * file extension. The algorithm is like this:
+   * Create the relative path for the passed DVR Coordinate elements and the file extension. The
+   * algorithm is like this:
    * <code>sGroupID.replace ('.', '/') + "/" + sArtifactID + "/" + sVersion + "/" + sArtifactID + "-" + sVersion [+ "-" + sClassifier] + sFileExt</code>
    * which is basically
    * <code>group/artifact/version/artifact-version[-classifier].fileExtension</code>
    *
    * @param sGroupID
-   *        The DVR Coordinate group ID. May neither be <code>null</code> nor
-   *        empty.
+   *        The DVR Coordinate group ID. May neither be <code>null</code> nor empty.
    * @param sArtifactID
-   *        The DVR Coordinate artifact ID. May neither be <code>null</code> nor
-   *        empty.
+   *        The DVR Coordinate artifact ID. May neither be <code>null</code> nor empty.
    * @param sVersion
-   *        The DVR Coordinate version. May neither be <code>null</code> nor
-   *        empty.
+   *        The DVR Coordinate version. May neither be <code>null</code> nor empty.
    * @param sClassifier
-   *        The DVR Coordinate classifier. If present, MUST NOT start with "-".
-   *        May be <code>null</code>.
-   * @param sFileExt
-   *        The file extension to use. Must start with ".". May not be
+   *        The DVR Coordinate classifier. If present, MUST NOT start with "-". May be
    *        <code>null</code>.
+   * @param sFileExt
+   *        The file extension to use. Must start with ".". May not be <code>null</code>.
    * @return Never <code>null</code>.
    * @see #getPathOfGroupIDAndArtifactID(String, String)
    */
@@ -180,8 +174,8 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
     ValueEnforcer.notEmpty (sFileExt, "FileExt");
     ValueEnforcer.isTrue ( () -> sFileExt.startsWith ("."), "FileExt must start with a dot");
 
-    final String sRealClassifier = StringHelper.hasText (sClassifier) ? DVRVersion.DEFAULT_CLASSIFIER_SEPARATOR +
-                                                                        sClassifier : "";
+    final String sRealClassifier = StringHelper.isNotEmpty (sClassifier) ? DVRVersion.DEFAULT_CLASSIFIER_SEPARATOR +
+                                                                           sClassifier : "";
     return getPathOfGroupIDAndArtifactID (sGroupID, sArtifactID) +
            sVersion +
            PATH_SEPARATOR +
@@ -193,15 +187,13 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
   }
 
   /**
-   * Create a {@link RepoStorageKey} from the passed DVR Coordinate and the file
-   * extension.
+   * Create a {@link RepoStorageKey} from the passed DVR Coordinate and the file extension.
    *
    * @param aCoord
-   *        The DVR Coordinate to convert. Considers an optionally present
-   *        classifier. May not be <code>null</code>.
-   * @param sFileExt
-   *        The file extension to use. Must start with ".". May not be
+   *        The DVR Coordinate to convert. Considers an optionally present classifier. May not be
    *        <code>null</code>.
+   * @param sFileExt
+   *        The file extension to use. Must start with ".". May not be <code>null</code>.
    * @return Never <code>null</code>.
    * @see #getFilename(String, String, String, String, String)
    */

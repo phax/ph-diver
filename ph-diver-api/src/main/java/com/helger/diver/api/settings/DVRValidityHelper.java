@@ -16,18 +16,18 @@
  */
 package com.helger.diver.api.settings;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import com.helger.annotation.Nonnegative;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.cache.regex.RegExHelper;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.regex.RegExHelper;
-import com.helger.commons.string.StringHelper;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
- * Helper class to check DVR Coordinate consistency. It is provided in its own
- * package, to avoid cyclic package dependencies between "coord" and "version".
+ * Helper class to check DVR Coordinate consistency. It is provided in its own package, to avoid
+ * cyclic package dependencies between "coord" and "version".
  *
  * @author Philip Helger
  */
@@ -55,7 +55,7 @@ public final class DVRValidityHelper
    */
   public static boolean isValidCoordinateGroupID (@Nullable final String sPart)
   {
-    if (StringHelper.hasNoText (sPart))
+    if (StringHelper.isEmpty (sPart))
       return false;
     return _isValidPart (sPart,
                          DVRGlobalCoordinateSettings.getGroupIDMinLen (),
@@ -71,7 +71,7 @@ public final class DVRValidityHelper
    */
   public static boolean isValidCoordinateArtifactID (@Nullable final String sPart)
   {
-    if (StringHelper.hasNoText (sPart))
+    if (StringHelper.isEmpty (sPart))
       return false;
     return _isValidPart (sPart,
                          DVRGlobalCoordinateSettings.getArtifactIDMinLen (),
@@ -87,7 +87,7 @@ public final class DVRValidityHelper
    */
   public static boolean isValidCoordinateVersion (@Nullable final String sPart)
   {
-    if (StringHelper.hasNoText (sPart))
+    if (StringHelper.isEmpty (sPart))
       return false;
     return _isValidPart (sPart,
                          DVRGlobalCoordinateSettings.getVersionMinLen (),
@@ -104,7 +104,7 @@ public final class DVRValidityHelper
   public static boolean isValidCoordinateClassifier (@Nullable final String sPart)
   {
     // Classifier is optional
-    if (StringHelper.hasNoText (sPart))
+    if (StringHelper.isEmpty (sPart))
       return true;
     return _isValidPart (sPart,
                          DVRGlobalCoordinateSettings.getClassifierMinLen (),

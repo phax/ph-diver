@@ -21,8 +21,8 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import com.helger.commons.mock.CommonsTestHelper;
 import com.helger.diver.api.version.DVRVersionException;
+import com.helger.unittest.support.TestHelper;
 
 /**
  * Test class for class {@link DVRCoordinate}.
@@ -39,27 +39,27 @@ public final class DVRCoordinateTest
     assertEquals ("phive", aID1.getArtifactID ());
     assertEquals ("3-SNAPSHOT", aID1.getVersionString ());
     assertNull (aID1.getClassifier ());
-    CommonsTestHelper.testEqualsImplementationWithEqualContentObject (aID1,
-                                                                      DVRCoordinate.create ("com.helger",
-                                                                                            "phive",
-                                                                                            "3.0.0.SNAPSHOT"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (aID1,
-                                                                          DVRCoordinate.create ("com.holger",
-                                                                                                "phive",
-                                                                                                "3.0.0.SNAPSHOT"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (aID1,
-                                                                          DVRCoordinate.create ("com.helger",
-                                                                                                "phivengine",
-                                                                                                "3.0.0.SNAPSHOT"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (aID1,
-                                                                          DVRCoordinate.create ("com.helger",
-                                                                                                "phive",
-                                                                                                "3.0.0"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (aID1,
-                                                                          DVRCoordinate.create ("com.helger",
-                                                                                                "phive",
-                                                                                                "3.0.0.SNAPSHOT",
-                                                                                                "src"));
+    TestHelper.testEqualsImplementationWithEqualContentObject (aID1,
+                                                               DVRCoordinate.create ("com.helger",
+                                                                                     "phive",
+                                                                                     "3.0.0.SNAPSHOT"));
+    TestHelper.testEqualsImplementationWithDifferentContentObject (aID1,
+                                                                   DVRCoordinate.create ("com.holger",
+                                                                                         "phive",
+                                                                                         "3.0.0.SNAPSHOT"));
+    TestHelper.testEqualsImplementationWithDifferentContentObject (aID1,
+                                                                   DVRCoordinate.create ("com.helger",
+                                                                                         "phivengine",
+                                                                                         "3.0.0.SNAPSHOT"));
+    TestHelper.testEqualsImplementationWithDifferentContentObject (aID1,
+                                                                   DVRCoordinate.create ("com.helger",
+                                                                                         "phive",
+                                                                                         "3.0.0"));
+    TestHelper.testEqualsImplementationWithDifferentContentObject (aID1,
+                                                                   DVRCoordinate.create ("com.helger",
+                                                                                         "phive",
+                                                                                         "3.0.0.SNAPSHOT",
+                                                                                         "src"));
   }
 
   @Test

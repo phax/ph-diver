@@ -16,9 +16,9 @@
  */
 package com.helger.diver.api.coord;
 
-import javax.annotation.Nonnull;
-
 import com.helger.diver.api.DVRException;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * A specific exception for DVR Coordinate handling

@@ -16,19 +16,19 @@
  */
 package com.helger.diver.api.coord;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.Nonempty;
+import com.helger.base.string.StringHelper;
 import com.helger.diver.api.version.DVRVersion;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
- * The DVR Coordinate represents the coordinate of a single technical artefact
- * in a specific version.<br />
- * It was originally called VESID for "Validation Executor Set ID" but is now
- * used in a wider range of use cases. The name was changed for release v2 to
- * DVRID. In v3 the name was changed again to DVR Coordinate.<br/>
+ * The DVR Coordinate represents the coordinate of a single technical artefact in a specific
+ * version.<br />
+ * It was originally called VESID for "Validation Executor Set ID" but is now used in a wider range
+ * of use cases. The name was changed for release v2 to DVRID. In v3 the name was changed again to
+ * DVR Coordinate.<br/>
  * This is the read-only interface for a single DVR Coordinate.
  *
  * @author Philip Helger
@@ -37,24 +37,21 @@ import com.helger.diver.api.version.DVRVersion;
 public interface IDVRCoordinate
 {
   /**
-   * @return The coordinate's group ID. May never be <code>null</code> nor
-   *         empty.
+   * @return The coordinate's group ID. May never be <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty
   String getGroupID ();
 
   /**
-   * @return The coordinate's artifact ID. May never be <code>null</code> nor
-   *         empty.
+   * @return The coordinate's artifact ID. May never be <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty
   String getArtifactID ();
 
   /**
-   * @return The coordinate's version as a single string. May never be
-   *         <code>null</code> nor empty.
+   * @return The coordinate's version as a single string. May never be <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty
@@ -70,25 +67,22 @@ public interface IDVRCoordinate
   DVRVersion getVersionObj ();
 
   /**
-   * @return <code>true</code> if a classifier is present, <code>false</code> if
-   *         not.
+   * @return <code>true</code> if a classifier is present, <code>false</code> if not.
    */
   default boolean hasClassifier ()
   {
-    return StringHelper.hasText (getClassifier ());
+    return StringHelper.isNotEmpty (getClassifier ());
   }
 
   /**
-   * @return The coordinate's optional classifier ID. May be <code>null</code>
-   *         or empty.
+   * @return The coordinate's optional classifier ID. May be <code>null</code> or empty.
    */
   @Nullable
   String getClassifier ();
 
   /**
-   * @return A joint String representation of the coordinates. The different
-   *         parts are separated by a colon (:) character. Never
-   *         <code>null</code> nor empty.
+   * @return A joint String representation of the coordinates. The different parts are separated by
+   *         a colon (:) character. Never <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty

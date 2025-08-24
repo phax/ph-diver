@@ -24,8 +24,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.helger.commons.mock.CommonsTestHelper;
-import com.helger.commons.version.Version;
+import com.helger.base.version.Version;
+import com.helger.unittest.support.TestHelper;
 
 /**
  * Test class for class {@link DVRVersion}.
@@ -126,12 +126,12 @@ public final class DVRVersionTest
   public void testEqualsHashcode ()
   {
     final DVRVersion ver = DVRVersion.parseOrNull ("1.2.3");
-    CommonsTestHelper.testEqualsImplementationWithEqualContentObject (ver, DVRVersion.parseOrNull ("1.2.3"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("1.2.4"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("1.1.3"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("2.2.3"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("1.2"));
-    CommonsTestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("1.2.3.bla"));
+    TestHelper.testEqualsImplementationWithEqualContentObject (ver, DVRVersion.parseOrNull ("1.2.3"));
+    TestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("1.2.4"));
+    TestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("1.1.3"));
+    TestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("2.2.3"));
+    TestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("1.2"));
+    TestHelper.testEqualsImplementationWithDifferentContentObject (ver, DVRVersion.parseOrNull ("1.2.3.bla"));
   }
 
   @Test

@@ -16,10 +16,10 @@
  */
 package com.helger.diver.api.version.spi;
 
-import javax.annotation.Nonnull;
-
-import com.helger.commons.annotation.IsSPIInterface;
+import com.helger.annotation.style.IsSPIInterface;
 import com.helger.diver.api.version.IDVRPseudoVersionRegistry;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * SPI pseudo version registration interface

@@ -25,12 +25,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.concurrent.ThreadLocalRandom;
 
-import javax.annotation.Nonnull;
-
 import org.junit.Test;
 
-import com.helger.commons.io.file.FileOperationManager;
-import com.helger.commons.state.ESuccess;
+import com.helger.base.state.ESuccess;
 import com.helger.diver.api.coord.DVRCoordinate;
 import com.helger.diver.api.version.DVRVersionException;
 import com.helger.diver.repo.ERepoDeletable;
@@ -43,6 +40,9 @@ import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.mock.MockRepoStorageLocalFileSystem;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
+import com.helger.io.file.FileOperationManager;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Test class for class {@link RepoStorageLocalFileSystem}.

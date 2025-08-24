@@ -19,23 +19,24 @@ package com.helger.diver.repo.toc;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.impl.CommonsTreeMap;
-import com.helger.commons.collection.impl.CommonsTreeSet;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.collection.impl.ICommonsSortedMap;
-import com.helger.commons.collection.impl.ICommonsSortedSet;
-import com.helger.commons.state.EChange;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.Nonempty;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.state.EChange;
+import com.helger.base.string.StringHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsTreeMap;
+import com.helger.collection.commons.CommonsTreeSet;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsSortedMap;
+import com.helger.collection.commons.ICommonsSortedSet;
 import com.helger.diver.api.settings.DVRValidityHelper;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toptoc.jaxb.v10.ArtifactType;
 import com.helger.diver.repo.toptoc.jaxb.v10.GroupType;
 import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * JAXB independent top ToC representation
@@ -45,8 +46,7 @@ import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
 public class RepoTopTocXML
 {
   /**
-   * Represents a single group with a name, a list of sub groups and a list of
-   * artifacts.
+   * Represents a single group with a name, a list of sub groups and a list of artifacts.
    *
    * @author Philip Helger
    */
@@ -109,8 +109,9 @@ public class RepoTopTocXML
   @Nullable
   private Group _getGroup (@Nonnull @Nonempty final String sGroupID)
   {
-    final ICommonsList <String> aGroupPart = StringHelper.getExploded (RepoStorageKeyOfArtefact.GROUP_LEVEL_SEPARATOR,
-                                                                       sGroupID);
+    final ICommonsList <String> aGroupPart = new CommonsArrayList <> ();
+    StringHelper.explode (RepoStorageKeyOfArtefact.GROUP_LEVEL_SEPARATOR, sGroupID, -1, aGroupPart::add);
+
     // Resolve all recursive subgroups
     Group aGroup = m_aTopLevelGroups.get (aGroupPart.removeFirstOrNull ());
     while (aGroup != null && aGroupPart.isNotEmpty ())
@@ -192,8 +193,9 @@ public class RepoTopTocXML
   @Nonnull
   private Group _getOrCreateGroup (@Nonnull @Nonempty final String sGroupID)
   {
-    final ICommonsList <String> aGroupPart = StringHelper.getExploded (RepoStorageKeyOfArtefact.GROUP_LEVEL_SEPARATOR,
-                                                                       sGroupID);
+    final ICommonsList <String> aGroupPart = new CommonsArrayList <> ();
+    StringHelper.explode (RepoStorageKeyOfArtefact.GROUP_LEVEL_SEPARATOR, sGroupID, -1, aGroupPart::add);
+
     // Resolve all recursive subgroups
     Group aGroup = m_aTopLevelGroups.computeIfAbsent (aGroupPart.removeFirstOrNull (), Group::new);
     while (aGroupPart.isNotEmpty ())

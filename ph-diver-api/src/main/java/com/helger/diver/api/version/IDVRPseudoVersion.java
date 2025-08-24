@@ -16,7 +16,7 @@
  */
 package com.helger.diver.api.version;
 
-import com.helger.commons.id.IHasID;
+import com.helger.base.id.IHasID;
 
 /**
  * Base read-only interface for a pseudo version.

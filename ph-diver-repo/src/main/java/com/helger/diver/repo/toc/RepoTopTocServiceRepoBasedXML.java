@@ -19,29 +19,29 @@ package com.helger.diver.repo.toc;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.error.list.ErrorList;
-import com.helger.commons.state.ESuccess;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.GuardedBy;
+import com.helger.annotation.concurrent.ThreadSafe;
+import com.helger.base.concurrent.SimpleReadWriteLock;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.state.ESuccess;
+import com.helger.base.string.StringHelper;
+import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.diver.repo.IRepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageContentByteArray;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.toc.jaxb.RepoTopToc1Marshaller;
 import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
- * XML based RepoTopToc model persisted in the repo itself. Each repository
- * requires its own instance of this service and MUST NOT be re-used.
+ * XML based RepoTopToc model persisted in the repo itself. Each repository requires its own
+ * instance of this service and MUST NOT be re-used.
  *
  * @author Philip Helger
  */
@@ -141,9 +141,9 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
   {
     _checkInited ();
 
-    if (StringHelper.hasNoText (sGroupID))
+    if (StringHelper.isEmpty (sGroupID))
       return false;
-    if (StringHelper.hasNoText (sArtifactID))
+    if (StringHelper.isEmpty (sArtifactID))
       return false;
 
     return m_aRWLock.readLockedBoolean ( () -> m_aTopToc.containsGroupAndArtifact (sGroupID, sArtifactID));

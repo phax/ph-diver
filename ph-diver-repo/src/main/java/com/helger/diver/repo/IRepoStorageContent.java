@@ -16,9 +16,8 @@
  */
 package com.helger.diver.repo;
 
-import javax.annotation.Nonnegative;
-
-import com.helger.commons.io.IHasInputStreamAndReader;
+import com.helger.annotation.Nonnegative;
+import com.helger.base.io.iface.IHasInputStreamAndReader;
 
 /**
  * The main content of an {@link IRepoStorageReadItem}.

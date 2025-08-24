@@ -19,32 +19,32 @@ package com.helger.diver.api.version;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.MustImplementComparable;
-import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.impl.CommonsLinkedHashSet;
-import com.helger.commons.collection.impl.ICommonsOrderedSet;
-import com.helger.commons.equals.EqualsHelper;
-import com.helger.commons.hashcode.HashCodeGenerator;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
-import com.helger.commons.version.Version;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.style.MustImplementComparable;
+import com.helger.annotation.style.MustImplementEqualsAndHashcode;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.equals.EqualsHelper;
+import com.helger.base.hashcode.HashCodeGenerator;
+import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringImplode;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.base.version.Version;
+import com.helger.collection.CollectionHelper;
+import com.helger.collection.commons.CommonsLinkedHashSet;
+import com.helger.collection.commons.ICommonsOrderedSet;
 import com.helger.diver.api.settings.DVRValidityHelper;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
- * This class contains the version of a DVR Coordinate. This can either be a
- * static version or a pseudo version. This version type has a specific kind of
- * ordering, so that versions using the classifier "SNAPSHOT" are ordered BEFORE
- * respective release versions. Example order:
+ * This class contains the version of a DVR Coordinate. This can either be a static version or a
+ * pseudo version. This version type has a specific kind of ordering, so that versions using the
+ * classifier "SNAPSHOT" are ordered BEFORE respective release versions. Example order:
  * <ol>
  * <li>1.0</li>
  * <li>1.1-SNAPSHOT</li>
@@ -92,8 +92,8 @@ public final class DVRVersion implements Comparable <DVRVersion>
   }
 
   /**
-   * @return <code>true</code> if it is a static version, <code>false</code> if
-   *         it is a pseudo version
+   * @return <code>true</code> if it is a static version, <code>false</code> if it is a pseudo
+   *         version
    * @see #isPseudoVersion()
    * @see #getStaticVersion()
    */
@@ -116,8 +116,7 @@ public final class DVRVersion implements Comparable <DVRVersion>
   /**
    * @param aVer
    *        The version to check. May be <code>null</code>.,
-   * @return <code>true</code> if the passed version has the the qualifier
-   *         "SNAPSHOT".
+   * @return <code>true</code> if the passed version has the the qualifier "SNAPSHOT".
    * @since 1.0.1
    */
   public static boolean isStaticSnapshotVersion (@Nullable final Version aVer)
@@ -126,8 +125,7 @@ public final class DVRVersion implements Comparable <DVRVersion>
   }
 
   /**
-   * @return <code>true</code> if this is a static version, and if the qualifier
-   *         is "SNAPSHOT".
+   * @return <code>true</code> if this is a static version, and if the qualifier is "SNAPSHOT".
    * @see #isStaticVersion()
    */
   public boolean isStaticSnapshotVersion ()
@@ -136,8 +134,8 @@ public final class DVRVersion implements Comparable <DVRVersion>
   }
 
   /**
-   * @return The static version of this VER version. Guaranteed to be
-   *         non-<code>null</code> if {@link #isStaticVersion()} returns true.
+   * @return The static version of this VER version. Guaranteed to be non-<code>null</code> if
+   *         {@link #isStaticVersion()} returns true.
    * @see #isStaticVersion()
    */
   @Nullable
@@ -147,8 +145,8 @@ public final class DVRVersion implements Comparable <DVRVersion>
   }
 
   /**
-   * @return <code>true</code> if it is a pseudo version, <code>false</code> if
-   *         it is a static version
+   * @return <code>true</code> if it is a pseudo version, <code>false</code> if it is a static
+   *         version
    * @see #isStaticVersion()
    * @see #getPseudoVersion()
    */
@@ -158,8 +156,8 @@ public final class DVRVersion implements Comparable <DVRVersion>
   }
 
   /**
-   * @return The pseudo version of this VER version. Guaranteed to be
-   *         non-<code>null</code> if {@link #isPseudoVersion()} returns true.
+   * @return The pseudo version of this VER version. Guaranteed to be non-<code>null</code> if
+   *         {@link #isPseudoVersion()} returns true.
    * @see #isPseudoVersion()
    */
   @Nullable
@@ -398,13 +396,12 @@ public final class DVRVersion implements Comparable <DVRVersion>
    *
    * @param sVersion
    *        The version to check
-   * @return <code>true</code> if the version is a valid static version,
-   *         <code>false</code> if not.
+   * @return <code>true</code> if the version is a valid static version, <code>false</code> if not.
    */
   public static boolean isValidStaticVersion (@Nullable final String sVersion)
   {
     // Must not be empty
-    if (StringHelper.hasNoText (sVersion))
+    if (StringHelper.isEmpty (sVersion))
       return false;
 
     // Must follow the DVR Coordinate constraints
@@ -438,10 +435,10 @@ public final class DVRVersion implements Comparable <DVRVersion>
       LOGGER.debug ("'" +
                     sVersion +
                     "' is none of " +
-                    StringHelper.imploder ()
-                                .source (aPossibleVersions, x -> "'" + x + "'")
-                                .separator (" or ")
-                                .build ());
+                    StringImplode.imploder ()
+                                 .source (aPossibleVersions, x -> "'" + x + "'")
+                                 .separator (" or ")
+                                 .build ());
 
     // Nope, invalid version
     return false;
@@ -450,7 +447,7 @@ public final class DVRVersion implements Comparable <DVRVersion>
   @Nonnull
   public static DVRVersion parseOrThrow (@Nullable final String sVersion) throws DVRVersionException
   {
-    if (StringHelper.hasNoText (sVersion))
+    if (StringHelper.isEmpty (sVersion))
       throw new DVRVersionException ("DVR Version string must not be empty");
 
     // Check pseudo version first
@@ -482,18 +479,16 @@ public final class DVRVersion implements Comparable <DVRVersion>
   }
 
   /**
-   * Create a {@link Predicate} that can be used to filter static DVR versions.
-   * The returned predicate may be used as a filter when iterating over entries.
-   * This method is only meant to work with static versions and does not
-   * consider pseudo versions.
+   * Create a {@link Predicate} that can be used to filter static DVR versions. The returned
+   * predicate may be used as a filter when iterating over entries. This method is only meant to
+   * work with static versions and does not consider pseudo versions.
    *
    * @param aVersionsToIgnore
-   *        Optional set of specific versions to ignore. This may be handy to
-   *        explicitly rule out illegal versions. May be <code>null</code> or
-   *        empty to indicate that no version should be ignored.
+   *        Optional set of specific versions to ignore. This may be handy to explicitly rule out
+   *        illegal versions. May be <code>null</code> or empty to indicate that no version should
+   *        be ignored.
    * @param bIncludeSnapshots
-   *        <code>true</code> if SNAPSHOT versions should be allowed by the
-   *        resulting predicate.
+   *        <code>true</code> if SNAPSHOT versions should be allowed by the resulting predicate.
    * @return Never <code>null</code>.
    */
   @Nonnull

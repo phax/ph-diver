@@ -16,24 +16,22 @@
  */
 package com.helger.diver.api.coord;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.MustImplementComparable;
-import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.compare.CompareHelper;
-import com.helger.commons.equals.EqualsHelper;
-import com.helger.commons.hashcode.HashCodeGenerator;
-import com.helger.commons.hashcode.IHashCodeGenerator;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.style.MustImplementComparable;
+import com.helger.annotation.style.MustImplementEqualsAndHashcode;
+import com.helger.base.compare.CompareHelper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.equals.EqualsHelper;
+import com.helger.base.hashcode.HashCodeGenerator;
+import com.helger.base.hashcode.IHashCodeGenerator;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
 import com.helger.diver.api.DVRException;
 import com.helger.diver.api.settings.DVRValidityHelper;
 import com.helger.diver.api.version.DVRPseudoVersionRegistry;
@@ -41,12 +39,15 @@ import com.helger.diver.api.version.DVRVersion;
 import com.helger.diver.api.version.DVRVersionException;
 import com.helger.diver.api.version.IDVRPseudoVersion;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
- * The DVR Coordinate represents the coordinate of a single technical artefact
- * in a specific version.<br />
- * It was originally called VESID for "Validation Executor Set ID" but is now
- * used in a wider range of use cases. The name was changed for release v2 to
- * DVRID. In v3 the name was changed again to DVR Coordinate.
+ * The DVR Coordinate represents the coordinate of a single technical artefact in a specific
+ * version.<br />
+ * It was originally called VESID for "Validation Executor Set ID" but is now used in a wider range
+ * of use cases. The name was changed for release v2 to DVRID. In v3 the name was changed again to
+ * DVR Coordinate.
  *
  * @author Philip Helger
  */
@@ -124,7 +125,7 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
     m_sArtifactID = sArtifactID;
     m_aVersion = aVersion;
     // Unify "" and null
-    m_sClassifier = StringHelper.hasText (sClassifier) ? sClassifier : null;
+    m_sClassifier = StringHelper.isNotEmpty (sClassifier) ? sClassifier : null;
   }
 
   @Nonnull
@@ -210,10 +211,14 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
                                       @Nonnull @Nonempty final String sVersion,
                                       @Nullable final String sClassifier)
   {
-    String ret = sGroupID + PART_SEPARATOR + sArtifactID + PART_SEPARATOR + sVersion;
-    if (StringHelper.hasText (sClassifier))
-      ret += PART_SEPARATOR + sClassifier;
-    return ret;
+    final StringBuilder ret = new StringBuilder ().append (sGroupID)
+                                                  .append (PART_SEPARATOR)
+                                                  .append (sArtifactID)
+                                                  .append (PART_SEPARATOR)
+                                                  .append (sVersion);
+    if (StringHelper.isNotEmpty (sClassifier))
+      ret.append (PART_SEPARATOR).append (sClassifier);
+    return ret.toString ();
   }
 
   @Nonnull
@@ -283,13 +288,12 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
     return new ToStringGenerator (null).append ("GroupID", m_sGroupID)
                                        .append ("ArtifactID", m_sArtifactID)
                                        .append ("Version", m_aVersion)
-                                       .appendIf ("Classifier", m_sClassifier, StringHelper::hasText)
+                                       .appendIf ("Classifier", m_sClassifier, StringHelper::isNotEmpty)
                                        .getToString ();
   }
 
   /**
-   * Factory method without classifier. All parameters must match the
-   * constraints from
+   * Factory method without classifier. All parameters must match the constraints from
    * {@link DVRValidityHelper#isValidCoordinateGroupID(String)},
    * {@link DVRValidityHelper#isValidCoordinateArtifactID(String)} and
    * {@link DVRValidityHelper#isValidCoordinateVersion(String)}.
@@ -313,8 +317,7 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
   }
 
   /**
-   * Factory method for DVR coordinates. All parameters must match the
-   * constraints from
+   * Factory method for DVR coordinates. All parameters must match the constraints from
    * {@link DVRValidityHelper#isValidCoordinateGroupID(String)},
    * {@link DVRValidityHelper#isValidCoordinateArtifactID(String)},
    * {@link DVRValidityHelper#isValidCoordinateVersion(String)} and
@@ -342,8 +345,8 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
   }
 
   /**
-   * Try to parse the provided coordinates String. This is the reverse operation
-   * to {@link #getAsSingleID()}.
+   * Try to parse the provided coordinates String. This is the reverse operation to
+   * {@link #getAsSingleID()}.
    *
    * @param sCoords
    *        The coordinate string to parse. May be <code>null</code>.
@@ -357,7 +360,7 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
   public static DVRCoordinate parseOrThrow (@Nullable final String sCoords) throws DVRCoordinateException,
                                                                             DVRVersionException
   {
-    final ICommonsList <String> aParts = StringHelper.getExploded (PART_SEPARATOR, sCoords);
+    final List <String> aParts = StringHelper.getExploded (PART_SEPARATOR, sCoords);
     final int nSize = aParts.size ();
     if (nSize >= 3 && nSize <= 4)
       return create (aParts.get (0), aParts.get (1), aParts.get (2), nSize >= 4 ? aParts.get (3) : null);

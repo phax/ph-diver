@@ -28,17 +28,17 @@ import java.time.temporal.ChronoUnit;
 
 import org.junit.Test;
 
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.collection.impl.ICommonsSortedMap;
-import com.helger.commons.datetime.PDTFactory;
-import com.helger.commons.datetime.PDTWebDateHelper;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.mock.CommonsTestHelper;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsMap;
+import com.helger.collection.commons.ICommonsSortedMap;
+import com.helger.datetime.helper.PDTFactory;
+import com.helger.datetime.web.PDTWebDateHelper;
 import com.helger.diver.api.DVRException;
 import com.helger.diver.api.version.DVRVersion;
 import com.helger.diver.repo.toc.jaxb.RepoToc1Marshaller;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.unittest.support.TestHelper;
 
 /**
  * Test class for class {@link RepoToc}.
@@ -131,10 +131,10 @@ public final class RepoTocTest
     final ICommonsMap <DVRVersion, OffsetDateTime> aVersions2 = aVersions.getClone ();
     aVersions2.put (DVRVersion.parseOrThrow ("1.2"), aODT);
 
-    CommonsTestHelper.testDefaultImplementationWithEqualContentObject (aToC, new RepoToc ("g", "a", aVersions));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (aToC, new RepoToc ("g2", "a", aVersions));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (aToC, new RepoToc ("g", "a2", aVersions));
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (aToC, new RepoToc ("g", "a", aVersions2));
+    TestHelper.testDefaultImplementationWithEqualContentObject (aToC, new RepoToc ("g", "a", aVersions));
+    TestHelper.testDefaultImplementationWithDifferentContentObject (aToC, new RepoToc ("g2", "a", aVersions));
+    TestHelper.testDefaultImplementationWithDifferentContentObject (aToC, new RepoToc ("g", "a2", aVersions));
+    TestHelper.testDefaultImplementationWithDifferentContentObject (aToC, new RepoToc ("g", "a", aVersions2));
   }
 
   @Test

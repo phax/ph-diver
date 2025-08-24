@@ -16,9 +16,9 @@
  */
 package com.helger.diver.api.version;
 
-import javax.annotation.Nonnull;
-
 import com.helger.diver.api.DVRException;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * A specific exception for DVR version handling
