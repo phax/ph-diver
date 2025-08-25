@@ -142,10 +142,20 @@
               com.helger.diver.repo.impl,
               com.helger.diver.repo.toc
             </Export-Package>
-            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <Import-Package>!jakarta.annotation.*,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <source>17</source>
+          <sourcepath>
+            ${project.build.sourceDirectory}:${project.build.directory}/generated-sources/xjc
+          </sourcepath>
+        </configuration>
+      </plugin> 
     </plugins>
   </build>
 </project>
