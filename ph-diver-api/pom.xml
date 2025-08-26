@@ -30,7 +30,6 @@
   <description>ph-diver - Philip Helger Digitally Versioned Resource Subsystem - basic API library</description>
   <url>https://github.com/phax/ph-diver/ph-diver-api</url>
   <inceptionYear>2023</inceptionYear>
-  
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -38,12 +37,10 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  
   <organization>
     <name>Philip Helger</name>
     <url>http://www.helger.com</url>
   </organization>
-  
   <developers>
     <developer>
       <id>philip</id>
@@ -52,7 +49,6 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
-  
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
@@ -62,14 +58,12 @@
       <groupId>com.helger.commons</groupId>
       <artifactId>ph-cache</artifactId>
     </dependency>
-    
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
   <build>
     <plugins>
       <plugin>
@@ -79,14 +73,16 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.diver.api</Automatic-Module-Name>
-            <Export-Package>
-              com.helger.diver.api,
+            <Export-Package>com.helger.diver.api,
               com.helger.diver.api.coord,
               com.helger.diver.api.settings,
               com.helger.diver.api.version,
-              com.helger.diver.api.version.spi
-            </Export-Package>
+              com.helger.diver.api.version.spi</Export-Package>
             <Import-Package>!jakarta.annotation.*,*</Import-Package>
+            <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)",
+osgi.extender; filter:="(osgi.extender=osgi.serviceloader.processor)",
+osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.diver.api.version.spi.IDVRPseudoVersionRegistrarSPI)"; cardinality:=multiple; resolution:=optional</Require-Capability>
+            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.diver.api.version.spi.IDVRPseudoVersionRegistrarSPI</Provide-Capability>
           </instructions>
         </configuration>
       </plugin>
