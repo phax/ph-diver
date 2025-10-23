@@ -67,8 +67,8 @@
     <jaxb-plugin.artifact>jaxb-maven-plugin</jaxb-plugin.artifact>
     <jaxb-plugin.version>4.0.11</jaxb-plugin.version>
     <ph-jaxb-plugin.version>5.0.1</ph-jaxb-plugin.version>
-    <jetty.version>12.1.2</jetty.version>
-    <awssdk-version>2.35.10</awssdk-version>
+    <jetty.version>12.1.3</jetty.version>
+    <awssdk-version>2.36.0</awssdk-version>
   </properties>
   
   <dependencyManagement>
