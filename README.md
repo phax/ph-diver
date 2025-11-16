@@ -20,7 +20,7 @@ The reason why the several types of repositories are separated, is mainly becaus
 # DVR Coordinate
 
 The DVR Coordinate, short for Digitally Version Resource Coordinate, is an identifier for any technical artefact (file) 
-  very similar to [Maven coordinates](https://maven.apache.org/pom.html#Maven_Coordinates).
+  very similar to [Maven Coordinates](https://maven.apache.org/pom.html#Maven_Coordinates).
 
 Hint: The original term was "VESID" which was very much focused on validation artefacts. 
    Each VESID is a DVR Coordinate, but not vice versa.
@@ -128,6 +128,10 @@ Alternate usage as a Maven BOM:
 ```
 
 # News and Noteworthy
+
+v4.1.0 - 2025-11-16
+* Updated to ph-commons 12.1.0
+* Using JSpecify annotations
 
 v4.0.0 - 2025-08-25
 * Requires Java 17 as the minimum version

@@ -16,10 +16,10 @@
  */
 package com.helger.diver.api.version.spi;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.IsSPIInterface;
 import com.helger.diver.api.version.IDVRPseudoVersionRegistry;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * SPI pseudo version registration interface
@@ -36,5 +36,5 @@ public interface IDVRPseudoVersionRegistrarSPI
    * @param aRegistry
    *        The registry to register to. Never <code>null</code>.
    */
-  void registerPseudoVersions (@Nonnull IDVRPseudoVersionRegistry aRegistry);
+  void registerPseudoVersions (@NonNull IDVRPseudoVersionRegistry aRegistry);
 }

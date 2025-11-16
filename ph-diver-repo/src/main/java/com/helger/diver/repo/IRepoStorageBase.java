@@ -16,8 +16,8 @@
  */
 package com.helger.diver.repo;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Defines an abstract way to read from a chain of repositories.
@@ -33,7 +33,7 @@ public interface IRepoStorageBase
    *        The key to check for existence. May not be <code>null</code>.
    * @return <code>true</code> if it exists, <code>false</code> if not.
    */
-  boolean exists (@Nonnull RepoStorageKey aKey);
+  boolean exists (@NonNull RepoStorageKey aKey);
 
   /**
    * Read the provided key from the underlying storage.
@@ -43,5 +43,5 @@ public interface IRepoStorageBase
    * @return <code>null</code> if the provided key does not exist.
    */
   @Nullable
-  IRepoStorageReadItem read (@Nonnull RepoStorageKey aKey);
+  IRepoStorageReadItem read (@NonNull RepoStorageKey aKey);
 }

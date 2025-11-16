@@ -20,6 +20,8 @@ import java.time.OffsetDateTime;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +46,6 @@ import com.helger.diver.repo.toc.RepoToc;
 import com.helger.diver.repo.toc.jaxb.RepoToc1Marshaller;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * Abstract implementation of a repository storage with table of contents
  * support.
@@ -68,18 +67,18 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
   private final AtomicBoolean m_aTopTocServiceInitialized = new AtomicBoolean (false);
   private final IRepoTopTocService m_aTopTocService;
 
-  protected AbstractRepoStorageWithToc (@Nonnull final IRepoStorageType aType,
-                                        @Nonnull @Nonempty final String sID,
-                                        @Nonnull final ERepoWritable eWriteEnabled,
-                                        @Nonnull final ERepoDeletable eDeleteEnabled,
-                                        @Nonnull final IRepoTopTocService aTopTocService)
+  protected AbstractRepoStorageWithToc (@NonNull final IRepoStorageType aType,
+                                        @NonNull @Nonempty final String sID,
+                                        @NonNull final ERepoWritable eWriteEnabled,
+                                        @NonNull final ERepoDeletable eDeleteEnabled,
+                                        @NonNull final IRepoTopTocService aTopTocService)
   {
     super (aType, sID, eWriteEnabled, eDeleteEnabled);
     ValueEnforcer.notNull (aTopTocService, "TopTocService");
     m_aTopTocService = aTopTocService;
   }
 
-  @Nonnull
+  @NonNull
   public final IRepoTopTocService getTopTocService ()
   {
     if (!m_aTopTocServiceInitialized.getAndSet (true))
@@ -97,7 +96,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
     return m_bEnableTocUpdates;
   }
 
-  @Nonnull
+  @NonNull
   public final IMPLTYPE setEnableTocUpdates (final boolean b)
   {
     m_bEnableTocUpdates = b;
@@ -118,10 +117,10 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
    * @return {@link ESuccess#SUCCESS} if updating was successful. Never
    *         <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @OverrideOnDemand
-  protected ESuccess updateToc (@Nonnull final RepoStorageKeyOfArtefact aKeyToc,
-                                @Nonnull final Consumer <? super RepoToc> aTocConsumer)
+  protected ESuccess updateToc (@NonNull final RepoStorageKeyOfArtefact aKeyToc,
+                                @NonNull final Consumer <? super RepoToc> aTocConsumer)
   {
     // Read existing ToC
     final IRepoStorageReadItem aTocItem = read (aKeyToc);
@@ -165,9 +164,9 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
 
   @Override
   @OverrideOnDemand
-  @Nonnull
-  protected final ESuccess onAfterWrite (@Nonnull final RepoStorageKeyOfArtefact aKey,
-                                         @Nonnull final IRepoStorageContent aContent,
+  @NonNull
+  protected final ESuccess onAfterWrite (@NonNull final RepoStorageKeyOfArtefact aKey,
+                                         @NonNull final IRepoStorageContent aContent,
                                          @Nullable final OffsetDateTime aPublicationDT)
   {
     if (isEnableTocUpdates ())
@@ -202,8 +201,8 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
   }
 
   @Override
-  @Nonnull
-  protected final ESuccess onAfterDelete (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  @NonNull
+  protected final ESuccess onAfterDelete (@NonNull final RepoStorageKeyOfArtefact aKey)
   {
     if (isEnableTocUpdates ())
     {

@@ -16,14 +16,14 @@
  */
 package com.helger.diver.api.settings;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonnegative;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.cache.regex.RegExHelper;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Helper class to check DVR Coordinate consistency. It is provided in its own package, to avoid
@@ -37,7 +37,7 @@ public final class DVRValidityHelper
   private DVRValidityHelper ()
   {}
 
-  private static boolean _isValidPart (@Nonnull final String sPart,
+  private static boolean _isValidPart (@NonNull final String sPart,
                                        @Nonnegative final int nMinLen,
                                        @Nonnegative final int nMaxLen)
   {

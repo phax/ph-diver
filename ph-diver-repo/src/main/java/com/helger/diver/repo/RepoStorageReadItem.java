@@ -16,15 +16,15 @@
  */
 package com.helger.diver.repo;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.array.ArrayHelper;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.base.type.ObjectType;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This is an abstract representation of a file retrieved from a repository. It contains the content
@@ -43,10 +43,10 @@ public class RepoStorageReadItem implements IRepoStorageReadItem
   private final byte [] m_aCalculatedDigest;
   private final ERepoHashState m_eHashState;
 
-  public RepoStorageReadItem (@Nonnull final IRepoStorageContent aContent,
+  public RepoStorageReadItem (@NonNull final IRepoStorageContent aContent,
                               @Nullable final byte [] aExpectedDigest,
                               @Nullable final byte [] aCalculatedDigest,
-                              @Nonnull final ERepoHashState eHashState)
+                              @NonNull final ERepoHashState eHashState)
   {
     ValueEnforcer.notNull (aContent, "Content");
     ValueEnforcer.notNull (eHashState, "HashState");
@@ -56,7 +56,7 @@ public class RepoStorageReadItem implements IRepoStorageReadItem
     m_eHashState = eHashState;
   }
 
-  @Nonnull
+  @NonNull
   public final IRepoStorageContent getContent ()
   {
     return m_aContent;
@@ -86,7 +86,7 @@ public class RepoStorageReadItem implements IRepoStorageReadItem
     return ArrayHelper.getCopy (m_aCalculatedDigest);
   }
 
-  @Nonnull
+  @NonNull
   public final ERepoHashState getHashState ()
   {
     return m_eHashState;

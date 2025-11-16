@@ -16,6 +16,9 @@
  */
 package com.helger.diver.repo.toc;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.diver.api.coord.DVRCoordinate;
 import com.helger.diver.api.version.DVRVersion;
@@ -24,9 +27,6 @@ import com.helger.diver.repo.IRepoStorageReadItem;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.toc.jaxb.RepoToc1Marshaller;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Extended {@link IRepoStorage} with support for table of contents.
@@ -59,7 +59,7 @@ public interface IRepoStorageWithToc extends IRepoStorage
    *        Artifact ID. May neither be <code>null</code> nor empty.
    * @return <code>true</code> if it exists, <code>false</code> if not.
    */
-  default boolean existsToc (@Nonnull @Nonempty final String sGroupID, @Nonnull @Nonempty final String sArtifactID)
+  default boolean existsToc (@NonNull @Nonempty final String sGroupID, @NonNull @Nonempty final String sArtifactID)
   {
     return exists (RepoStorageKeyOfArtefact.ofToc (sGroupID, sArtifactID));
   }
@@ -75,8 +75,8 @@ public interface IRepoStorageWithToc extends IRepoStorage
    *         no ToC is present.
    */
   @Nullable
-  default IRepoStorageReadItem readToc (@Nonnull @Nonempty final String sGroupID,
-                                        @Nonnull @Nonempty final String sArtifactID)
+  default IRepoStorageReadItem readToc (@NonNull @Nonempty final String sGroupID,
+                                        @NonNull @Nonempty final String sArtifactID)
   {
     return read (RepoStorageKeyOfArtefact.ofToc (sGroupID, sArtifactID));
   }
@@ -92,7 +92,7 @@ public interface IRepoStorageWithToc extends IRepoStorage
    *         no ToC is present.
    */
   @Nullable
-  default RepoToc readTocModel (@Nonnull final DVRCoordinate aCoord)
+  default RepoToc readTocModel (@NonNull final DVRCoordinate aCoord)
   {
     return readTocModel (aCoord.getGroupID (), aCoord.getArtifactID ());
   }
@@ -109,7 +109,7 @@ public interface IRepoStorageWithToc extends IRepoStorage
    *         no ToC is present.
    */
   @Nullable
-  default RepoToc readTocModel (@Nonnull @Nonempty final String sGroupID, @Nonnull @Nonempty final String sArtifactID)
+  default RepoToc readTocModel (@NonNull @Nonempty final String sGroupID, @NonNull @Nonempty final String sArtifactID)
   {
     // Read bytes
     final IRepoStorageReadItem aItem = readToc (sGroupID, sArtifactID);

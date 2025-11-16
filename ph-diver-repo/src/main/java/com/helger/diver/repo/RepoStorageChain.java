@@ -18,6 +18,8 @@ package com.helger.diver.repo;
 
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +29,6 @@ import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A chain of {@link IRepoStorage} objects for reading from multiple sources,
@@ -59,7 +58,7 @@ public class RepoStorageChain implements IRepoStorageBase
    *        eventually received artefact from a remote storage is not saved
    *        locally.
    */
-  public RepoStorageChain (@Nonnull final List <? extends IRepoStorage> aReadingStorages,
+  public RepoStorageChain (@NonNull final List <? extends IRepoStorage> aReadingStorages,
                            @Nullable final List <? extends IRepoStorage> aWritableStorages)
   {
     ValueEnforcer.notEmptyNoNullValue (aReadingStorages, "ReadingStorages");
@@ -73,14 +72,14 @@ public class RepoStorageChain implements IRepoStorageBase
     m_aWritableStorages = new CommonsArrayList <> (aWritableStorages);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final ICommonsList <IRepoStorage> internalGetAllStorages ()
   {
     return m_aReadingStorages.getClone ();
   }
 
-  @Nonnull
+  @NonNull
   public final ICommonsList <IRepoStorage> internalGetAllWritableStorages ()
   {
     return m_aWritableStorages.getClone ();
@@ -96,14 +95,14 @@ public class RepoStorageChain implements IRepoStorageBase
     return m_bCacheRemoteContent;
   }
 
-  @Nonnull
+  @NonNull
   public final RepoStorageChain setCacheRemoteContent (final boolean bCacheRemoteContent)
   {
     m_bCacheRemoteContent = bCacheRemoteContent;
     return this;
   }
 
-  public boolean exists (@Nonnull final RepoStorageKey aKey)
+  public boolean exists (@NonNull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -135,7 +134,7 @@ public class RepoStorageChain implements IRepoStorageBase
   }
 
   @Nullable
-  public IRepoStorageReadItem read (@Nonnull final RepoStorageKey aKey)
+  public IRepoStorageReadItem read (@NonNull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -202,9 +201,9 @@ public class RepoStorageChain implements IRepoStorageBase
     return null;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableObject
-  public static RepoStorageChain of (@Nonnull @Nonempty final IRepoStorage... aStorages)
+  public static RepoStorageChain of (@NonNull @Nonempty final IRepoStorage... aStorages)
   {
     ValueEnforcer.notNullNoNullValue (aStorages, "Storages");
 
@@ -216,9 +215,9 @@ public class RepoStorageChain implements IRepoStorageBase
     return of (aAll, aWritableOnes);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableObject
-  public static RepoStorageChain of (@Nonnull @Nonempty final ICommonsList <? extends IRepoStorage> aStorages,
+  public static RepoStorageChain of (@NonNull @Nonempty final ICommonsList <? extends IRepoStorage> aStorages,
                                      @Nullable final ICommonsList <? extends IRepoStorage> aWritableStorages)
   {
     ValueEnforcer.notNullNoNullValue (aStorages, "Storages");

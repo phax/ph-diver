@@ -16,6 +16,7 @@
  */
 package com.helger.diver.repo;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,6 @@ import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * A key that identifies a single item to be exchanged. It is an abstract
@@ -46,7 +45,7 @@ public class RepoStorageKey
 
   private final String m_sPath;
 
-  public RepoStorageKey (@Nonnull @Nonempty final String sPath)
+  public RepoStorageKey (@NonNull @Nonempty final String sPath)
   {
     ValueEnforcer.notEmpty (sPath, "Path");
     ValueEnforcer.isFalse ( () -> sPath.startsWith ("/"), "Path should not start with a Slash");
@@ -55,14 +54,14 @@ public class RepoStorageKey
     m_sPath = sPath;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getPath ()
   {
     return m_sPath;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public RepoStorageKey getKeyHashSha256 ()
   {

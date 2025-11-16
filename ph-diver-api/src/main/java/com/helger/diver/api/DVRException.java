@@ -16,7 +16,7 @@
  */
 package com.helger.diver.api;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A base exception for DVR handling
@@ -26,7 +26,7 @@ import jakarta.annotation.Nonnull;
  */
 public class DVRException extends Exception
 {
-  public DVRException (@Nonnull final String sMsg)
+  public DVRException (@NonNull final String sMsg)
   {
     super (sMsg);
   }

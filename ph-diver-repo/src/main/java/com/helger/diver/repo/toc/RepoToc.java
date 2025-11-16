@@ -21,6 +21,8 @@ import java.time.ZoneOffset;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +50,6 @@ import com.helger.diver.repo.toc.jaxb.v10.RTVersionListType;
 import com.helger.diver.repo.toc.jaxb.v10.RTVersionType;
 import com.helger.diver.repo.toc.jaxb.v10.RTVersioningType;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Local representation of a Repository Table of Contents (ToC) for a single
@@ -87,14 +86,14 @@ public class RepoToc
    *        DVR Coordinate Artifact ID of the ToC. May neither be
    *        <code>null</code> nor empty.
    */
-  public RepoToc (@Nonnull @Nonempty final String sGroupID, @Nonnull @Nonempty final String sArtifactID)
+  public RepoToc (@NonNull @Nonempty final String sGroupID, @NonNull @Nonempty final String sArtifactID)
   {
     this (sGroupID, sArtifactID, null);
   }
 
   @VisibleForTesting
-  RepoToc (@Nonnull @Nonempty final String sGroupID,
-           @Nonnull @Nonempty final String sArtifactID,
+  RepoToc (@NonNull @Nonempty final String sGroupID,
+           @NonNull @Nonempty final String sArtifactID,
            @Nullable final Map <DVRVersion, OffsetDateTime> aVersions)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
@@ -109,7 +108,7 @@ public class RepoToc
    * @return The DVR Coordinate Group ID as provided in the constructor. Neither
    *         <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getGroupID ()
   {
@@ -120,7 +119,7 @@ public class RepoToc
    * @return The DVR Coordinate Artefact ID as provided in the constructor.
    *         Neither <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getArtifactID ()
   {
@@ -140,7 +139,7 @@ public class RepoToc
    * @return A copy of all contained versions as a map from version to its
    *         publication date. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public final ICommonsSortedMap <DVRVersion, OffsetDateTime> getAllVersions ()
   {
@@ -152,7 +151,7 @@ public class RepoToc
    *         <code>null</code>.
    * @since 1.1.0
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public final ICommonsSortedSet <DVRVersion> getAllVersionsOnly ()
   {
@@ -164,7 +163,7 @@ public class RepoToc
    *         <code>null</code>.
    * @since 1.2.0
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public final ICommonsList <DVRVersion> getAllVersionsAsList ()
   {
@@ -282,9 +281,9 @@ public class RepoToc
     return m_aVersions.get (aVersion);
   }
 
-  @Nonnull
-  private EChange _addVersion (@Nonnull final DVRVersion aVersion,
-                               @Nonnull final OffsetDateTime aPublishDT,
+  @NonNull
+  private EChange _addVersion (@NonNull final DVRVersion aVersion,
+                               @NonNull final OffsetDateTime aPublishDT,
                                final boolean bDoLog)
   {
     if (!aVersion.isStaticVersion ())
@@ -337,9 +336,9 @@ public class RepoToc
    * @return {@link EChange#CHANGED} if the version was successfully added,
    *         {@link EChange#UNCHANGED} otherwise.
    */
-  @Nonnull
+  @NonNull
   @OverridingMethodsMustInvokeSuper
-  public EChange addVersion (@Nonnull final DVRVersion aVersion, @Nonnull final OffsetDateTime aPublishDT)
+  public EChange addVersion (@NonNull final DVRVersion aVersion, @NonNull final OffsetDateTime aPublishDT)
   {
     ValueEnforcer.notNull (aVersion, "Version");
     ValueEnforcer.notNull (aPublishDT, "PublishDT");
@@ -347,9 +346,9 @@ public class RepoToc
     return _addVersion (aVersion, aPublishDT, true);
   }
 
-  @Nonnull
+  @NonNull
   @OverridingMethodsMustInvokeSuper
-  public EChange removeVersion (@Nonnull final DVRVersion aVersion)
+  public EChange removeVersion (@NonNull final DVRVersion aVersion)
   {
     ValueEnforcer.notNull (aVersion, "Version");
     ValueEnforcer.isTrue (aVersion.isStaticVersion (), "Version must be static and not pseudo");
@@ -421,7 +420,7 @@ public class RepoToc
                                        .getToString ();
   }
 
-  @Nonnull
+  @NonNull
   public RepoTocType getAsJaxbObject ()
   {
     final RepoTocType ret = new RepoTocType ();
@@ -449,15 +448,15 @@ public class RepoToc
     return ret;
   }
 
-  @Nonnull
-  private static OffsetDateTime _toODT (@Nonnull final XMLOffsetDateTime aXODT)
+  @NonNull
+  private static OffsetDateTime _toODT (@NonNull final XMLOffsetDateTime aXODT)
   {
     return aXODT.hasOffset () ? aXODT.toOffsetDateTime () : aXODT.withOffsetSameInstant (ZoneOffset.UTC)
                                                                  .toOffsetDateTime ();
   }
 
-  @Nonnull
-  public static RepoToc createFromJaxbObject (@Nonnull final RepoTocType aRepoToc)
+  @NonNull
+  public static RepoToc createFromJaxbObject (@NonNull final RepoTocType aRepoToc)
   {
     final RepoToc ret = new RepoToc (aRepoToc.getGroupId (), aRepoToc.getArtifactId ());
     // Try to read as silently as possible, without unnecessary logging

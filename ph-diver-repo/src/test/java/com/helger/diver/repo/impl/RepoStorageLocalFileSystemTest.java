@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 
 import com.helger.base.state.ESuccess;
@@ -42,8 +43,6 @@ import com.helger.diver.repo.mock.MockRepoStorageLocalFileSystem;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 import com.helger.io.file.FileOperationManager;
 
-import jakarta.annotation.Nonnull;
-
 /**
  * Test class for class {@link RepoStorageLocalFileSystem}.
  *
@@ -51,7 +50,7 @@ import jakarta.annotation.Nonnull;
  */
 public final class RepoStorageLocalFileSystemTest
 {
-  @Nonnull
+  @NonNull
   private static RepoStorageLocalFileSystem _createRepo ()
   {
     return new MockRepoStorageLocalFileSystem (ERepoWritable.WITH_WRITE, ERepoDeletable.WITH_DELETE);

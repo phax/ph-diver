@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,6 @@ import com.helger.diver.repo.toc.IRepoStorageWithToc;
 import com.helger.diver.repo.toc.IRepoTopTocGroupNameConsumer;
 import com.helger.diver.repo.toc.IRepoTopTocService;
 
-import jakarta.annotation.Nonnull;
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
@@ -67,7 +67,7 @@ public final class RepoStorageS3Test
   private static final String TEST_BUCKET_NAME = "test";
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageS3Test.class);
 
-  @Nonnull
+  @NonNull
   private static S3Client _s3Client ()
   {
     return S3Client.builder ()
@@ -78,7 +78,7 @@ public final class RepoStorageS3Test
                    .build ();
   }
 
-  @Nonnull
+  @NonNull
   private static RepoStorageS3 _createRepoWritable ()
   {
     return new RepoStorageS3 (_s3Client (),
@@ -88,7 +88,7 @@ public final class RepoStorageS3Test
                               ERepoDeletable.WITH_DELETE,
                               new IRepoTopTocService ()
                               {
-                                @Nonnull
+                                @NonNull
                                 public ESuccess registerGroupAndArtifact (final String sGroupID,
                                                                           final String sArtifactID)
                                 {

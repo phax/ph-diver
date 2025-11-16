@@ -16,9 +16,9 @@
  */
 package com.helger.diver.repo.toc;
 
-import com.helger.annotation.Nonempty;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.annotation.Nonempty;
 
 /**
  * Callback interface for iterating group names in a top-level ToC.
@@ -37,5 +37,5 @@ public interface IRepoTopTocGroupNameConsumer
    * @param aAbsoluteGroupName
    *        Absolute group name. Neither <code>null</code> nor empty.
    */
-  void accept (@Nonnull @Nonempty String sRelativeGroupName, @Nonnull @Nonempty String aAbsoluteGroupName);
+  void accept (@NonNull @Nonempty String sRelativeGroupName, @NonNull @Nonempty String aAbsoluteGroupName);
 }

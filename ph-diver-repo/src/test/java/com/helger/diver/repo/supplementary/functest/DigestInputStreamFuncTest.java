@@ -25,11 +25,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 
 import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Test class for digest streams
@@ -38,7 +37,7 @@ import jakarta.annotation.Nonnull;
  */
 public final class DigestInputStreamFuncTest
 {
-  @Nonnull
+  @NonNull
   private DigestInputStream _createMDIS ()
   {
     final InputStream aIS = new NonBlockingByteArrayInputStream ("bla".getBytes (StandardCharsets.ISO_8859_1));

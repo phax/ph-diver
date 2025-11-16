@@ -16,12 +16,12 @@
  */
 package com.helger.diver.api.version.spi;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.IsSPIImplementation;
 import com.helger.annotation.style.UsedViaReflection;
 import com.helger.diver.api.version.DVRPseudoVersionRegistry;
 import com.helger.diver.api.version.IDVRPseudoVersionRegistry;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Default pseudo version registrar
@@ -37,7 +37,7 @@ public final class DefaultPseudoVersionRegistrarSPIImpl implements IDVRPseudoVer
   public DefaultPseudoVersionRegistrarSPIImpl ()
   {}
 
-  public void registerPseudoVersions (@Nonnull final IDVRPseudoVersionRegistry aRegistry)
+  public void registerPseudoVersions (@NonNull final IDVRPseudoVersionRegistry aRegistry)
   {
     aRegistry.registerPseudoVersion (DVRPseudoVersionRegistry.OLDEST);
     aRegistry.registerPseudoVersion (DVRPseudoVersionRegistry.LATEST_RELEASE);

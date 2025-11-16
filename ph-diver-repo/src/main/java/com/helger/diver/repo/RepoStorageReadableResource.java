@@ -20,14 +20,14 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.style.UnsupportedOperation;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.io.resource.IReadableResource;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Implementation of {@link IReadableResource} for {@link RepoStorageKey} and
@@ -48,7 +48,7 @@ public class RepoStorageReadableResource implements IReadableResource
    * @param aContent
    *        The repository content that was read. May not be <code>null</code>.
    */
-  public RepoStorageReadableResource (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
+  public RepoStorageReadableResource (@NonNull final RepoStorageKey aKey, @NonNull final IRepoStorageContent aContent)
   {
     ValueEnforcer.notNull (aKey, "Key");
     ValueEnforcer.notNull (aContent, "Content");
@@ -56,25 +56,25 @@ public class RepoStorageReadableResource implements IReadableResource
     m_aContent = aContent;
   }
 
-  @Nonnull
+  @NonNull
   public final RepoStorageKey getRepoStorageKey ()
   {
     return m_aKey;
   }
 
-  @Nonnull
+  @NonNull
   public final IRepoStorageContent getRepoStorageContent ()
   {
     return m_aContent;
   }
 
-  @Nonnull
+  @NonNull
   public InputStream getInputStream ()
   {
     return m_aContent.getInputStream ();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public InputStream getBufferedInputStream ()
   {
@@ -86,14 +86,14 @@ public class RepoStorageReadableResource implements IReadableResource
     return m_aContent.isReadMultiple ();
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getResourceID ()
   {
     return getPath ();
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getPath ()
   {

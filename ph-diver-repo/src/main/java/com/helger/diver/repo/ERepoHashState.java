@@ -16,10 +16,10 @@
  */
 package com.helger.diver.repo;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.base.name.IHasDisplayName;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * This enum contains the hash comparison result when reading from the
@@ -35,12 +35,12 @@ public enum ERepoHashState implements IHasDisplayName
 
   private final String m_sDisplayName;
 
-  ERepoHashState (@Nonnull @Nonempty final String sDisplayName)
+  ERepoHashState (@NonNull @Nonempty final String sDisplayName)
   {
     m_sDisplayName = sDisplayName;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDisplayName ()
   {

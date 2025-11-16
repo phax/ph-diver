@@ -16,9 +16,9 @@
  */
 package com.helger.diver.api.version;
 
-import com.helger.base.version.Version;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.base.version.Version;
 
 /**
  * Helper interface to ensure that versions and pseudo version can be kept in strict order.
@@ -36,7 +36,7 @@ public interface IDVRPseudoVersionComparable
    * @return a value &lt; 0 if this is &lt; other version; value 0 if this = other version; value
    *         &gt; 0 if this is &gt; other version
    */
-  int compareToPseudoVersion (@Nonnull IDVRPseudoVersion aOtherPseudoVersion);
+  int compareToPseudoVersion (@NonNull IDVRPseudoVersion aOtherPseudoVersion);
 
   /**
    * Compare this object to the provided static version.
@@ -46,5 +46,5 @@ public interface IDVRPseudoVersionComparable
    * @return a value &lt; 0 if this is &lt; other version; value 0 if this = other version; value
    *         &gt; 0 if this is &gt; other version
    */
-  int compareToVersion (@Nonnull Version aOtherStaticVersion);
+  int compareToVersion (@NonNull Version aOtherStaticVersion);
 }

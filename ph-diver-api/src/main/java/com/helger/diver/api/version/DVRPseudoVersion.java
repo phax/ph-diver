@@ -16,13 +16,13 @@
  */
 package com.helger.diver.api.version;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.base.version.Version;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Default implementation of {@link IDVRPseudoVersion}
@@ -35,7 +35,7 @@ public class DVRPseudoVersion implements IDVRPseudoVersion
   private final String m_sID;
   private final IDVRPseudoVersionComparable m_aComparable;
 
-  public DVRPseudoVersion (@Nonnull @Nonempty final String sID, @Nonnull final IDVRPseudoVersionComparable aComparable)
+  public DVRPseudoVersion (@NonNull @Nonempty final String sID, @NonNull final IDVRPseudoVersionComparable aComparable)
   {
     ValueEnforcer.notEmpty (sID, "ID");
     ValueEnforcer.notNull (aComparable, "Comparable");
@@ -43,7 +43,7 @@ public class DVRPseudoVersion implements IDVRPseudoVersion
     m_aComparable = aComparable;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getID ()
   {
@@ -54,13 +54,13 @@ public class DVRPseudoVersion implements IDVRPseudoVersion
    * @return Get the comparable object provided in the constructor. Never <code>null</code>.
    * @since 3.0.2
    */
-  @Nonnull
+  @NonNull
   public final IDVRPseudoVersionComparable getPseudoVersionComparable ()
   {
     return m_aComparable;
   }
 
-  public int compareToPseudoVersion (@Nonnull final IDVRPseudoVersion aOtherPseudoVersion)
+  public int compareToPseudoVersion (@NonNull final IDVRPseudoVersion aOtherPseudoVersion)
   {
     ValueEnforcer.notNull (aOtherPseudoVersion, "OtherPseudoVersion");
 
@@ -72,7 +72,7 @@ public class DVRPseudoVersion implements IDVRPseudoVersion
     return m_aComparable.compareToPseudoVersion (aOtherPseudoVersion);
   }
 
-  public int compareToVersion (@Nonnull final Version aStaticVersion)
+  public int compareToVersion (@NonNull final Version aStaticVersion)
   {
     ValueEnforcer.notNull (aStaticVersion, "StaticVersion");
 

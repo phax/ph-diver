@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -45,8 +46,6 @@ import com.helger.diver.repo.http.mock.LocalJettyRunner;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 import com.helger.httpclient.HttpClientManager;
 import com.helger.io.file.FileOperationManager;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Test class for class {@link RepoStorageHttp}.
@@ -70,7 +69,7 @@ public final class RepoStorageHttpTest
     JETTY_HELPER.stopJetty ();
   }
 
-  @Nonnull
+  @NonNull
   private static RepoStorageHttp _createRepoReadOnly ()
   {
     return new RepoStorageHttp (new HttpClientManager (),
@@ -100,7 +99,7 @@ public final class RepoStorageHttpTest
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
   }
 
-  @Nonnull
+  @NonNull
   private static RepoStorageHttp _createRepoWritable ()
   {
     return new RepoStorageHttp (new HttpClientManager (),

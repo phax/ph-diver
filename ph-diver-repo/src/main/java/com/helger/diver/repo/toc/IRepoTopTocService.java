@@ -18,6 +18,9 @@ package com.helger.diver.repo.toc;
 
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.state.ESuccess;
@@ -25,9 +28,6 @@ import com.helger.collection.commons.CommonsLinkedHashSet;
 import com.helger.collection.commons.CommonsTreeSet;
 import com.helger.collection.commons.ICommonsOrderedSet;
 import com.helger.collection.commons.ICommonsSortedSet;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Base interface for a top-level ToC
@@ -44,7 +44,7 @@ public interface IRepoTopTocService
    * @param aRepo
    *        The repository that uses this service.
    */
-  void initForRepo (@Nonnull IRepoStorageWithToc aRepo);
+  void initForRepo (@NonNull IRepoStorageWithToc aRepo);
 
   /**
    * Check if the provided group ID and artifact ID are contained or not.
@@ -65,14 +65,14 @@ public interface IRepoTopTocService
    *        be <code>null</code>.
    * @see #getAllTopLevelGroupNames()
    */
-  void iterateAllTopLevelGroupNames (@Nonnull Consumer <String> aGroupNameConsumer);
+  void iterateAllTopLevelGroupNames (@NonNull Consumer <String> aGroupNameConsumer);
 
   /**
    * @return A set of all contained top-level group names. Never
    *         <code>null</code> but maybe empty.
    * @see #iterateAllTopLevelGroupNames(Consumer)
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   default ICommonsSortedSet <String> getAllTopLevelGroupNames ()
   {
@@ -96,22 +96,22 @@ public interface IRepoTopTocService
    * @see #getAllAbsoluteSubGroupNames(String)
    * @see #getAllAbsoluteSubGroupNamesRecursive(String)
    */
-  void iterateAllSubGroups (@Nonnull @Nonempty String sGroupID,
-                            @Nonnull IRepoTopTocGroupNameConsumer aGroupNameConsumer,
+  void iterateAllSubGroups (@NonNull @Nonempty String sGroupID,
+                            @NonNull IRepoTopTocGroupNameConsumer aGroupNameConsumer,
                             boolean bRecursive);
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
-  default ICommonsOrderedSet <String> getAllAbsoluteSubGroupNamesRecursive (@Nonnull @Nonempty final String sGroupID)
+  default ICommonsOrderedSet <String> getAllAbsoluteSubGroupNamesRecursive (@NonNull @Nonempty final String sGroupID)
   {
     final ICommonsOrderedSet <String> ret = new CommonsLinkedHashSet <> ();
     iterateAllSubGroups (sGroupID, (rgn, agn) -> ret.add (agn), true);
     return ret;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
-  default ICommonsOrderedSet <String> getAllAbsoluteSubGroupNames (@Nonnull @Nonempty final String sGroupID)
+  default ICommonsOrderedSet <String> getAllAbsoluteSubGroupNames (@NonNull @Nonempty final String sGroupID)
   {
     final ICommonsOrderedSet <String> ret = new CommonsLinkedHashSet <> ();
     iterateAllSubGroups (sGroupID, (rgn, agn) -> ret.add (agn), false);
@@ -129,11 +129,11 @@ public interface IRepoTopTocService
    *        <code>null</code>.
    * @see #getAllArtefacts(String)
    */
-  void iterateAllArtifacts (@Nonnull @Nonempty String sGroupID, @Nonnull Consumer <String> aArtifactNameConsumer);
+  void iterateAllArtifacts (@NonNull @Nonempty String sGroupID, @NonNull Consumer <String> aArtifactNameConsumer);
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
-  default ICommonsOrderedSet <String> getAllArtefacts (@Nonnull @Nonempty final String sGroupID)
+  default ICommonsOrderedSet <String> getAllArtefacts (@NonNull @Nonempty final String sGroupID)
   {
     final ICommonsOrderedSet <String> ret = new CommonsLinkedHashSet <> ();
     iterateAllArtifacts (sGroupID, ret::add);
@@ -153,6 +153,6 @@ public interface IRepoTopTocService
    *        empty.
    * @return {@link ESuccess} and never <code>null</code>.
    */
-  @Nonnull
-  ESuccess registerGroupAndArtifact (@Nonnull @Nonempty String sGroupID, @Nonnull @Nonempty String sArtifactID);
+  @NonNull
+  ESuccess registerGroupAndArtifact (@NonNull @Nonempty String sGroupID, @NonNull @Nonempty String sArtifactID);
 }

@@ -16,7 +16,7 @@
  */
 package com.helger.diver.repo;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Defines if a repository supports the action of deleting elements or not.
@@ -38,7 +38,7 @@ public enum ERepoDeletable
     return this == WITHOUT_DELETE;
   }
 
-  @Nonnull
+  @NonNull
   public static ERepoDeletable valueOf (final boolean b)
   {
     return b ? WITH_DELETE : WITHOUT_DELETE;

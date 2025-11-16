@@ -16,6 +16,8 @@
  */
 package com.helger.diver.repo;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +29,6 @@ import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.diver.api.coord.DVRCoordinate;
 import com.helger.diver.api.version.DVRVersion;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This is a specific storage key that not just contains a path but also a DVR Coordinate to
@@ -55,7 +54,7 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
 
   private final DVRCoordinate m_aCoord;
 
-  protected RepoStorageKeyOfArtefact (@Nonnull final DVRCoordinate aCoord, @Nonnull @Nonempty final String sPath)
+  protected RepoStorageKeyOfArtefact (@NonNull final DVRCoordinate aCoord, @NonNull @Nonempty final String sPath)
   {
     super (sPath);
     ValueEnforcer.notNull (aCoord, "Coord");
@@ -68,14 +67,14 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
   /**
    * @return The DVR coordinates as provided in the constructor. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public final DVRCoordinate getCoordinate ()
   {
     return m_aCoord;
   }
 
   @Override
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public RepoStorageKeyOfArtefact getKeyHashSha256 ()
   {
@@ -90,7 +89,7 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
     return new RepoStorageKeyOfArtefact (m_aCoord, sPath + FILE_EXT_SHA256);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public RepoStorageKeyOfArtefact getKeyToc ()
   {
@@ -130,10 +129,10 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
    * @return A path from group ID and artifact ID, ending with a trailing slash. Can never be
    *         <code>null</code> or empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
-  public static String getPathOfGroupIDAndArtifactID (@Nonnull @Nonempty final String sGroupID,
-                                                      @Nonnull @Nonempty final String sArtifactID)
+  public static String getPathOfGroupIDAndArtifactID (@NonNull @Nonempty final String sGroupID,
+                                                      @NonNull @Nonempty final String sArtifactID)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
@@ -162,13 +161,13 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
    * @return Never <code>null</code>.
    * @see #getPathOfGroupIDAndArtifactID(String, String)
    */
-  @Nonnull
+  @NonNull
   @Nonempty
-  public static String getFilename (@Nonnull @Nonempty final String sGroupID,
-                                    @Nonnull @Nonempty final String sArtifactID,
-                                    @Nonnull @Nonempty final String sVersion,
+  public static String getFilename (@NonNull @Nonempty final String sGroupID,
+                                    @NonNull @Nonempty final String sArtifactID,
+                                    @NonNull @Nonempty final String sVersion,
                                     @Nullable final String sClassifier,
-                                    @Nonnull @Nonempty final String sFileExt)
+                                    @NonNull @Nonempty final String sFileExt)
   {
     ValueEnforcer.notEmpty (sVersion, "Version");
     ValueEnforcer.notEmpty (sFileExt, "FileExt");
@@ -197,9 +196,9 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
    * @return Never <code>null</code>.
    * @see #getFilename(String, String, String, String, String)
    */
-  @Nonnull
-  public static RepoStorageKeyOfArtefact of (@Nonnull final DVRCoordinate aCoord,
-                                             @Nonnull @Nonempty final String sFileExt)
+  @NonNull
+  public static RepoStorageKeyOfArtefact of (@NonNull final DVRCoordinate aCoord,
+                                             @NonNull @Nonempty final String sFileExt)
   {
     ValueEnforcer.notNull (aCoord, "Coord");
     ValueEnforcer.isTrue (aCoord.getVersionObj ().isStaticVersion (),
@@ -213,9 +212,9 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
                                                       sFileExt));
   }
 
-  @Nonnull
-  public static RepoStorageKeyOfArtefact ofToc (@Nonnull @Nonempty final String sGroupID,
-                                                @Nonnull @Nonempty final String sArtifactID)
+  @NonNull
+  public static RepoStorageKeyOfArtefact ofToc (@NonNull @Nonempty final String sGroupID,
+                                                @NonNull @Nonempty final String sArtifactID)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");

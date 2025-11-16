@@ -16,11 +16,11 @@
  */
 package com.helger.diver.api.version;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.state.EChange;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Base interface for a Pseudo version registry.
@@ -39,8 +39,8 @@ public interface IDVRPseudoVersionRegistry
    * @return {@link EChange#CHANGED} if it was added, {@link EChange#UNCHANGED}
    *         if it was already present. Never <code>null</code>.
    */
-  @Nonnull
-  EChange registerPseudoVersion (@Nonnull IDVRPseudoVersion aPseudoVersion);
+  @NonNull
+  EChange registerPseudoVersion (@NonNull IDVRPseudoVersion aPseudoVersion);
 
   /**
    * Try to resolve the pseudo version with the provided ID.

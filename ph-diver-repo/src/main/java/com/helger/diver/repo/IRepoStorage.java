@@ -18,13 +18,13 @@ package com.helger.diver.repo;
 
 import java.time.OffsetDateTime;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.base.id.IHasID;
 import com.helger.base.state.ESuccess;
 import com.helger.security.messagedigest.EMessageDigestAlgorithm;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Defines an abstract way to read and write repository items, identified by
@@ -43,14 +43,14 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    * @return The repository storage type the implementation handles. May not be
    *         <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   IRepoStorageType getRepoType ();
 
   /**
    * @return The ID of the repository storage type the implementation handles.
    *         May neither be <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   default String getRepoTypeID ()
   {
@@ -75,8 +75,8 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    *        The main content to write. May not be <code>null</code>.
    * @return {@link ESuccess}
    */
-  @Nonnull
-  default ESuccess write (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
+  @NonNull
+  default ESuccess write (@NonNull final RepoStorageKey aKey, @NonNull final IRepoStorageContent aContent)
   {
     return write (aKey, aContent, (OffsetDateTime) null);
   }
@@ -94,9 +94,9 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    *        time is used.
    * @return {@link ESuccess}
    */
-  @Nonnull
-  ESuccess write (@Nonnull RepoStorageKey aKey,
-                  @Nonnull IRepoStorageContent aContent,
+  @NonNull
+  ESuccess write (@NonNull RepoStorageKey aKey,
+                  @NonNull IRepoStorageContent aContent,
                   @Nullable OffsetDateTime aPublicationDT);
 
   /**
@@ -113,6 +113,6 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
    * @return {@link ESuccess#SUCCESS} if deletion was successful,
    *         {@link ESuccess#FAILURE} if not.
    */
-  @Nonnull
-  ESuccess delete (@Nonnull RepoStorageKey aKey);
+  @NonNull
+  ESuccess delete (@NonNull RepoStorageKey aKey);
 }

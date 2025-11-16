@@ -18,6 +18,8 @@ package com.helger.diver.repo.impl;
 
 import java.io.InputStream;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +41,6 @@ import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.toc.IRepoTopTocService;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This class implements an in-memory repository storage. That is used for extra
@@ -81,10 +80,10 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
   private final boolean m_bAllowOverwrite;
 
   public RepoStorageInMemory (@Nonnegative final int nMaxSize,
-                              @Nonnull @Nonempty final String sID,
-                              @Nonnull final ERepoWritable eWriteEnabled,
-                              @Nonnull final ERepoDeletable eDeleteEnabled,
-                              @Nonnull final IRepoTopTocService aTopTocService,
+                              @NonNull @Nonempty final String sID,
+                              @NonNull final ERepoWritable eWriteEnabled,
+                              @NonNull final ERepoDeletable eDeleteEnabled,
+                              @NonNull final IRepoTopTocService aTopTocService,
                               final boolean bAllowOverwrite)
   {
     super (RepoStorageType.IN_MEMORY, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
@@ -93,7 +92,7 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
     m_bAllowOverwrite = bAllowOverwrite;
   }
 
-  public boolean exists (@Nonnull final RepoStorageKey aKey)
+  public boolean exists (@NonNull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -111,7 +110,7 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
 
   @Override
   @Nullable
-  protected InputStream getInputStream (@Nonnull final RepoStorageKey aKey)
+  protected InputStream getInputStream (@NonNull final RepoStorageKey aKey)
   {
     final String sRealKey = aKey.getPath ();
     if (LOGGER.isDebugEnabled ())
@@ -135,9 +134,9 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
     return m_bAllowOverwrite;
   }
 
-  @Nonnull
-  private ESuccess _write (@Nonnull final RepoStorageKey aKey,
-                           @Nonnull final IRepoStorageContent aContent,
+  @NonNull
+  private ESuccess _write (@NonNull final RepoStorageKey aKey,
+                           @NonNull final IRepoStorageContent aContent,
                            final boolean bAllowOverwrite)
   {
     ValueEnforcer.isTrue ( () -> aContent.isLengthAnInt (),
@@ -194,8 +193,8 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
   }
 
   @Override
-  @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
+  @NonNull
+  protected ESuccess writeObject (@NonNull final RepoStorageKey aKey, @NonNull final IRepoStorageContent aContent)
   {
     return _write (aKey, aContent, m_bAllowOverwrite);
   }
@@ -210,9 +209,9 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
    *        The content to be accessible.
    * @return this for chaining
    */
-  @Nonnull
-  public RepoStorageInMemory registerObject (@Nonnull final RepoStorageKey aKey,
-                                             @Nonnull final IRepoStorageContent aContent)
+  @NonNull
+  public RepoStorageInMemory registerObject (@NonNull final RepoStorageKey aKey,
+                                             @NonNull final IRepoStorageContent aContent)
   {
     ValueEnforcer.notNull (aKey, "Key");
     ValueEnforcer.notNull (aContent, "Content");
@@ -223,8 +222,8 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
   }
 
   @Override
-  @Nonnull
-  protected ESuccess deleteObject (@Nonnull final RepoStorageKey aKey)
+  @NonNull
+  protected ESuccess deleteObject (@NonNull final RepoStorageKey aKey)
   {
     final String sRealKey = aKey.getPath ();
 
@@ -253,8 +252,8 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
    * @see #DEFAULT_CAN_DELETE
    * @see #DEFAULT_ALLOW_OVERWRITE
    */
-  @Nonnull
-  public static RepoStorageInMemory createDefault (@Nonnull @Nonempty final String sID)
+  @NonNull
+  public static RepoStorageInMemory createDefault (@NonNull @Nonempty final String sID)
   {
     return createDefault (sID, DEFAULT_CAN_WRITE, DEFAULT_CAN_DELETE);
   }
@@ -271,10 +270,10 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
    * @see #DEFAULT_MAX_SIZE
    * @see #DEFAULT_ALLOW_OVERWRITE
    */
-  @Nonnull
-  public static RepoStorageInMemory createDefault (@Nonnull @Nonempty final String sID,
-                                                   @Nonnull final ERepoWritable eWriteEnabled,
-                                                   @Nonnull final ERepoDeletable eDeleteEnabled)
+  @NonNull
+  public static RepoStorageInMemory createDefault (@NonNull @Nonempty final String sID,
+                                                   @NonNull final ERepoWritable eWriteEnabled,
+                                                   @NonNull final ERepoDeletable eDeleteEnabled)
   {
     return new RepoStorageInMemory (DEFAULT_MAX_SIZE,
                                     sID,

@@ -26,6 +26,8 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.io.entity.InputStreamEntity;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +51,6 @@ import com.helger.httpclient.HttpClientManager;
 import com.helger.httpclient.response.ResponseHandlerByteArray;
 import com.helger.io.file.FilenameHelper;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * Base implementation of {@link IRepoStorage} for arbitrary HTTP connections. Supports HTTP GET,
  * PUT and DELETE.
@@ -70,12 +69,12 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
   private Consumer <? super HttpPut> m_aWriteCustomizer;
   private Consumer <? super HttpDelete> m_aDeleteCustomizer;
 
-  public RepoStorageHttp (@Nonnull @WillNotClose final HttpClientManager aHttpClient,
-                          @Nonnull @Nonempty final String sURLPrefix,
-                          @Nonnull @Nonempty final String sID,
-                          @Nonnull final ERepoWritable eWriteEnabled,
-                          @Nonnull final ERepoDeletable eDeleteEnabled,
-                          @Nonnull final IRepoTopTocService aTopTocService)
+  public RepoStorageHttp (@NonNull @WillNotClose final HttpClientManager aHttpClient,
+                          @NonNull @Nonempty final String sURLPrefix,
+                          @NonNull @Nonempty final String sID,
+                          @NonNull final ERepoWritable eWriteEnabled,
+                          @NonNull final ERepoDeletable eDeleteEnabled,
+                          @NonNull final IRepoTopTocService aTopTocService)
   {
     super (RepoStorageType.HTTP, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
     ValueEnforcer.notNull (aHttpClient, "HttpClient");
@@ -112,7 +111,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     return m_aReadCustomizer;
   }
 
-  @Nonnull
+  @NonNull
   public final RepoStorageHttp setReadCusomizer (@Nullable final Consumer <? super HttpGet> aReadCustomizer)
   {
     m_aReadCustomizer = aReadCustomizer;
@@ -125,7 +124,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     return m_aWriteCustomizer;
   }
 
-  @Nonnull
+  @NonNull
   public final RepoStorageHttp setWriteCusomizer (@Nullable final Consumer <? super HttpPut> aWriteCustomizer)
   {
     m_aWriteCustomizer = aWriteCustomizer;
@@ -138,14 +137,14 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     return m_aDeleteCustomizer;
   }
 
-  @Nonnull
+  @NonNull
   public final RepoStorageHttp setDeleteCusomizer (@Nullable final Consumer <? super HttpDelete> aDeleteCustomizer)
   {
     m_aDeleteCustomizer = aDeleteCustomizer;
     return this;
   }
 
-  public boolean exists (@Nonnull final RepoStorageKey aKey)
+  public boolean exists (@NonNull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -155,7 +154,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
 
   @Override
   @Nullable
-  protected InputStream getInputStream (@Nonnull final RepoStorageKey aKey)
+  protected InputStream getInputStream (@NonNull final RepoStorageKey aKey)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
     CONDLOG.info ( () -> "Reading from HTTP '" + sURL + "'");
@@ -183,8 +182,8 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
   }
 
   @Override
-  @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
+  @NonNull
+  protected ESuccess writeObject (@NonNull final RepoStorageKey aKey, @NonNull final IRepoStorageContent aContent)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
     CONDLOG.info ( () -> "Writing to HTTP '" + sURL + "'");
@@ -219,8 +218,8 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
   }
 
   @Override
-  @Nonnull
-  protected ESuccess deleteObject (@Nonnull final RepoStorageKey aKey)
+  @NonNull
+  protected ESuccess deleteObject (@NonNull final RepoStorageKey aKey)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
     CONDLOG.info ( () -> "Deleting from HTTP '" + sURL + "'");

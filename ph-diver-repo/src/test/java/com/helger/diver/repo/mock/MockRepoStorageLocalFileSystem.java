@@ -18,19 +18,19 @@ package com.helger.diver.repo.mock;
 
 import java.io.File;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.impl.RepoStorageLocalFileSystem;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 
-import jakarta.annotation.Nonnull;
-
 public final class MockRepoStorageLocalFileSystem extends RepoStorageLocalFileSystem
 {
   public static final File TEST_REPO_DIR = new File ("src/test/resources/test-repo");
 
-  public MockRepoStorageLocalFileSystem (@Nonnull final ERepoWritable eWriteEnabled,
-                                         @Nonnull final ERepoDeletable eDeleteEnabled)
+  public MockRepoStorageLocalFileSystem (@NonNull final ERepoWritable eWriteEnabled,
+                                         @NonNull final ERepoDeletable eDeleteEnabled)
   {
     super (TEST_REPO_DIR, "unittest-fs", eWriteEnabled, eDeleteEnabled, new RepoTopTocServiceRepoBasedXML ());
   }

@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +40,6 @@ import com.helger.diver.repo.toc.IRepoTopTocService;
 import com.helger.io.file.FileHelper;
 import com.helger.io.file.FileOperationManager;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * Base implementation of {@link IRepoStorage} on a local file system.
  *
@@ -52,11 +51,11 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
 
   private final File m_aBaseDir;
 
-  public RepoStorageLocalFileSystem (@Nonnull final File aBaseDir,
-                                     @Nonnull @Nonempty final String sID,
-                                     @Nonnull final ERepoWritable eWriteEnabled,
-                                     @Nonnull final ERepoDeletable eDeleteEnabled,
-                                     @Nonnull final IRepoTopTocService aTopTocService)
+  public RepoStorageLocalFileSystem (@NonNull final File aBaseDir,
+                                     @NonNull @Nonempty final String sID,
+                                     @NonNull final ERepoWritable eWriteEnabled,
+                                     @NonNull final ERepoDeletable eDeleteEnabled,
+                                     @NonNull final IRepoTopTocService aTopTocService)
   {
     super (RepoStorageType.LOCAL_FILE_SYSTEM, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
     ValueEnforcer.notNull (aBaseDir, "BaseDir");
@@ -69,19 +68,19 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
    * @return The base directory as provided in the constructor. Never
    *         <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public final File getBaseDirectory ()
   {
     return m_aBaseDir;
   }
 
-  @Nonnull
-  public final File getRelativeFile (@Nonnull final RepoStorageKey aKey)
+  @NonNull
+  public final File getRelativeFile (@NonNull final RepoStorageKey aKey)
   {
     return new File (m_aBaseDir, aKey.getPath ());
   }
 
-  public boolean exists (@Nonnull final RepoStorageKey aKey)
+  public boolean exists (@NonNull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -102,7 +101,7 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
 
   @Override
   @Nullable
-  protected InputStream getInputStream (@Nonnull final RepoStorageKey aKey)
+  protected InputStream getInputStream (@NonNull final RepoStorageKey aKey)
   {
     final File fSrc = getRelativeFile (aKey);
     if (LOGGER.isDebugEnabled ())
@@ -123,8 +122,8 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
   }
 
   @Override
-  @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
+  @NonNull
+  protected ESuccess writeObject (@NonNull final RepoStorageKey aKey, @NonNull final IRepoStorageContent aContent)
   {
     final File fTarget = getRelativeFile (aKey);
     if (LOGGER.isDebugEnabled ())
@@ -157,8 +156,8 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
   }
 
   @Override
-  @Nonnull
-  protected ESuccess deleteObject (@Nonnull final RepoStorageKey aKey)
+  @NonNull
+  protected ESuccess deleteObject (@NonNull final RepoStorageKey aKey)
   {
     final File fTarget = getRelativeFile (aKey);
     LOGGER.info ("Deleting from local file system '" + fTarget.getAbsolutePath () + "'");

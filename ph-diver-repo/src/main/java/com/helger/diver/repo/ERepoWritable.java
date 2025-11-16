@@ -16,7 +16,7 @@
  */
 package com.helger.diver.repo;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Defines if a repository supports the action of writing elements or not.
@@ -38,7 +38,7 @@ public enum ERepoWritable
     return this == WITHOUT_WRITE;
   }
 
-  @Nonnull
+  @NonNull
   public static ERepoWritable valueOf (final boolean b)
   {
     return b ? WITH_WRITE : WITHOUT_WRITE;

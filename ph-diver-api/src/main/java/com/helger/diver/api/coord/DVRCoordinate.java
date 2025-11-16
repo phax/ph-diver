@@ -18,6 +18,8 @@ package com.helger.diver.api.coord;
 
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +40,6 @@ import com.helger.diver.api.version.DVRPseudoVersionRegistry;
 import com.helger.diver.api.version.DVRVersion;
 import com.helger.diver.api.version.DVRVersionException;
 import com.helger.diver.api.version.IDVRPseudoVersion;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * The DVR Coordinate represents the coordinate of a single technical artefact in a specific
@@ -82,9 +81,9 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
    *        Version object. May not be <code>null</code>.
    * @since 1.1.2
    */
-  public DVRCoordinate (@Nonnull @Nonempty final String sGroupID,
-                        @Nonnull @Nonempty final String sArtifactID,
-                        @Nonnull final DVRVersion aVersion)
+  public DVRCoordinate (@NonNull @Nonempty final String sGroupID,
+                        @NonNull @Nonempty final String sArtifactID,
+                        @NonNull final DVRVersion aVersion)
   {
     this (sGroupID, sArtifactID, aVersion, (String) null);
   }
@@ -105,9 +104,9 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
    * @param sClassifier
    *        Classifier. May be <code>null</code>.
    */
-  public DVRCoordinate (@Nonnull @Nonempty final String sGroupID,
-                        @Nonnull @Nonempty final String sArtifactID,
-                        @Nonnull final DVRVersion aVersion,
+  public DVRCoordinate (@NonNull @Nonempty final String sGroupID,
+                        @NonNull @Nonempty final String sArtifactID,
+                        @NonNull final DVRVersion aVersion,
                         @Nullable final String sClassifier)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
@@ -128,21 +127,21 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
     m_sClassifier = StringHelper.isNotEmpty (sClassifier) ? sClassifier : null;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getGroupID ()
   {
     return m_sGroupID;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getArtifactID ()
   {
     return m_sArtifactID;
   }
 
-  @Nonnull
+  @NonNull
   public DVRVersion getVersionObj ()
   {
     return m_aVersion;
@@ -154,7 +153,7 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
     return m_sClassifier;
   }
 
-  @Nonnull
+  @NonNull
   public DVRCoordinate getWithGroupID (@Nullable final String sNewGroupID)
   {
     if (EqualsHelper.equals (m_sGroupID, sNewGroupID))
@@ -162,7 +161,7 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
     return new DVRCoordinate (sNewGroupID, m_sArtifactID, m_aVersion, m_sClassifier);
   }
 
-  @Nonnull
+  @NonNull
   public DVRCoordinate getWithArtifactID (@Nullable final String sNewArtifactID)
   {
     if (EqualsHelper.equals (m_sArtifactID, sNewArtifactID))
@@ -170,33 +169,33 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
     return new DVRCoordinate (m_sGroupID, sNewArtifactID, m_aVersion, m_sClassifier);
   }
 
-  @Nonnull
-  public DVRCoordinate getWithVersion (@Nonnull final DVRVersion aNewVersion)
+  @NonNull
+  public DVRCoordinate getWithVersion (@NonNull final DVRVersion aNewVersion)
   {
     if (EqualsHelper.equals (m_aVersion, aNewVersion))
       return this;
     return new DVRCoordinate (m_sGroupID, m_sArtifactID, aNewVersion, m_sClassifier);
   }
 
-  @Nonnull
-  public DVRCoordinate getWithVersion (@Nonnull final IDVRPseudoVersion aPseudoVersion)
+  @NonNull
+  public DVRCoordinate getWithVersion (@NonNull final IDVRPseudoVersion aPseudoVersion)
   {
     return getWithVersion (DVRVersion.of (aPseudoVersion));
   }
 
-  @Nonnull
+  @NonNull
   public DVRCoordinate getWithVersionLatest ()
   {
     return getWithVersion (DVRPseudoVersionRegistry.LATEST);
   }
 
-  @Nonnull
+  @NonNull
   public DVRCoordinate getWithVersionLatestRelease ()
   {
     return getWithVersion (DVRPseudoVersionRegistry.LATEST_RELEASE);
   }
 
-  @Nonnull
+  @NonNull
   public DVRCoordinate getWithClassifier (@Nullable final String sNewClassifier)
   {
     if (EqualsHelper.equals (m_sClassifier, sNewClassifier))
@@ -204,11 +203,11 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
     return new DVRCoordinate (m_sGroupID, m_sArtifactID, m_aVersion, sNewClassifier);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
-  public static String getAsSingleID (@Nonnull @Nonempty final String sGroupID,
-                                      @Nonnull @Nonempty final String sArtifactID,
-                                      @Nonnull @Nonempty final String sVersion,
+  public static String getAsSingleID (@NonNull @Nonempty final String sGroupID,
+                                      @NonNull @Nonempty final String sArtifactID,
+                                      @NonNull @Nonempty final String sVersion,
                                       @Nullable final String sClassifier)
   {
     final StringBuilder ret = new StringBuilder ().append (sGroupID)
@@ -221,14 +220,14 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
     return ret.toString ();
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getAsSingleID ()
   {
     return getAsSingleID (m_sGroupID, m_sArtifactID, getVersionString (), m_sClassifier);
   }
 
-  public static int compare (@Nonnull final DVRCoordinate aLeft, @Nonnull final DVRCoordinate aRight)
+  public static int compare (@NonNull final DVRCoordinate aLeft, @NonNull final DVRCoordinate aRight)
   {
     int ret = aLeft.m_sGroupID.compareTo (aRight.m_sGroupID);
     if (ret == 0)
@@ -247,7 +246,7 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
     return ret;
   }
 
-  public int compareTo (@Nonnull final DVRCoordinate aOther)
+  public int compareTo (@NonNull final DVRCoordinate aOther)
   {
     return compare (this, aOther);
   }
@@ -308,10 +307,10 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
    * @throws DVRVersionException
    *         if the provided version is invalid
    */
-  @Nonnull
-  public static DVRCoordinate create (@Nonnull @Nonempty final String sGroupID,
-                                      @Nonnull @Nonempty final String sArtifactID,
-                                      @Nonnull @Nonempty final String sVersion) throws DVRVersionException
+  @NonNull
+  public static DVRCoordinate create (@NonNull @Nonempty final String sGroupID,
+                                      @NonNull @Nonempty final String sArtifactID,
+                                      @NonNull @Nonempty final String sVersion) throws DVRVersionException
   {
     return create (sGroupID, sArtifactID, sVersion, (String) null);
   }
@@ -335,10 +334,10 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
    * @throws DVRVersionException
    *         if the provided version is invalid
    */
-  @Nonnull
-  public static DVRCoordinate create (@Nonnull @Nonempty final String sGroupID,
-                                      @Nonnull @Nonempty final String sArtifactID,
-                                      @Nonnull @Nonempty final String sVersion,
+  @NonNull
+  public static DVRCoordinate create (@NonNull @Nonempty final String sGroupID,
+                                      @NonNull @Nonempty final String sArtifactID,
+                                      @NonNull @Nonempty final String sVersion,
                                       @Nullable final String sClassifier) throws DVRVersionException
   {
     return new DVRCoordinate (sGroupID, sArtifactID, DVRVersion.parseOrThrow (sVersion), sClassifier);
@@ -356,7 +355,7 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
    * @throws DVRVersionException
    *         In case the version is incorrect
    */
-  @Nonnull
+  @NonNull
   public static DVRCoordinate parseOrThrow (@Nullable final String sCoords) throws DVRCoordinateException,
                                                                             DVRVersionException
   {

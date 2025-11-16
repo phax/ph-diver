@@ -19,6 +19,8 @@ package com.helger.diver.repo.toc;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +37,6 @@ import com.helger.diver.repo.RepoStorageContentByteArray;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.toc.jaxb.RepoTopToc1Marshaller;
 import com.helger.diver.repo.toptoc.jaxb.v10.RepoTopTocType;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * XML based RepoTopToc model persisted in the repo itself. Each repository requires its own
@@ -64,7 +63,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
   public RepoTopTocServiceRepoBasedXML ()
   {}
 
-  @Nonnull
+  @NonNull
   private RepoTopTocXML _readTopToc (final boolean bVerbose)
   {
     final RepoTopTocXML ret;
@@ -103,8 +102,8 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     return ret;
   }
 
-  @Nonnull
-  private ESuccess _writeTopToc (@Nonnull final RepoTopTocXML aTopToc)
+  @NonNull
+  private ESuccess _writeTopToc (@NonNull final RepoTopTocXML aTopToc)
   {
     ValueEnforcer.notNull (aTopToc, "TopToc");
 
@@ -118,7 +117,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     return m_aRepo.write (RSK_TOP_TOC, RepoStorageContentByteArray.of (aTopTocBytes));
   }
 
-  public void initForRepo (@Nonnull final IRepoStorageWithToc aRepo)
+  public void initForRepo (@NonNull final IRepoStorageWithToc aRepo)
   {
     ValueEnforcer.notNull (aRepo, "Repo");
 
@@ -149,7 +148,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     return m_aRWLock.readLockedBoolean ( () -> m_aTopToc.containsGroupAndArtifact (sGroupID, sArtifactID));
   }
 
-  public void iterateAllTopLevelGroupNames (@Nonnull final Consumer <String> aGroupNameConsumer)
+  public void iterateAllTopLevelGroupNames (@NonNull final Consumer <String> aGroupNameConsumer)
   {
     ValueEnforcer.notNull (aGroupNameConsumer, "GroupNameConsumer");
     _checkInited ();
@@ -157,8 +156,8 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     m_aRWLock.readLocked ( () -> m_aTopToc.iterateAllTopLevelGroupNames (aGroupNameConsumer));
   }
 
-  public void iterateAllSubGroups (@Nonnull @Nonempty final String sGroupID,
-                                   @Nonnull final IRepoTopTocGroupNameConsumer aGroupNameConsumer,
+  public void iterateAllSubGroups (@NonNull @Nonempty final String sGroupID,
+                                   @NonNull final IRepoTopTocGroupNameConsumer aGroupNameConsumer,
                                    final boolean bRecursive)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
@@ -168,8 +167,8 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     m_aRWLock.readLocked ( () -> m_aTopToc.iterateAllSubGroups (sGroupID, aGroupNameConsumer, bRecursive));
   }
 
-  public void iterateAllArtifacts (@Nonnull @Nonempty final String sGroupID,
-                                   @Nonnull final Consumer <String> aArtifactNameConsumer)
+  public void iterateAllArtifacts (@NonNull @Nonempty final String sGroupID,
+                                   @NonNull final Consumer <String> aArtifactNameConsumer)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
     ValueEnforcer.notNull (aArtifactNameConsumer, "ArtifactNameConsumer");
@@ -178,9 +177,9 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     m_aRWLock.readLocked ( () -> m_aTopToc.iterateAllArtifacts (sGroupID, aArtifactNameConsumer));
   }
 
-  @Nonnull
-  public ESuccess registerGroupAndArtifact (@Nonnull @Nonempty final String sGroupID,
-                                            @Nonnull @Nonempty final String sArtifactID)
+  @NonNull
+  public ESuccess registerGroupAndArtifact (@NonNull @Nonempty final String sGroupID,
+                                            @NonNull @Nonempty final String sArtifactID)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");

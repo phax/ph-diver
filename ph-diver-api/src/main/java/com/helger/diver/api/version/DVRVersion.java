@@ -19,6 +19,8 @@ package com.helger.diver.api.version;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +39,6 @@ import com.helger.collection.CollectionHelper;
 import com.helger.collection.commons.CommonsLinkedHashSet;
 import com.helger.collection.commons.ICommonsOrderedSet;
 import com.helger.diver.api.settings.DVRValidityHelper;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This class contains the version of a DVR Coordinate. This can either be a static version or a
@@ -166,8 +165,8 @@ public final class DVRVersion implements Comparable <DVRVersion>
     return m_aPseudoVersion;
   }
 
-  @Nonnull
-  private static String _getAsString (@Nonnull final Version aVersion,
+  @NonNull
+  private static String _getAsString (@NonNull final Version aVersion,
                                       final char cClassifierSep,
                                       final boolean bEnforceAllNumbers,
                                       final boolean bEnforceAtLeastMinor)
@@ -218,15 +217,15 @@ public final class DVRVersion implements Comparable <DVRVersion>
     return ret;
   }
 
-  @Nonnull
-  public static String getAsString (@Nonnull final Version aVersion)
+  @NonNull
+  public static String getAsString (@NonNull final Version aVersion)
   {
     return _getAsString (aVersion, DEFAULT_CLASSIFIER_SEPARATOR, false, false);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
-  public static String getAsString (@Nonnull final IDVRPseudoVersion aPseudoVersion)
+  public static String getAsString (@NonNull final IDVRPseudoVersion aPseudoVersion)
   {
     return aPseudoVersion.getID ();
   }
@@ -234,7 +233,7 @@ public final class DVRVersion implements Comparable <DVRVersion>
   /**
    * @return The unified string representation of the Version.
    */
-  @Nonnull
+  @NonNull
   public String getAsString ()
   {
     if (m_aStaticVersion != null)
@@ -243,13 +242,13 @@ public final class DVRVersion implements Comparable <DVRVersion>
     return getAsString (m_aPseudoVersion);
   }
 
-  @Nonnull
-  private static Version _getWithoutQualifier (@Nonnull final Version aSrc)
+  @NonNull
+  private static Version _getWithoutQualifier (@NonNull final Version aSrc)
   {
     return new Version (aSrc.getMajor (), aSrc.getMinor (), aSrc.getMicro (), null);
   }
 
-  private static int _compareSemantically (@Nonnull final Version aLhs, @Nonnull final Version aRhs)
+  private static int _compareSemantically (@NonNull final Version aLhs, @NonNull final Version aRhs)
   {
     if (QUALIFIER_SNAPSHOT.equals (aLhs.getQualifier ()))
     {
@@ -295,14 +294,14 @@ public final class DVRVersion implements Comparable <DVRVersion>
    *        Pseudo version. May not be <code>null</code>.
    * @return -1, 0 or +1
    */
-  private static int _compareWithPseudoVersion (@Nonnull final Version aStaticVersion,
-                                                @Nonnull final IDVRPseudoVersion aPseudoVersion)
+  private static int _compareWithPseudoVersion (@NonNull final Version aStaticVersion,
+                                                @NonNull final IDVRPseudoVersion aPseudoVersion)
   {
     // Change sign, due to calling order
     return -aPseudoVersion.compareToVersion (aStaticVersion);
   }
 
-  public int compareTo (@Nonnull final DVRVersion rhs)
+  public int compareTo (@NonNull final DVRVersion rhs)
   {
     if (isStaticVersion ())
     {
@@ -348,15 +347,15 @@ public final class DVRVersion implements Comparable <DVRVersion>
                                        .getToString ();
   }
 
-  @Nonnull
-  public static DVRVersion of (@Nonnull final Version aVersion)
+  @NonNull
+  public static DVRVersion of (@NonNull final Version aVersion)
   {
     ValueEnforcer.notNull (aVersion, "Version");
     return new DVRVersion (aVersion, null);
   }
 
-  @Nonnull
-  public static DVRVersion of (@Nonnull final IDVRPseudoVersion aPseudoVersion)
+  @NonNull
+  public static DVRVersion of (@NonNull final IDVRPseudoVersion aPseudoVersion)
   {
     ValueEnforcer.notNull (aPseudoVersion, "PseudoVersion");
     return new DVRVersion (null, aPseudoVersion);
@@ -365,7 +364,7 @@ public final class DVRVersion implements Comparable <DVRVersion>
   /**
    * @return A new {@link DVRVersion} using the pseudo version "latest".
    */
-  @Nonnull
+  @NonNull
   public static DVRVersion latest ()
   {
     return of (DVRPseudoVersionRegistry.LATEST);
@@ -374,7 +373,7 @@ public final class DVRVersion implements Comparable <DVRVersion>
   /**
    * @return A new {@link DVRVersion} using the pseudo version "latest-release".
    */
-  @Nonnull
+  @NonNull
   public static DVRVersion latestRelease ()
   {
     return of (DVRPseudoVersionRegistry.LATEST_RELEASE);
@@ -444,7 +443,7 @@ public final class DVRVersion implements Comparable <DVRVersion>
     return false;
   }
 
-  @Nonnull
+  @NonNull
   public static DVRVersion parseOrThrow (@Nullable final String sVersion) throws DVRVersionException
   {
     if (StringHelper.isEmpty (sVersion))
@@ -491,7 +490,7 @@ public final class DVRVersion implements Comparable <DVRVersion>
    *        <code>true</code> if SNAPSHOT versions should be allowed by the resulting predicate.
    * @return Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public static Predicate <DVRVersion> getStaticVersionAcceptor (@Nullable final Set <String> aVersionsToIgnore,
                                                                  final boolean bIncludeSnapshots)
   {

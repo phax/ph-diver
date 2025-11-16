@@ -19,6 +19,8 @@ package com.helger.diver.repo;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonnegative;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.array.bytes.ByteArrayWrapper;
@@ -26,8 +28,6 @@ import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.io.stream.StreamHelper;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.io.resource.IReadableResource;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * This is the default implementation of {@link IRepoStorageContent} based on a
@@ -40,19 +40,19 @@ public class RepoStorageContentByteArray implements IRepoStorageContent
 {
   private final ByteArrayWrapper m_aBytes;
 
-  public RepoStorageContentByteArray (@Nonnull final ByteArrayWrapper aBytes)
+  public RepoStorageContentByteArray (@NonNull final ByteArrayWrapper aBytes)
   {
     ValueEnforcer.notNull (aBytes, "Bytes");
     m_aBytes = aBytes;
   }
 
-  @Nonnull
+  @NonNull
   public InputStream getInputStream ()
   {
     return m_aBytes.getInputStream ();
   }
 
-  @Nonnull
+  @NonNull
   @Override
   public InputStream getBufferedInputStream ()
   {
@@ -71,7 +71,7 @@ public class RepoStorageContentByteArray implements IRepoStorageContent
     return m_aBytes.size ();
   }
 
-  @Nonnull
+  @NonNull
   public String getAsUtf8String ()
   {
     return m_aBytes.getBytesAsString (StandardCharsets.UTF_8);
@@ -91,8 +91,8 @@ public class RepoStorageContentByteArray implements IRepoStorageContent
    *        The data to be wrapped.
    * @return A new item and never <code>null</code>.
    */
-  @Nonnull
-  public static RepoStorageContentByteArray of (@Nonnull final byte [] aContent)
+  @NonNull
+  public static RepoStorageContentByteArray of (@NonNull final byte [] aContent)
   {
     ValueEnforcer.notNull (aContent, "Content");
 
@@ -106,16 +106,16 @@ public class RepoStorageContentByteArray implements IRepoStorageContent
    *        The UTF-8 bytes to store.
    * @return A new item and never <code>null</code>.
    */
-  @Nonnull
-  public static RepoStorageContentByteArray ofUtf8 (@Nonnull final String sContent)
+  @NonNull
+  public static RepoStorageContentByteArray ofUtf8 (@NonNull final String sContent)
   {
     ValueEnforcer.notNull (sContent, "String Content");
 
     return of (sContent.getBytes (StandardCharsets.UTF_8));
   }
 
-  @Nonnull
-  public static RepoStorageContentByteArray of (@Nonnull final IReadableResource aRes)
+  @NonNull
+  public static RepoStorageContentByteArray of (@NonNull final IReadableResource aRes)
   {
     ValueEnforcer.notNull (aRes, "Resource");
 

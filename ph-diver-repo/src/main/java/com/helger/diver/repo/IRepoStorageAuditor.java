@@ -16,9 +16,9 @@
  */
 package com.helger.diver.repo;
 
-import com.helger.base.state.ESuccess;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.base.state.ESuccess;
 
 /**
  * Callback interface for a repository storage auditor. Implementations of this
@@ -28,34 +28,34 @@ import jakarta.annotation.Nonnull;
  */
 public interface IRepoStorageAuditor
 {
-  void onRead (@Nonnull IRepoStorage aRepo, @Nonnull RepoStorageKey aKey, @Nonnull ESuccess eSuccess);
+  void onRead (@NonNull IRepoStorage aRepo, @NonNull RepoStorageKey aKey, @NonNull ESuccess eSuccess);
 
-  void onWrite (@Nonnull IRepoStorage aRepo, @Nonnull RepoStorageKey aKey, @Nonnull ESuccess eSuccess);
+  void onWrite (@NonNull IRepoStorage aRepo, @NonNull RepoStorageKey aKey, @NonNull ESuccess eSuccess);
 
-  void onDelete (@Nonnull IRepoStorage aRepo, @Nonnull RepoStorageKey aKey, @Nonnull ESuccess eSuccess);
+  void onDelete (@NonNull IRepoStorage aRepo, @NonNull RepoStorageKey aKey, @NonNull ESuccess eSuccess);
 
   /**
    * The "nil" object
    */
   IRepoStorageAuditor DO_NOTHING_AUDITOR = new IRepoStorageAuditor ()
   {
-    public void onRead (@Nonnull final IRepoStorage aRepo,
-                        @Nonnull final RepoStorageKey aKey,
-                        @Nonnull final ESuccess eSuccess)
+    public void onRead (@NonNull final IRepoStorage aRepo,
+                        @NonNull final RepoStorageKey aKey,
+                        @NonNull final ESuccess eSuccess)
     {
       // empty
     }
 
-    public void onWrite (@Nonnull final IRepoStorage aRepo,
-                         @Nonnull final RepoStorageKey aKey,
-                         @Nonnull final ESuccess eSuccess)
+    public void onWrite (@NonNull final IRepoStorage aRepo,
+                         @NonNull final RepoStorageKey aKey,
+                         @NonNull final ESuccess eSuccess)
     {
       // empty
     }
 
-    public void onDelete (@Nonnull final IRepoStorage aRepo,
-                          @Nonnull final RepoStorageKey aKey,
-                          @Nonnull final ESuccess eSuccess)
+    public void onDelete (@NonNull final IRepoStorage aRepo,
+                          @NonNull final RepoStorageKey aKey,
+                          @NonNull final ESuccess eSuccess)
     {
       // empty
     }

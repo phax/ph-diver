@@ -16,13 +16,13 @@
  */
 package com.helger.diver.repo;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Defines a single repository storage type.
@@ -40,7 +40,7 @@ public final class RepoStorageType implements IRepoStorageType
   private final boolean m_bPersistent;
   private final boolean m_bRemote;
 
-  public RepoStorageType (@Nonnull @Nonempty final String sID, final boolean bPersistent, final boolean bRemote)
+  public RepoStorageType (@NonNull @Nonempty final String sID, final boolean bPersistent, final boolean bRemote)
   {
     ValueEnforcer.notEmpty (sID, "ID");
 
@@ -49,7 +49,7 @@ public final class RepoStorageType implements IRepoStorageType
     m_bRemote = bRemote;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getID ()
   {

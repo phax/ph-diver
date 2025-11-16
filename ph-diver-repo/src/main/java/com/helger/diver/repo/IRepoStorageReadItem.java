@@ -16,10 +16,10 @@
  */
 package com.helger.diver.repo;
 
-import com.helger.annotation.style.ReturnsMutableCopy;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import com.helger.annotation.style.ReturnsMutableCopy;
 
 /**
  * Base interface for the data of an item in a repository as retrieved by
@@ -32,7 +32,7 @@ public interface IRepoStorageReadItem
   /**
    * @return The main content of the item. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   IRepoStorageContent getContent ();
 
   /**
@@ -66,6 +66,6 @@ public interface IRepoStorageReadItem
   /**
    * @return The verification state of this item. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   ERepoHashState getHashState ();
 }

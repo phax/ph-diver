@@ -22,6 +22,8 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.time.OffsetDateTime;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +48,6 @@ import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.RepoStorageReadItem;
 import com.helger.security.messagedigest.EMessageDigestAlgorithm;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Abstract implementation of a repository storage. It supports the verification
@@ -76,10 +75,10 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   private boolean m_bVerifyHashOnRead = DEFAULT_VERIFY_HASH_VALUE;
   private IRepoStorageAuditor m_aAuditor = IRepoStorageAuditor.DO_NOTHING_AUDITOR;
 
-  protected AbstractRepoStorage (@Nonnull final IRepoStorageType aRepoStorageType,
-                                 @Nonnull @Nonempty final String sID,
-                                 @Nonnull final ERepoWritable eWriteEnabled,
-                                 @Nonnull final ERepoDeletable eDeleteEnabled)
+  protected AbstractRepoStorage (@NonNull final IRepoStorageType aRepoStorageType,
+                                 @NonNull @Nonempty final String sID,
+                                 @NonNull final ERepoWritable eWriteEnabled,
+                                 @NonNull final ERepoDeletable eDeleteEnabled)
   {
     ValueEnforcer.notNull (aRepoStorageType, "RepoStorageType");
     ValueEnforcer.notEmpty (sID, "ID");
@@ -91,13 +90,13 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     m_eDeleteEnabled = eDeleteEnabled;
   }
 
-  @Nonnull
+  @NonNull
   public final IRepoStorageType getRepoType ()
   {
     return m_aRepoStorageType;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public final String getID ()
   {
@@ -109,7 +108,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     return m_bVerifyHashOnRead;
   }
 
-  @Nonnull
+  @NonNull
   public final IMPLTYPE setVerifyHashOnRead (final boolean b)
   {
     m_bVerifyHashOnRead = b;
@@ -120,14 +119,14 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     return thisAsT ();
   }
 
-  @Nonnull
+  @NonNull
   public final IRepoStorageAuditor getAuditor ()
   {
     return m_aAuditor;
   }
 
-  @Nonnull
-  public final IMPLTYPE setAuditor (@Nonnull final IRepoStorageAuditor aAuditor)
+  @NonNull
+  public final IMPLTYPE setAuditor (@NonNull final IRepoStorageAuditor aAuditor)
   {
     ValueEnforcer.notNull (aAuditor, "Auditor");
     m_aAuditor = aAuditor;
@@ -143,10 +142,10 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
    * @return <code>null</code> in case open fails (why so ever)
    */
   @Nullable
-  protected abstract InputStream getInputStream (@Nonnull final RepoStorageKey aKey);
+  protected abstract InputStream getInputStream (@NonNull final RepoStorageKey aKey);
 
   @Nullable
-  private InputStream _getInputStreamWithAudit (@Nonnull final RepoStorageKey aKey)
+  private InputStream _getInputStreamWithAudit (@NonNull final RepoStorageKey aKey)
   {
     final InputStream ret = getInputStream (aKey);
     m_aAuditor.onRead (thisAsT (), aKey, ESuccess.valueOf (ret != null));
@@ -154,7 +153,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   }
 
   @Nullable
-  public final IRepoStorageReadItem read (@Nonnull final RepoStorageKey aKey)
+  public final IRepoStorageReadItem read (@NonNull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -244,22 +243,22 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     return m_eWriteEnabled.isWriteEnabled ();
   }
 
-  @Nonnull
-  protected abstract ESuccess writeObject (@Nonnull final RepoStorageKey aKey,
-                                           @Nonnull final IRepoStorageContent aContent);
+  @NonNull
+  protected abstract ESuccess writeObject (@NonNull final RepoStorageKey aKey,
+                                           @NonNull final IRepoStorageContent aContent);
 
   @Nullable
-  private ESuccess _writeObjectWithAudit (@Nonnull final RepoStorageKey aKey,
-                                          @Nonnull final IRepoStorageContent aContent)
+  private ESuccess _writeObjectWithAudit (@NonNull final RepoStorageKey aKey,
+                                          @NonNull final IRepoStorageContent aContent)
   {
     final ESuccess ret = writeObject (aKey, aContent);
     m_aAuditor.onWrite (thisAsT (), aKey, ret);
     return ret;
   }
 
-  @Nonnull
-  protected final ESuccess doWriteRepoStorageItem (@Nonnull final RepoStorageKey aKey,
-                                                   @Nonnull final IRepoStorageContent aContent)
+  @NonNull
+  protected final ESuccess doWriteRepoStorageItem (@NonNull final RepoStorageKey aKey,
+                                                   @NonNull final IRepoStorageContent aContent)
   {
     ValueEnforcer.notNull (aKey, "Key");
     ValueEnforcer.notNull (aContent, "Content");
@@ -317,17 +316,17 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
    * @return {@link ESuccess}
    */
   @OverrideOnDemand
-  @Nonnull
-  protected ESuccess onAfterWrite (@Nonnull final RepoStorageKeyOfArtefact aKey,
-                                   @Nonnull final IRepoStorageContent aContent,
+  @NonNull
+  protected ESuccess onAfterWrite (@NonNull final RepoStorageKeyOfArtefact aKey,
+                                   @NonNull final IRepoStorageContent aContent,
                                    @Nullable final OffsetDateTime aPublicationDT)
   {
     return ESuccess.SUCCESS;
   }
 
-  @Nonnull
-  public final ESuccess write (@Nonnull final RepoStorageKey aKey,
-                               @Nonnull final IRepoStorageContent aContent,
+  @NonNull
+  public final ESuccess write (@NonNull final RepoStorageKey aKey,
+                               @NonNull final IRepoStorageContent aContent,
                                @Nullable final OffsetDateTime aPublicationDT)
   {
     ValueEnforcer.notNull (aKey, "Key");
@@ -354,19 +353,19 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     return m_eDeleteEnabled.isDeleteEnabled ();
   }
 
-  @Nonnull
-  protected abstract ESuccess deleteObject (@Nonnull final RepoStorageKey aKey);
+  @NonNull
+  protected abstract ESuccess deleteObject (@NonNull final RepoStorageKey aKey);
 
   @Nullable
-  private ESuccess _deleteObjectWithAudit (@Nonnull final RepoStorageKey aKey)
+  private ESuccess _deleteObjectWithAudit (@NonNull final RepoStorageKey aKey)
   {
     final ESuccess ret = deleteObject (aKey);
     m_aAuditor.onDelete (thisAsT (), aKey, ret);
     return ret;
   }
 
-  @Nonnull
-  private ESuccess _doDeleteRepoStorageItem (@Nonnull final RepoStorageKey aKey)
+  @NonNull
+  private ESuccess _doDeleteRepoStorageItem (@NonNull final RepoStorageKey aKey)
   {
     LOGGER.info ("Deleting item '" + aKey.getPath () + "' from RepoStorage[" + m_aRepoStorageType.getID () + "]");
 
@@ -388,15 +387,15 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
    *        The key of the deleted repo item. Never <code>null</code>.
    * @return {@link ESuccess}
    */
-  @Nonnull
+  @NonNull
   @OverrideOnDemand
-  protected ESuccess onAfterDelete (@Nonnull final RepoStorageKeyOfArtefact aKey)
+  protected ESuccess onAfterDelete (@NonNull final RepoStorageKeyOfArtefact aKey)
   {
     return ESuccess.SUCCESS;
   }
 
-  @Nonnull
-  public final ESuccess delete (@Nonnull final RepoStorageKey aKey)
+  @NonNull
+  public final ESuccess delete (@NonNull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 

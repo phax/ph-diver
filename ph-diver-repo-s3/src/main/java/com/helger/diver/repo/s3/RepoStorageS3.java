@@ -16,6 +16,8 @@
  */
 package com.helger.diver.repo.s3;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +35,6 @@ import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
 import com.helger.diver.repo.toc.IRepoTopTocService;
 import com.helger.mime.CMimeType;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -60,12 +60,12 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
   private final S3Client m_aS3Client;
   private final String m_sBucketName;
 
-  public RepoStorageS3 (@Nonnull final S3Client aS3Client,
-                        @Nonnull @Nonempty final String sBucketName,
-                        @Nonnull @Nonempty final String sID,
-                        @Nonnull final ERepoWritable eWriteEnabled,
-                        @Nonnull final ERepoDeletable eDeleteEnabled,
-                        @Nonnull final IRepoTopTocService aTopTocService)
+  public RepoStorageS3 (@NonNull final S3Client aS3Client,
+                        @NonNull @Nonempty final String sBucketName,
+                        @NonNull @Nonempty final String sID,
+                        @NonNull final ERepoWritable eWriteEnabled,
+                        @NonNull final ERepoDeletable eDeleteEnabled,
+                        @NonNull final IRepoTopTocService aTopTocService)
   {
     super (AWS_S3, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
     ValueEnforcer.notNull (aS3Client, "S3Client");
@@ -75,7 +75,7 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
     m_sBucketName = sBucketName;
   }
 
-  public boolean exists (@Nonnull final RepoStorageKey aKey)
+  public boolean exists (@NonNull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
@@ -104,7 +104,7 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
 
   @Override
   @Nullable
-  protected ResponseInputStream <GetObjectResponse> getInputStream (@Nonnull final RepoStorageKey aKey)
+  protected ResponseInputStream <GetObjectResponse> getInputStream (@NonNull final RepoStorageKey aKey)
   {
     final String sRealKey = aKey.getPath ();
     if (sRealKey.startsWith ("/"))
@@ -132,8 +132,8 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
   }
 
   @Override
-  @Nonnull
-  protected ESuccess writeObject (@Nonnull final RepoStorageKey aKey, @Nonnull final IRepoStorageContent aContent)
+  @NonNull
+  protected ESuccess writeObject (@NonNull final RepoStorageKey aKey, @NonNull final IRepoStorageContent aContent)
   {
     final String sRealKey = aKey.getPath ();
 
@@ -160,8 +160,8 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
   }
 
   @Override
-  @Nonnull
-  protected ESuccess deleteObject (@Nonnull final RepoStorageKey aKey)
+  @NonNull
+  protected ESuccess deleteObject (@NonNull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 

@@ -34,6 +34,7 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.resource.PathResourceFactory;
 import org.eclipse.jetty.util.resource.ResourceFactory;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,6 @@ import com.helger.http.EHttpMethod;
 import com.helger.io.file.FileHelper;
 import com.helger.io.file.FileOperationManager;
 
-import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class LocalJettyRunner
@@ -61,9 +61,9 @@ public class LocalJettyRunner
   private final Server m_aServer;
 
   public LocalJettyRunner (@Nonnegative final int nPort,
-                           @Nonnull final File aResourceBase,
-                           @Nonnull final ERepoWritable eWriteEnabled,
-                           @Nonnull final ERepoDeletable eDeleteEnabled)
+                           @NonNull final File aResourceBase,
+                           @NonNull final ERepoWritable eWriteEnabled,
+                           @NonNull final ERepoDeletable eDeleteEnabled)
   {
     LOGGER.info ("Starting Jetty with resource base dir '" + aResourceBase.getAbsolutePath () + "'");
     m_aServer = new Server (nPort);
@@ -203,9 +203,9 @@ public class LocalJettyRunner
     m_aServer.stop ();
   }
 
-  @Nonnull
-  public static LocalJettyRunner createDefaultTestInstance (@Nonnull final ERepoWritable eWriteEnabled,
-                                                            @Nonnull final ERepoDeletable eDeleteEnabled)
+  @NonNull
+  public static LocalJettyRunner createDefaultTestInstance (@NonNull final ERepoWritable eWriteEnabled,
+                                                            @NonNull final ERepoDeletable eDeleteEnabled)
   {
     return new LocalJettyRunner (DEFAULT_PORT, DEFAULT_TEST_RESOURCE_BASE, eWriteEnabled, eDeleteEnabled);
   }

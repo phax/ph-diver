@@ -16,12 +16,12 @@
  */
 package com.helger.diver.api.coord;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.base.string.StringHelper;
 import com.helger.diver.api.version.DVRVersion;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * The DVR Coordinate represents the coordinate of a single technical artefact in a specific
@@ -39,21 +39,21 @@ public interface IDVRCoordinate
   /**
    * @return The coordinate's group ID. May never be <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   String getGroupID ();
 
   /**
    * @return The coordinate's artifact ID. May never be <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   String getArtifactID ();
 
   /**
    * @return The coordinate's version as a single string. May never be <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   default String getVersionString ()
   {
@@ -63,7 +63,7 @@ public interface IDVRCoordinate
   /**
    * @return The coordinates version object. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   DVRVersion getVersionObj ();
 
   /**
@@ -84,7 +84,7 @@ public interface IDVRCoordinate
    * @return A joint String representation of the coordinates. The different parts are separated by
    *         a colon (:) character. Never <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   String getAsSingleID ();
 }

@@ -16,6 +16,8 @@
  */
 package com.helger.diver.api.version;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,9 +34,6 @@ import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.diver.api.version.spi.IDVRPseudoVersionRegistrarSPI;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * Registry for all known {@link IDVRPseudoVersion} instances.
  *
@@ -49,13 +48,13 @@ public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
    */
   public static final IDVRPseudoVersion OLDEST = new DVRPseudoVersion ("oldest", new IDVRPseudoVersionComparable ()
   {
-    public int compareToPseudoVersion (@Nonnull final IDVRPseudoVersion aOtherPseudoVersion)
+    public int compareToPseudoVersion (@NonNull final IDVRPseudoVersion aOtherPseudoVersion)
     {
       // OLDEST is always smaller
       return -1;
     }
 
-    public int compareToVersion (@Nonnull final Version aStaticVersion)
+    public int compareToVersion (@NonNull final Version aStaticVersion)
     {
       // OLDEST is always smaller
       return -1;
@@ -73,13 +72,13 @@ public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
    */
   public static final IDVRPseudoVersion LATEST = new DVRPseudoVersion ("latest", new IDVRPseudoVersionComparable ()
   {
-    public int compareToPseudoVersion (@Nonnull final IDVRPseudoVersion aOtherPseudoVersion)
+    public int compareToPseudoVersion (@NonNull final IDVRPseudoVersion aOtherPseudoVersion)
     {
       // LATEST is always greater
       return +1;
     }
 
-    public int compareToVersion (@Nonnull final Version aStaticVersion)
+    public int compareToVersion (@NonNull final Version aStaticVersion)
     {
       // LATEST is always greater
       return +1;
@@ -102,7 +101,7 @@ public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
   {
     LATEST_RELEASE = new DVRPseudoVersion ("latest-release", new IDVRPseudoVersionComparable ()
     {
-      public int compareToPseudoVersion (@Nonnull final IDVRPseudoVersion aOtherPseudoVersion)
+      public int compareToPseudoVersion (@NonNull final IDVRPseudoVersion aOtherPseudoVersion)
       {
         // We are before LATEST
         if (aOtherPseudoVersion.equals (LATEST))
@@ -112,7 +111,7 @@ public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
         return +1;
       }
 
-      public int compareToVersion (@Nonnull final Version aStaticVersion)
+      public int compareToVersion (@NonNull final Version aStaticVersion)
       {
         // LATEST_RELEASE is always greater
         return +1;
@@ -140,7 +139,7 @@ public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
     _reinitialize (false);
   }
 
-  @Nonnull
+  @NonNull
   public static DVRPseudoVersionRegistry getInstance ()
   {
     return SingletonHolder.INSTANCE;
@@ -170,8 +169,8 @@ public class DVRPseudoVersionRegistry implements IDVRPseudoVersionRegistry
     _reinitialize (true);
   }
 
-  @Nonnull
-  public EChange registerPseudoVersion (@Nonnull final IDVRPseudoVersion aPseudoVersion)
+  @NonNull
+  public EChange registerPseudoVersion (@NonNull final IDVRPseudoVersion aPseudoVersion)
   {
     ValueEnforcer.notNull (aPseudoVersion, "PseudoVersion");
 
