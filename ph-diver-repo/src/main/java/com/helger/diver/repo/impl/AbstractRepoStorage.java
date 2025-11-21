@@ -178,7 +178,15 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
         else
         {
           // Do hex decoding
-          aRepoDigest = StringHex.getHexDecoded (aRepoDigest);
+          try
+          {
+            aRepoDigest = StringHex.getHexDecoded (aRepoDigest);
+          }
+          catch (final IllegalArgumentException ex)
+          {
+            // TODO remove when everyhing is updated
+            // Invalid digest - maybe not hex encoded (legacy)
+          }
         }
 
         // The message digest to be calculated while reading
