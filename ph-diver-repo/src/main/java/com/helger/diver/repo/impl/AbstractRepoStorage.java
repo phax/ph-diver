@@ -33,6 +33,7 @@ import com.helger.base.array.ArrayHelper;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.io.stream.StreamHelper;
 import com.helger.base.state.ESuccess;
+import com.helger.base.string.StringHex;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.base.trait.IGenericImplTrait;
 import com.helger.diver.repo.ERepoDeletable;
@@ -50,8 +51,8 @@ import com.helger.diver.repo.RepoStorageReadItem;
 import com.helger.security.messagedigest.EMessageDigestAlgorithm;
 
 /**
- * Abstract implementation of a repository storage. It supports the verification
- * of hash values upon reading.
+ * Abstract implementation of a repository storage. It supports the verification of hash values upon
+ * reading.
  *
  * @author Philip Helger
  * @param <IMPLTYPE>
@@ -134,8 +135,8 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   }
 
   /**
-   * Get the input stream (locally or remote) to the provided key. Any failure
-   * to open, should be logged inside.
+   * Get the input stream (locally or remote) to the provided key. Any failure to open, should be
+   * logged inside.
    *
    * @param aKey
    *        The key to open. May not be <code>null</code>.
@@ -173,6 +174,11 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
           // Should already be logged in getInputStream
           if (LOGGER.isDebugEnabled ())
             LOGGER.debug ("Failed to read digest value from " + aKey.getPath ());
+        }
+        else
+        {
+          // Do hex decoding
+          aRepoDigest = StringHex.getHexDecoded (aRepoDigest);
         }
 
         // The message digest to be calculated while reading
@@ -298,7 +304,9 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     final byte [] aDigestBytes = aMD.digest ();
 
     // Store the hash value
-    if (_writeObjectWithAudit (aKey.getKeyHashSha256 (), RepoStorageContentByteArray.of (aDigestBytes)).isFailure ())
+    // Since 2025-11-21: use hex encoded
+    if (_writeObjectWithAudit (aKey.getKeyHashSha256 (),
+                               RepoStorageContentByteArray.of (StringHex.getHexEncodedByteArray (aDigestBytes))).isFailure ())
       return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;
