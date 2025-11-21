@@ -25,14 +25,15 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 
 /**
- * A chain of {@link IRepoStorage} objects for reading from multiple sources,
- * including local storage.
+ * A chain of {@link IRepoStorage} objects for reading from multiple sources, including local
+ * storage.
  *
  * @author Philip Helger
  */
@@ -50,13 +51,11 @@ public class RepoStorageChain implements IRepoStorageBase
    * Constructor. The order of storages is maintained.
    *
    * @param aReadingStorages
-   *        The storages to be considered. May neither be <code>null</code> nor
-   *        empty.
+   *        The storages to be considered. May neither be <code>null</code> nor empty.
    * @param aWritableStorages
-   *        The list of writable storages to save remote read artifacts to. May
-   *        be <code>null</code>. If this list is <code>null</code> or empty, an
-   *        eventually received artefact from a remote storage is not saved
-   *        locally.
+   *        The list of writable storages to save remote read artifacts to. May be
+   *        <code>null</code>. If this list is <code>null</code> or empty, an eventually received
+   *        artefact from a remote storage is not saved locally.
    */
   public RepoStorageChain (@NonNull final List <? extends IRepoStorage> aReadingStorages,
                            @Nullable final List <? extends IRepoStorage> aWritableStorages)
@@ -74,21 +73,22 @@ public class RepoStorageChain implements IRepoStorageBase
 
   @NonNull
   @Nonempty
+  @ReturnsMutableCopy
   public final ICommonsList <IRepoStorage> internalGetAllStorages ()
   {
     return m_aReadingStorages.getClone ();
   }
 
   @NonNull
+  @ReturnsMutableCopy
   public final ICommonsList <IRepoStorage> internalGetAllWritableStorages ()
   {
     return m_aWritableStorages.getClone ();
   }
 
   /**
-   * @return <code>true</code> of remote content that was read, should be
-   *         written to a persistent local repository for faster access next
-   *         time.
+   * @return <code>true</code> of remote content that was read, should be written to a persistent
+   *         local repository for faster access next time.
    */
   public final boolean isCacheRemoteContent ()
   {
