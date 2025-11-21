@@ -16,6 +16,10 @@
  */
 package com.helger.diver.api.settings;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
+
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -23,7 +27,6 @@ import com.helger.annotation.Nonnegative;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
-import com.helger.cache.regex.RegExHelper;
 
 /**
  * Helper class to check DVR Coordinate consistency. It is provided in its own package, to avoid
@@ -37,13 +40,17 @@ public final class DVRValidityHelper
   private DVRValidityHelper ()
   {}
 
+  private static final Map <String, Pattern> REGEX_CACHE = new ConcurrentHashMap <> ();
+
   private static boolean _isValidPart (@NonNull final String sPart,
                                        @Nonnegative final int nMinLen,
                                        @Nonnegative final int nMaxLen)
   {
     ValueEnforcer.isTrue ( () -> nMinLen <= nMaxLen,
                            () -> "Min length (" + nMinLen + ") must be <= Max length (" + nMaxLen + ")");
-    return RegExHelper.stringMatchesPattern ("[a-zA-Z0-9_\\-\\.]{" + nMinLen + "," + nMaxLen + "}", sPart);
+    return REGEX_CACHE.computeIfAbsent ("[a-zA-Z0-9_\\-\\.]{" + nMinLen + "," + nMaxLen + "}", Pattern::compile)
+                      .matcher (sPart)
+                      .matches ();
   }
 
   /**
@@ -110,5 +117,4 @@ public final class DVRValidityHelper
                          DVRGlobalCoordinateSettings.getClassifierMinLen (),
                          DVRGlobalCoordinateSettings.getClassifierMaxLen ());
   }
-
 }
