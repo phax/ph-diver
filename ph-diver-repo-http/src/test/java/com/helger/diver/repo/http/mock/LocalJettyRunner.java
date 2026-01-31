@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023-2025 Philip Helger & ecosio
+ * Copyright (C) 2023-2026 Philip Helger & ecosio
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
