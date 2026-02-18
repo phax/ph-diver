@@ -38,13 +38,21 @@ import com.helger.collection.commons.ICommonsSortedSet;
 public interface IRepoTopTocService
 {
   /**
-   * Only invoked by the repository that uses this Top ToC service. This method
-   * must be called before any other method is called.
+   * Only invoked by the repository that uses this Top ToC service. This method must be called
+   * before any other method is called.
    *
    * @param aRepo
    *        The repository that uses this service.
    */
   void initForRepo (@NonNull IRepoStorageWithToc aRepo);
+
+  /**
+   * Re-initialize the content from the repository that was provided in
+   * {@link #initForRepo(IRepoStorageWithToc)}
+   *
+   * @since 4.2.0
+   */
+  void refreshFromRepo ();
 
   /**
    * Check if the provided group ID and artifact ID are contained or not.
@@ -61,15 +69,13 @@ public interface IRepoTopTocService
    * Iterate all top-level group names.
    *
    * @param aGroupNameConsumer
-   *        The consumer to be invoked for all top-level group names. Must not
-   *        be <code>null</code>.
+   *        The consumer to be invoked for all top-level group names. Must not be <code>null</code>.
    * @see #getAllTopLevelGroupNames()
    */
   void iterateAllTopLevelGroupNames (@NonNull Consumer <String> aGroupNameConsumer);
 
   /**
-   * @return A set of all contained top-level group names. Never
-   *         <code>null</code> but maybe empty.
+   * @return A set of all contained top-level group names. Never <code>null</code> but maybe empty.
    * @see #iterateAllTopLevelGroupNames(Consumer)
    */
   @NonNull
@@ -85,14 +91,12 @@ public interface IRepoTopTocService
    * Iterate all sub groups of the provided group ID.
    *
    * @param sGroupID
-   *        The top-level or absolute group ID to start at. May neither be
-   *        <code>null</code> nor empty.
+   *        The top-level or absolute group ID to start at. May neither be <code>null</code> nor
+   *        empty.
    * @param aGroupNameConsumer
-   *        The consumer to be invoked for each match. May not be
-   *        <code>null</code>.
+   *        The consumer to be invoked for each match. May not be <code>null</code>.
    * @param bRecursive
-   *        <code>true</code> to iterate recursively, <code>false</code> to
-   *        iterate just one level.
+   *        <code>true</code> to iterate recursively, <code>false</code> to iterate just one level.
    * @see #getAllAbsoluteSubGroupNames(String)
    * @see #getAllAbsoluteSubGroupNamesRecursive(String)
    */
@@ -122,11 +126,10 @@ public interface IRepoTopTocService
    * Iterate all artifacts in the provided group ID.
    *
    * @param sGroupID
-   *        The top-level or absolute group ID to iterate. May neither be
-   *        <code>null</code> nor empty.
+   *        The top-level or absolute group ID to iterate. May neither be <code>null</code> nor
+   *        empty.
    * @param aArtifactNameConsumer
-   *        The consumer to be invoked for each artifact. May not be
-   *        <code>null</code>.
+   *        The consumer to be invoked for each artifact. May not be <code>null</code>.
    * @see #getAllArtefacts(String)
    */
   void iterateAllArtifacts (@NonNull @Nonempty String sGroupID, @NonNull Consumer <String> aArtifactNameConsumer);
@@ -141,16 +144,13 @@ public interface IRepoTopTocService
   }
 
   /**
-   * Register a new combination of group ID and artifact ID into the top-level
-   * ToC. If the provided combination is already present, nothing happens and
-   * success is to be returned.
+   * Register a new combination of group ID and artifact ID into the top-level ToC. If the provided
+   * combination is already present, nothing happens and success is to be returned.
    *
    * @param sGroupID
-   *        Absolute Group ID to register. May neither be <code>null</code> nor
-   *        empty.
+   *        Absolute Group ID to register. May neither be <code>null</code> nor empty.
    * @param sArtifactID
-   *        The artifact ID to register. May neither be <code>null</code> nor
-   *        empty.
+   *        The artifact ID to register. May neither be <code>null</code> nor empty.
    * @return {@link ESuccess} and never <code>null</code>.
    */
   @NonNull

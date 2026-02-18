@@ -136,6 +136,15 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
       throw new IllegalStateException ("This service was not properly initialized");
   }
 
+  public void refreshFromRepo ()
+  {
+    _checkInited ();
+
+    // Re-read and atomic assign
+    final RepoTopTocXML aTmpTopToc = _readTopToc (true);
+    m_aRWLock.writeLocked ( () -> m_aTopToc = aTmpTopToc);
+  }
+
   public boolean containsGroupAndArtifact (@Nullable final String sGroupID, @Nullable final String sArtifactID)
   {
     _checkInited ();

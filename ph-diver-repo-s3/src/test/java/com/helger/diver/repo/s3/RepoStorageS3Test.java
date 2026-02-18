@@ -88,11 +88,16 @@ public final class RepoStorageS3Test
                               ERepoDeletable.WITH_DELETE,
                               new IRepoTopTocService ()
                               {
-                                @NonNull
-                                public ESuccess registerGroupAndArtifact (final String sGroupID,
-                                                                          final String sArtifactID)
+                                public void initForRepo (final IRepoStorageWithToc aRepo)
+                                {}
+
+                                public void refreshFromRepo ()
+                                {}
+
+                                public boolean containsGroupAndArtifact (final String sGroupID,
+                                                                         final String sArtifactID)
                                 {
-                                  return ESuccess.SUCCESS;
+                                  return false;
                                 }
 
                                 public void iterateAllTopLevelGroupNames (final Consumer <String> aGroupNameConsumer)
@@ -107,13 +112,11 @@ public final class RepoStorageS3Test
                                                                  final Consumer <String> aArtifactNameConsumer)
                                 {}
 
-                                public void initForRepo (final IRepoStorageWithToc aRepo)
-                                {}
-
-                                public boolean containsGroupAndArtifact (final String sGroupID,
-                                                                         final String sArtifactID)
+                                @NonNull
+                                public ESuccess registerGroupAndArtifact (final String sGroupID,
+                                                                          final String sArtifactID)
                                 {
-                                  return false;
+                                  return ESuccess.SUCCESS;
                                 }
                               });
   }
