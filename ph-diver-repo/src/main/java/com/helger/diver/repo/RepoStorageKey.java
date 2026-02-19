@@ -28,8 +28,8 @@ import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
 
 /**
- * A key that identifies a single item to be exchanged. It is an abstract
- * interpretation of a combination of folder and filename.
+ * A key that identifies a single item to be exchanged. It is an abstract interpretation of a
+ * combination of folder and filename.
  *
  * @author Philip Helger
  */
@@ -48,8 +48,9 @@ public class RepoStorageKey
   public RepoStorageKey (@NonNull @Nonempty final String sPath)
   {
     ValueEnforcer.notEmpty (sPath, "Path");
-    ValueEnforcer.isFalse ( () -> sPath.startsWith ("/"), "Path should not start with a Slash");
-    ValueEnforcer.isFalse ( () -> sPath.endsWith ("/"), "Path should not end with a Slash");
+    ValueEnforcer.isFalse ( () -> sPath.startsWith ("/"),
+                            () -> "Path ('" + sPath + "') should not start with a slash ('/')");
+    ValueEnforcer.isFalse ( () -> sPath.endsWith ("/"), "Path ('" + sPath + "') should not end with a slash ('/')");
 
     m_sPath = sPath;
   }
