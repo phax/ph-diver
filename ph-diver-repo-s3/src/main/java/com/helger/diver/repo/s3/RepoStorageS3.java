@@ -115,7 +115,9 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
   {
     final String sRealKey = m_sDefaultKeyPrefix + aKey.getPath ();
     if (sRealKey.startsWith ("/"))
-      throw new IllegalArgumentException ("RepoStorageKey ('" + sRealKey + "') may not start with a leading slash");
+      throw new IllegalArgumentException ("RepoStorageKey ('" +
+                                          sRealKey +
+                                          "') must not start with a leading slash ('/')");
     return sRealKey;
   }
 
@@ -175,6 +177,9 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
   @NonNull
   protected ESuccess writeObject (@NonNull final RepoStorageKey aKey, @NonNull final IRepoStorageContent aContent)
   {
+    ValueEnforcer.notNull (aKey, "Key");
+    ValueEnforcer.notNull (aContent, "Content");
+
     final String sRealKey = _getRealKey (aKey);
 
     if (LOGGER.isDebugEnabled ())
