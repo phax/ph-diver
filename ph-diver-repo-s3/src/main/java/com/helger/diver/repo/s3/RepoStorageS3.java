@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.annotation.Nonempty;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.ESuccess;
+import com.helger.base.string.StringHelper;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorage;
@@ -59,9 +60,22 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
 
   private final S3Client m_aS3Client;
   private final String m_sBucketName;
+  private final String m_sDefaultKeyPrefix;
+
+  @Deprecated (forRemoval = true, since = "4.2.0")
+  public RepoStorageS3 (@NonNull final S3Client aS3Client,
+                        @NonNull @Nonempty final String sBucketName,
+                        @NonNull @Nonempty final String sID,
+                        @NonNull final ERepoWritable eWriteEnabled,
+                        @NonNull final ERepoDeletable eDeleteEnabled,
+                        @NonNull final IRepoTopTocService aTopTocService)
+  {
+    this (aS3Client, sBucketName, (String) null, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
+  }
 
   public RepoStorageS3 (@NonNull final S3Client aS3Client,
                         @NonNull @Nonempty final String sBucketName,
+                        @Nullable final String sDefaultKeyPrefix,
                         @NonNull @Nonempty final String sID,
                         @NonNull final ERepoWritable eWriteEnabled,
                         @NonNull final ERepoDeletable eDeleteEnabled,
@@ -71,17 +85,34 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
     ValueEnforcer.notNull (aS3Client, "S3Client");
     ValueEnforcer.notEmpty (sBucketName, "BucketName");
     ValueEnforcer.isEqual (sBucketName, sBucketName.trim (), "BucketName must be trimmed");
+    if (StringHelper.isNotEmpty (sDefaultKeyPrefix))
+    {
+      ValueEnforcer.isFalse ( () -> sDefaultKeyPrefix.startsWith ("/"),
+                              () -> "The default key prefix ('" +
+                                    sDefaultKeyPrefix +
+                                    "') must not start with a slash ('/')");
+      ValueEnforcer.isTrue ( () -> sDefaultKeyPrefix.endsWith ("/"),
+                             () -> "The default key prefix ('" + sDefaultKeyPrefix + "') must end with a slash ('/')");
+    }
     m_aS3Client = aS3Client;
     m_sBucketName = sBucketName;
+    m_sDefaultKeyPrefix = sDefaultKeyPrefix == null ? "" : sDefaultKeyPrefix;
+  }
+
+  @NonNull
+  private String _getRealKey (@NonNull final RepoStorageKey aKey)
+  {
+    final String sRealKey = m_sDefaultKeyPrefix + aKey.getPath ();
+    if (sRealKey.startsWith ("/"))
+      throw new IllegalArgumentException ("RepoStorageKey ('" + sRealKey + "') may not start with a leading slash");
+    return sRealKey;
   }
 
   public boolean exists (@NonNull final RepoStorageKey aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
 
-    final String sRealKey = aKey.getPath ();
-    if (sRealKey.startsWith ("/"))
-      throw new IllegalArgumentException ("RepoStorageKey may not start with a leading slash");
+    final String sRealKey = _getRealKey (aKey);
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Reading from S3 '" + m_sBucketName + "' / '" + sRealKey + "'");
@@ -106,9 +137,7 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
   @Nullable
   protected ResponseInputStream <GetObjectResponse> getInputStream (@NonNull final RepoStorageKey aKey)
   {
-    final String sRealKey = aKey.getPath ();
-    if (sRealKey.startsWith ("/"))
-      throw new IllegalArgumentException ("RepoStorageKey may not start with a leading slash");
+    final String sRealKey = _getRealKey (aKey);
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Reading from S3 '" + m_sBucketName + "' / '" + sRealKey + "'");
@@ -135,7 +164,7 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
   @NonNull
   protected ESuccess writeObject (@NonNull final RepoStorageKey aKey, @NonNull final IRepoStorageContent aContent)
   {
-    final String sRealKey = aKey.getPath ();
+    final String sRealKey = _getRealKey (aKey);
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Writing to S3 '" + m_sBucketName + "' / '" + sRealKey + "'");
@@ -165,7 +194,8 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
   {
     ValueEnforcer.notNull (aKey, "Key");
 
-    final String sRealKey = aKey.getPath ();
+    final String sRealKey = _getRealKey (aKey);
+
     LOGGER.info ("Deleting from S3 '" + m_sBucketName + "' / '" + sRealKey + "'");
 
     final DeleteObjectResponse aDeleteResponse = m_aS3Client.deleteObject (DeleteObjectRequest.builder ()

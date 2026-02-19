@@ -81,8 +81,10 @@ public final class RepoStorageS3Test
   @NonNull
   private static RepoStorageS3 _createRepoWritable ()
   {
+    final String sDefaultKeyPrefix = "";
     return new RepoStorageS3 (_s3Client (),
                               "bucket",
+                              sDefaultKeyPrefix,
                               "unittest.s3",
                               ERepoWritable.WITH_WRITE,
                               ERepoDeletable.WITH_DELETE,
