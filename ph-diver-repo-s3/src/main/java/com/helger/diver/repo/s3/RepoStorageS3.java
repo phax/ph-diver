@@ -102,6 +102,8 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
                                     "') must not start with a slash ('/')");
       ValueEnforcer.isTrue ( () -> sDefaultKeyPrefix.endsWith ("/"),
                              () -> "The default key prefix ('" + sDefaultKeyPrefix + "') must end with a slash ('/')");
+      ValueEnforcer.isFalse ( () -> sDefaultKeyPrefix.equals ("/"),
+                              () -> "The default key prefix must not be a single slash ('/')");
     }
     m_aS3Client = aS3Client;
     m_sBucketName = sBucketName;
