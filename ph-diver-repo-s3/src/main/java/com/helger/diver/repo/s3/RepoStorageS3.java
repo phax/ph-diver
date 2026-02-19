@@ -62,17 +62,26 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
   private final String m_sBucketName;
   private final String m_sDefaultKeyPrefix;
 
-  @Deprecated (forRemoval = true, since = "4.2.0")
-  public RepoStorageS3 (@NonNull final S3Client aS3Client,
-                        @NonNull @Nonempty final String sBucketName,
-                        @NonNull @Nonempty final String sID,
-                        @NonNull final ERepoWritable eWriteEnabled,
-                        @NonNull final ERepoDeletable eDeleteEnabled,
-                        @NonNull final IRepoTopTocService aTopTocService)
-  {
-    this (aS3Client, sBucketName, (String) null, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
-  }
-
+  /**
+   * Constructor
+   *
+   * @param aS3Client
+   *        The AWS S3 client to use. May not be <code>null</code>.
+   * @param sBucketName
+   *        The S3 bucket name to use. May neither be <code>null</code> nor empty.
+   * @param sDefaultKeyPrefix
+   *        An optional "default key prefix" that is automatically added on the beginning of each
+   *        path. May be <code>null</code> or an empty string. If the value is a non-empty String,
+   *        it must not start with a slash, but must end with a slash.
+   * @param sID
+   *        The internal repository ID. May neither be <code>null</code> nor empty.
+   * @param eWriteEnabled
+   *        Is the repository writable? May not be <code>null</code>.
+   * @param eDeleteEnabled
+   *        Is the repository deletable? May not be <code>null</code>.
+   * @param aTopTocService
+   *        The top-level Table of Content service to be used. May not be <code>null</code>.
+   */
   public RepoStorageS3 (@NonNull final S3Client aS3Client,
                         @NonNull @Nonempty final String sBucketName,
                         @Nullable final String sDefaultKeyPrefix,
