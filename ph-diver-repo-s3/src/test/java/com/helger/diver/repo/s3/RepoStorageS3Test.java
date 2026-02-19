@@ -23,7 +23,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
 
 import org.jspecify.annotations.NonNull;
 import org.junit.Test;
@@ -42,9 +41,7 @@ import com.helger.diver.repo.RepoStorageContentByteArray;
 import com.helger.diver.repo.RepoStorageContentHelper;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
-import com.helger.diver.repo.toc.IRepoStorageWithToc;
-import com.helger.diver.repo.toc.IRepoTopTocGroupNameConsumer;
-import com.helger.diver.repo.toc.IRepoTopTocService;
+import com.helger.diver.repo.toc.DoNothingRepoTopTocService;
 
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.core.exception.SdkClientException;
@@ -88,39 +85,7 @@ public final class RepoStorageS3Test
                               "unittest.s3",
                               ERepoWritable.WITH_WRITE,
                               ERepoDeletable.WITH_DELETE,
-                              new IRepoTopTocService ()
-                              {
-                                public void initForRepo (final IRepoStorageWithToc aRepo)
-                                {}
-
-                                public void refreshFromRepo ()
-                                {}
-
-                                public boolean containsGroupAndArtifact (final String sGroupID,
-                                                                         final String sArtifactID)
-                                {
-                                  return false;
-                                }
-
-                                public void iterateAllTopLevelGroupNames (final Consumer <String> aGroupNameConsumer)
-                                {}
-
-                                public void iterateAllSubGroups (final String sGroupID,
-                                                                 final IRepoTopTocGroupNameConsumer aGroupNameConsumer,
-                                                                 final boolean bRecursive)
-                                {}
-
-                                public void iterateAllArtifacts (final String sGroupID,
-                                                                 final Consumer <String> aArtifactNameConsumer)
-                                {}
-
-                                @NonNull
-                                public ESuccess registerGroupAndArtifact (final String sGroupID,
-                                                                          final String sArtifactID)
-                                {
-                                  return ESuccess.SUCCESS;
-                                }
-                              });
+                              DoNothingRepoTopTocService.INSTANCE);
   }
 
   @Test
