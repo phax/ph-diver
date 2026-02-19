@@ -131,6 +131,7 @@ Alternate usage as a Maven BOM:
 
 v4.2.0 - work in progress
 * Added new method `IRepoTopTocService.refreshFromRepo`. See [#1](https://github.com/phax/ph-diver/issues/1)
+* Added a "default key prefix" to be applied to S3 repos. See [#2](https://github.com/phax/ph-diver/issues/2)
 
 v4.1.0 - 2025-11-16
 * Updated to ph-commons 12.1.0
