@@ -39,7 +39,7 @@ import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
-import com.helger.diver.repo.toc.RepoTopTocServiceAuditor;
+import com.helger.diver.repo.toc.RepoTopTocAuditor;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 
 /**
@@ -280,7 +280,7 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
                                                              eDeleteEnabled,
                                                              DEFAULT_ALLOW_OVERWRITE);
     // Enable a top-level table of contents on XML basis
-    ret.setAuditor (new RepoTopTocServiceAuditor (new RepoTopTocServiceRepoBasedXML ()));
+    ret.setAuditor (new RepoTopTocAuditor (new RepoTopTocServiceRepoBasedXML ()));
     return ret;
   }
 }

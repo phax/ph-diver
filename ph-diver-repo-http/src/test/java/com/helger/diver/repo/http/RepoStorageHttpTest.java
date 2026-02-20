@@ -43,7 +43,7 @@ import com.helger.diver.repo.RepoStorageContentHelper;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.http.mock.LocalJettyRunner;
-import com.helger.diver.repo.toc.RepoTopTocServiceAuditor;
+import com.helger.diver.repo.toc.RepoTopTocAuditor;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 import com.helger.httpclient.HttpClientManager;
 import com.helger.io.file.FileOperationManager;
@@ -78,7 +78,7 @@ public final class RepoStorageHttpTest
                                                      "unittest",
                                                      ERepoWritable.WITHOUT_WRITE,
                                                      ERepoDeletable.WITHOUT_DELETE);
-    ret.setAuditor (new RepoTopTocServiceAuditor (new RepoTopTocServiceRepoBasedXML ()));
+    ret.setAuditor (new RepoTopTocAuditor (new RepoTopTocServiceRepoBasedXML ()));
     return ret;
   }
 
@@ -109,7 +109,7 @@ public final class RepoStorageHttpTest
                                                      "unittest",
                                                      ERepoWritable.WITH_WRITE,
                                                      ERepoDeletable.WITH_DELETE);
-    ret.setAuditor (new RepoTopTocServiceAuditor (new RepoTopTocServiceRepoBasedXML ()));
+    ret.setAuditor (new RepoTopTocAuditor (new RepoTopTocServiceRepoBasedXML ()));
     return ret;
   }
 

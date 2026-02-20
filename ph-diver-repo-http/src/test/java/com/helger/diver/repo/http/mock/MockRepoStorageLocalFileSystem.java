@@ -23,7 +23,7 @@ import org.jspecify.annotations.NonNull;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.impl.RepoStorageLocalFileSystem;
-import com.helger.diver.repo.toc.RepoTopTocServiceAuditor;
+import com.helger.diver.repo.toc.RepoTopTocAuditor;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 
 public final class MockRepoStorageLocalFileSystem extends RepoStorageLocalFileSystem
@@ -34,6 +34,6 @@ public final class MockRepoStorageLocalFileSystem extends RepoStorageLocalFileSy
                                          @NonNull final ERepoDeletable eDeleteEnabled)
   {
     super (TEST_REPO_DIR, "unittest-fs", eWriteEnabled, eDeleteEnabled);
-    setAuditor (new RepoTopTocServiceAuditor (new RepoTopTocServiceRepoBasedXML ()));
+    setAuditor (new RepoTopTocAuditor (new RepoTopTocServiceRepoBasedXML ()));
   }
 }

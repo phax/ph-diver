@@ -15,15 +15,22 @@ import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 
-public class RepoTopTocServiceAuditor implements IRepoStorageAuditor
+/**
+ * Special {@link IRepoStorageAuditor} implementation to handle {@link IRepoTopTocService}
+ * instances.
+ *
+ * @author Philip Helger
+ * @since 4.2.0
+ */
+public class RepoTopTocAuditor implements IRepoStorageAuditor
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (RepoTopTocServiceAuditor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (RepoTopTocAuditor.class);
 
   // Key is the repository ID
   private final ICommonsMap <String, Object> m_aTopTocServiceInitialized = new CommonsConcurrentHashMap <> ();
   private final IRepoTopTocService m_aTopTocService;
 
-  public RepoTopTocServiceAuditor (@NonNull final IRepoTopTocService aTopTocService)
+  public RepoTopTocAuditor (@NonNull final IRepoTopTocService aTopTocService)
   {
     ValueEnforcer.notNull (aTopTocService, "TopTocService");
     m_aTopTocService = aTopTocService;

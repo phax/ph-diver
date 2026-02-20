@@ -44,7 +44,7 @@ import com.helger.diver.repo.http.mock.LocalJettyRunner;
 import com.helger.diver.repo.http.mock.MockRepoStorageLocalFileSystem;
 import com.helger.diver.repo.impl.RepoStorageInMemory;
 import com.helger.diver.repo.impl.RepoStorageLocalFileSystem;
-import com.helger.diver.repo.toc.RepoTopTocServiceAuditor;
+import com.helger.diver.repo.toc.RepoTopTocAuditor;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 import com.helger.httpclient.HttpClientManager;
 import com.helger.io.file.FileOperationManager;
@@ -88,7 +88,7 @@ public final class RepoStorageChainFuncTest
                                                            "unittest-http",
                                                            ERepoWritable.WITHOUT_WRITE,
                                                            ERepoDeletable.WITHOUT_DELETE);
-    aRepoHttp.setAuditor (new RepoTopTocServiceAuditor (new RepoTopTocServiceRepoBasedXML ()));
+    aRepoHttp.setAuditor (new RepoTopTocAuditor (new RepoTopTocServiceRepoBasedXML ()));
 
     final RepoStorageChain aRepoChain = RepoStorageChain.of (new CommonsArrayList <> (aRepoInMemory,
                                                                                       aRepoLocalFS,
@@ -170,7 +170,7 @@ public final class RepoStorageChainFuncTest
                                                            "unittest-http",
                                                            ERepoWritable.WITHOUT_WRITE,
                                                            ERepoDeletable.WITHOUT_DELETE);
-    aRepoHttp.setAuditor (new RepoTopTocServiceAuditor (new RepoTopTocServiceRepoBasedXML ()));
+    aRepoHttp.setAuditor (new RepoTopTocAuditor (new RepoTopTocServiceRepoBasedXML ()));
 
     final RepoStorageChain aChain = RepoStorageChain.of (new CommonsArrayList <> (aRepoInMemory,
                                                                                   aRepoLocalFS,
