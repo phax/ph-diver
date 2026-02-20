@@ -209,12 +209,14 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
         }
 
         // Register again, because data structure changed
-        m_aTopToc.registerGroupAndArtifact (sGroupID, sArtifactID);
-
-        // Write updated version on server
-        // Pass instance to avoid it changes while writing
-        if (_writeTopToc (m_aTopToc).isFailure ())
-          return ESuccess.FAILURE;
+        // Maybe it was added in the meantime?
+        if (m_aTopToc.registerGroupAndArtifact (sGroupID, sArtifactID).isChanged ())
+        {
+          // Write updated version on server
+          // Pass instance to avoid it changes while writing
+          if (_writeTopToc (m_aTopToc).isFailure ())
+            return ESuccess.FAILURE;
+        }
       }
 
       return ESuccess.SUCCESS;
