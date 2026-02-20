@@ -25,7 +25,7 @@
     <version>4.2.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-diver-repo</artifactId>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
   <name>ph-diver-repo</name>
   <description>phive - Philip Helger Digitally Versioned Resource Subsystem - Repository part</description>
   <url>https://github.com/phax/ph-diver/ph-diver-repo</url>
@@ -130,22 +130,6 @@
             <version>${ph-jaxb-plugin.version}</version>
           </dependency>
         </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Automatic-Module-Name>com.helger.diver.repo</Automatic-Module-Name>
-            <Export-Package>
-              com.helger.diver.repo,
-              com.helger.diver.repo.impl,
-              com.helger.diver.repo.toc
-            </Export-Package>
-            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
-          </instructions>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

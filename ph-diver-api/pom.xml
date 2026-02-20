@@ -25,7 +25,7 @@
     <version>4.2.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-diver-api</artifactId>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
   <name>ph-diver-api</name>
   <description>ph-diver - Philip Helger Digitally Versioned Resource Subsystem - basic API library</description>
   <url>https://github.com/phax/ph-diver/ph-diver-api</url>
@@ -64,29 +64,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Automatic-Module-Name>com.helger.diver.api</Automatic-Module-Name>
-            <Export-Package>com.helger.diver.api,
-              com.helger.diver.api.coord,
-              com.helger.diver.api.settings,
-              com.helger.diver.api.version,
-              com.helger.diver.api.version.spi</Export-Package>
-            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
-            <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)",
-osgi.extender; filter:="(osgi.extender=osgi.serviceloader.processor)",
-osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.diver.api.version.spi.IDVRPseudoVersionRegistrarSPI)"; cardinality:=multiple; resolution:=optional</Require-Capability>
-            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.diver.api.version.spi.IDVRPseudoVersionRegistrarSPI</Provide-Capability>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
