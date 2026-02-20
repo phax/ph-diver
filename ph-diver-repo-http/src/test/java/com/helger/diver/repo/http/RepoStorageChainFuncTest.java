@@ -44,6 +44,7 @@ import com.helger.diver.repo.http.mock.LocalJettyRunner;
 import com.helger.diver.repo.http.mock.MockRepoStorageLocalFileSystem;
 import com.helger.diver.repo.impl.RepoStorageInMemory;
 import com.helger.diver.repo.impl.RepoStorageLocalFileSystem;
+import com.helger.diver.repo.toc.RepoTopTocServiceAuditor;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 import com.helger.httpclient.HttpClientManager;
 import com.helger.io.file.FileOperationManager;
@@ -86,8 +87,8 @@ public final class RepoStorageChainFuncTest
                                                            LocalJettyRunner.DEFAULT_ACCESS_URL,
                                                            "unittest-http",
                                                            ERepoWritable.WITHOUT_WRITE,
-                                                           ERepoDeletable.WITHOUT_DELETE,
-                                                           new RepoTopTocServiceRepoBasedXML ());
+                                                           ERepoDeletable.WITHOUT_DELETE);
+    aRepoHttp.setAuditor (new RepoTopTocServiceAuditor (new RepoTopTocServiceRepoBasedXML ()));
 
     final RepoStorageChain aRepoChain = RepoStorageChain.of (new CommonsArrayList <> (aRepoInMemory,
                                                                                       aRepoLocalFS,
@@ -159,27 +160,30 @@ public final class RepoStorageChainFuncTest
                                                                                              "http-only",
                                                                                              "1"), ".txt");
 
-    final RepoStorageInMemory aInMemory = RepoStorageInMemory.createDefault ("unittest-local",
-                                                                             ERepoWritable.WITH_WRITE,
-                                                                             ERepoDeletable.WITHOUT_DELETE);
-    final RepoStorageLocalFileSystem aLocalFS = new MockRepoStorageLocalFileSystem (ERepoWritable.WITH_WRITE,
-                                                                                    ERepoDeletable.WITH_DELETE);
-    final RepoStorageHttp aHttp = new RepoStorageHttp (new HttpClientManager (),
-                                                       LocalJettyRunner.DEFAULT_ACCESS_URL,
-                                                       "unittest-http",
-                                                       ERepoWritable.WITHOUT_WRITE,
-                                                       ERepoDeletable.WITHOUT_DELETE,
-                                                       new RepoTopTocServiceRepoBasedXML ());
-    final RepoStorageChain aChain = RepoStorageChain.of (new CommonsArrayList <> (aInMemory, aLocalFS, aHttp),
-                                                         new CommonsArrayList <> (aInMemory, aLocalFS))
+    final RepoStorageInMemory aRepoInMemory = RepoStorageInMemory.createDefault ("unittest-local",
+                                                                                 ERepoWritable.WITH_WRITE,
+                                                                                 ERepoDeletable.WITHOUT_DELETE);
+    final RepoStorageLocalFileSystem aRepoLocalFS = new MockRepoStorageLocalFileSystem (ERepoWritable.WITH_WRITE,
+                                                                                        ERepoDeletable.WITH_DELETE);
+    final RepoStorageHttp aRepoHttp = new RepoStorageHttp (new HttpClientManager (),
+                                                           LocalJettyRunner.DEFAULT_ACCESS_URL,
+                                                           "unittest-http",
+                                                           ERepoWritable.WITHOUT_WRITE,
+                                                           ERepoDeletable.WITHOUT_DELETE);
+    aRepoHttp.setAuditor (new RepoTopTocServiceAuditor (new RepoTopTocServiceRepoBasedXML ()));
+
+    final RepoStorageChain aChain = RepoStorageChain.of (new CommonsArrayList <> (aRepoInMemory,
+                                                                                  aRepoLocalFS,
+                                                                                  aRepoHttp),
+                                                         new CommonsArrayList <> (aRepoInMemory, aRepoLocalFS))
                                                     .setCacheRemoteContent (false);
     assertFalse (aChain.isCacheRemoteContent ());
     assertEquals (3, aChain.internalGetAllStorages ().size ());
     assertEquals (2, aChain.internalGetAllWritableStorages ().size ());
 
     // Ensure it does not exist locally
-    assertNull (aInMemory.read (aKey));
-    assertNull (aLocalFS.read (aKey));
+    assertNull (aRepoInMemory.read (aKey));
+    assertNull (aRepoLocalFS.read (aKey));
 
     // Read from chain, ending up with the item from HTTP
     IRepoStorageReadItem aItem = aChain.read (aKey);
@@ -188,11 +192,11 @@ public final class RepoStorageChainFuncTest
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
     // Now it should be present in memory as well
-    aItem = aInMemory.read (aKey);
+    aItem = aRepoInMemory.read (aKey);
     assertNull (aItem);
 
     // Now it should be present locally as well
-    aItem = aLocalFS.read (aKey);
+    aItem = aRepoLocalFS.read (aKey);
     assertNull (aItem);
   }
 }

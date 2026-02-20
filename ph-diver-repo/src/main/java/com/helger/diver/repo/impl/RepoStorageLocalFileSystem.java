@@ -36,7 +36,6 @@ import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
-import com.helger.diver.repo.toc.IRepoTopTocService;
 import com.helger.io.file.FileHelper;
 import com.helger.io.file.FileOperationManager;
 
@@ -54,10 +53,9 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
   public RepoStorageLocalFileSystem (@NonNull final File aBaseDir,
                                      @NonNull @Nonempty final String sID,
                                      @NonNull final ERepoWritable eWriteEnabled,
-                                     @NonNull final ERepoDeletable eDeleteEnabled,
-                                     @NonNull final IRepoTopTocService aTopTocService)
+                                     @NonNull final ERepoDeletable eDeleteEnabled)
   {
-    super (RepoStorageType.LOCAL_FILE_SYSTEM, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
+    super (RepoStorageType.LOCAL_FILE_SYSTEM, sID, eWriteEnabled, eDeleteEnabled);
     ValueEnforcer.notNull (aBaseDir, "BaseDir");
     ValueEnforcer.isFalse (aBaseDir.isFile (), "Base Directory may not be an existing file");
     FileOperationManager.INSTANCE.createDirRecursiveIfNotExisting (aBaseDir.getAbsoluteFile ());
@@ -65,8 +63,7 @@ public class RepoStorageLocalFileSystem extends AbstractRepoStorageWithToc <Repo
   }
 
   /**
-   * @return The base directory as provided in the constructor. Never
-   *         <code>null</code>.
+   * @return The base directory as provided in the constructor. Never <code>null</code>.
    */
   @NonNull
   public final File getBaseDirectory ()

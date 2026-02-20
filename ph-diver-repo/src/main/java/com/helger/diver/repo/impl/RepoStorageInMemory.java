@@ -39,13 +39,13 @@ import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
-import com.helger.diver.repo.toc.IRepoTopTocService;
+import com.helger.diver.repo.toc.RepoTopTocServiceAuditor;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 
 /**
- * This class implements an in-memory repository storage. That is used for extra
- * quick turn around times. To avoid memory overload, the maximum number of
- * elements in memory storage can be configured in the constructor.
+ * This class implements an in-memory repository storage. That is used for extra quick turn around
+ * times. To avoid memory overload, the maximum number of elements in memory storage can be
+ * configured in the constructor.
  *
  * @author Philip Helger
  */
@@ -83,10 +83,9 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
                               @NonNull @Nonempty final String sID,
                               @NonNull final ERepoWritable eWriteEnabled,
                               @NonNull final ERepoDeletable eDeleteEnabled,
-                              @NonNull final IRepoTopTocService aTopTocService,
                               final boolean bAllowOverwrite)
   {
-    super (RepoStorageType.IN_MEMORY, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
+    super (RepoStorageType.IN_MEMORY, sID, eWriteEnabled, eDeleteEnabled);
     ValueEnforcer.isGT0 (nMaxSize, "Max size must be > 0");
     m_aCache = new MaxSizeMap (nMaxSize);
     m_bAllowOverwrite = bAllowOverwrite;
@@ -200,8 +199,8 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
   }
 
   /**
-   * This method is intended to be used to fill a {@link RepoStorageInMemory}
-   * from the outside, when it is marked as read-only.
+   * This method is intended to be used to fill a {@link RepoStorageInMemory} from the outside, when
+   * it is marked as read-only.
    *
    * @param aKey
    *        The key to register.
@@ -245,8 +244,8 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
   /**
    * @param sID
    *        The ID of repo to use. May neither be <code>null</code> nor empty.
-   * @return A writable and deletable {@link RepoStorageInMemory} with a maximum
-   *         of 1000 entries. Never <code>null</code>.
+   * @return A writable and deletable {@link RepoStorageInMemory} with a maximum of 1000 entries.
+   *         Never <code>null</code>.
    * @see #DEFAULT_MAX_SIZE
    * @see #DEFAULT_CAN_WRITE
    * @see #DEFAULT_CAN_DELETE
@@ -259,8 +258,8 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
   }
 
   /**
-   * @return A writable and deletable {@link RepoStorageInMemory} with a maximum
-   *         of 1000 entries. Never <code>null</code>.
+   * @return A writable and deletable {@link RepoStorageInMemory} with a maximum of 1000 entries.
+   *         Never <code>null</code>.
    * @param sID
    *        The ID of repo to use. May neither be <code>null</code> nor empty.
    * @param eWriteEnabled
@@ -275,11 +274,13 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
                                                    @NonNull final ERepoWritable eWriteEnabled,
                                                    @NonNull final ERepoDeletable eDeleteEnabled)
   {
-    return new RepoStorageInMemory (DEFAULT_MAX_SIZE,
-                                    sID,
-                                    eWriteEnabled,
-                                    eDeleteEnabled,
-                                    new RepoTopTocServiceRepoBasedXML (),
-                                    DEFAULT_ALLOW_OVERWRITE);
+    final RepoStorageInMemory ret = new RepoStorageInMemory (DEFAULT_MAX_SIZE,
+                                                             sID,
+                                                             eWriteEnabled,
+                                                             eDeleteEnabled,
+                                                             DEFAULT_ALLOW_OVERWRITE);
+    // Enable a top-level table of contents on XML basis
+    ret.setAuditor (new RepoTopTocServiceAuditor (new RepoTopTocServiceRepoBasedXML ()));
+    return ret;
   }
 }

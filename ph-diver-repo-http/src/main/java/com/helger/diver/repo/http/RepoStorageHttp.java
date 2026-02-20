@@ -46,7 +46,6 @@ import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
-import com.helger.diver.repo.toc.IRepoTopTocService;
 import com.helger.httpclient.HttpClientManager;
 import com.helger.httpclient.response.ResponseHandlerByteArray;
 import com.helger.io.file.FilenameHelper;
@@ -73,10 +72,9 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
                           @NonNull @Nonempty final String sURLPrefix,
                           @NonNull @Nonempty final String sID,
                           @NonNull final ERepoWritable eWriteEnabled,
-                          @NonNull final ERepoDeletable eDeleteEnabled,
-                          @NonNull final IRepoTopTocService aTopTocService)
+                          @NonNull final ERepoDeletable eDeleteEnabled)
   {
-    super (RepoStorageType.HTTP, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
+    super (RepoStorageType.HTTP, sID, eWriteEnabled, eDeleteEnabled);
     ValueEnforcer.notNull (aHttpClient, "HttpClient");
     ValueEnforcer.notEmpty (sURLPrefix, "URLPrefix");
     m_aHttpClient = aHttpClient;

@@ -23,6 +23,7 @@ import org.jspecify.annotations.NonNull;
 import com.helger.diver.repo.ERepoDeletable;
 import com.helger.diver.repo.ERepoWritable;
 import com.helger.diver.repo.impl.RepoStorageLocalFileSystem;
+import com.helger.diver.repo.toc.RepoTopTocServiceAuditor;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 
 public final class MockRepoStorageLocalFileSystem extends RepoStorageLocalFileSystem
@@ -32,6 +33,9 @@ public final class MockRepoStorageLocalFileSystem extends RepoStorageLocalFileSy
   public MockRepoStorageLocalFileSystem (@NonNull final ERepoWritable eWriteEnabled,
                                          @NonNull final ERepoDeletable eDeleteEnabled)
   {
-    super (TEST_REPO_DIR, "unittest-fs", eWriteEnabled, eDeleteEnabled, new RepoTopTocServiceRepoBasedXML ());
+    super (TEST_REPO_DIR, "unittest-fs", eWriteEnabled, eDeleteEnabled);
+
+    // Enable a top-level table of contents on XML basis
+    setAuditor (new RepoTopTocServiceAuditor (new RepoTopTocServiceRepoBasedXML ()));
   }
 }

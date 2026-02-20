@@ -51,6 +51,7 @@ public class RepoTopTocServiceAuditor implements IRepoStorageAuditor
     // We only care about success
     if (eSuccess.isSuccess () &&
         aRepo instanceof final IRepoStorageWithToc aRepoWithToc &&
+        aRepoWithToc.isEnableTocUpdates () &&
         aKey instanceof final RepoStorageKeyOfArtefact aArtefactKey)
     {
       // Update top-level ToC

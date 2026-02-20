@@ -33,7 +33,6 @@ import com.helger.diver.repo.IRepoStorageType;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
-import com.helger.diver.repo.toc.IRepoTopTocService;
 import com.helger.mime.CMimeType;
 
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -87,10 +86,9 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
                         @Nullable final String sDefaultKeyPrefix,
                         @NonNull @Nonempty final String sID,
                         @NonNull final ERepoWritable eWriteEnabled,
-                        @NonNull final ERepoDeletable eDeleteEnabled,
-                        @NonNull final IRepoTopTocService aTopTocService)
+                        @NonNull final ERepoDeletable eDeleteEnabled)
   {
-    super (AWS_S3, sID, eWriteEnabled, eDeleteEnabled, aTopTocService);
+    super (AWS_S3, sID, eWriteEnabled, eDeleteEnabled);
     ValueEnforcer.notNull (aS3Client, "S3Client");
     ValueEnforcer.notEmpty (sBucketName, "BucketName");
     ValueEnforcer.isEqual (sBucketName, sBucketName.trim (), "BucketName must be trimmed");

@@ -36,22 +36,14 @@ import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
  */
 public interface IRepoStorageWithToc extends IRepoStorage
 {
-  // Top-level Table of Contents:
-
   /**
-   * Read the top-level ToC and return the parsed data.
-   *
-   * @return <code>null</code> if the top-toc does not exist,
-   *         non-<code>null</code> otherwise.
+   * @return <code>true</code> if the Table of Content updates are enabled, <code>false</code> if
+   *         not. By default they are enabled.
    */
-  @Nullable
-  IRepoTopTocService getTopTocService ();
-
-  // Table of Contents per Group ID and Artifact ID:
+  boolean isEnableTocUpdates ();
 
   /**
-   * Test if the table of contents for the provided Group ID and Artefact ID is
-   * present or not.
+   * Test if the table of contents for the provided Group ID and Artefact ID is present or not.
    *
    * @param sGroupID
    *        Group ID. May neither be <code>null</code> nor empty.
@@ -71,8 +63,7 @@ public interface IRepoStorageWithToc extends IRepoStorage
    *        Group ID. May neither be <code>null</code> nor empty.
    * @param sArtifactID
    *        Artifact ID. May neither be <code>null</code> nor empty.
-   * @return <code>null</code> if either group or artifact do not exist, or if
-   *         no ToC is present.
+   * @return <code>null</code> if either group or artifact do not exist, or if no ToC is present.
    */
   @Nullable
   default IRepoStorageReadItem readToc (@NonNull @Nonempty final String sGroupID,
@@ -82,14 +73,11 @@ public interface IRepoStorageWithToc extends IRepoStorage
   }
 
   /**
-   * Read the ToC for the provided Group ID and Artefact ID and return the
-   * parsed data.
+   * Read the ToC for the provided Group ID and Artefact ID and return the parsed data.
    *
    * @param aCoord
-   *        DVR Coordinate to take Group ID and Artifact ID from. May not be
-   *        <code>null</code>.
-   * @return <code>null</code> if either group or artifact do not exist, or if
-   *         no ToC is present.
+   *        DVR Coordinate to take Group ID and Artifact ID from. May not be <code>null</code>.
+   * @return <code>null</code> if either group or artifact do not exist, or if no ToC is present.
    */
   @Nullable
   default RepoToc readTocModel (@NonNull final DVRCoordinate aCoord)
@@ -98,15 +86,13 @@ public interface IRepoStorageWithToc extends IRepoStorage
   }
 
   /**
-   * Read the ToC for the provided Group ID and Artefact ID and return the
-   * parsed data.
+   * Read the ToC for the provided Group ID and Artefact ID and return the parsed data.
    *
    * @param sGroupID
    *        Group ID. May neither be <code>null</code> nor empty.
    * @param sArtifactID
    *        Artifact ID. May neither be <code>null</code> nor empty.
-   * @return <code>null</code> if either group or artifact do not exist, or if
-   *         no ToC is present.
+   * @return <code>null</code> if either group or artifact do not exist, or if no ToC is present.
    */
   @Nullable
   default RepoToc readTocModel (@NonNull @Nonempty final String sGroupID, @NonNull @Nonempty final String sArtifactID)
@@ -127,16 +113,15 @@ public interface IRepoStorageWithToc extends IRepoStorage
   }
 
   /**
-   * Find the latest release version of the provided group ID and artifact ID.
-   * This excludes snapshot versions.
+   * Find the latest release version of the provided group ID and artifact ID. This excludes
+   * snapshot versions.
    *
    * @param sGroupID
    *        Group ID to resolve. May be <code>null</code>.
    * @param sArtifactID
    *        Artifact ID to resolve. May be <code>null</code>.
-   * @return <code>null</code> if either group ID does not exist or artifact ID
-   *         does not exist or the combination of group ID and artifact ID only
-   *         has snapshot builds.
+   * @return <code>null</code> if either group ID does not exist or artifact ID does not exist or
+   *         the combination of group ID and artifact ID only has snapshot builds.
    * @see #readTocModel(String, String)
    * @since 1.1.2
    */
@@ -154,15 +139,13 @@ public interface IRepoStorageWithToc extends IRepoStorage
   }
 
   /**
-   * Find the latest version (release and snapshot) of the provided group ID and
-   * artifact ID.
+   * Find the latest version (release and snapshot) of the provided group ID and artifact ID.
    *
    * @param sGroupID
    *        Group ID to resolve. May be <code>null</code>.
    * @param sArtifactID
    *        Artifact ID to resolve. May be <code>null</code>.
-   * @return <code>null</code> if either group ID does not exist or artifact ID
-   *         does not exist.
+   * @return <code>null</code> if either group ID does not exist or artifact ID does not exist.
    * @see #readTocModel(String, String)
    * @since 1.1.2
    */

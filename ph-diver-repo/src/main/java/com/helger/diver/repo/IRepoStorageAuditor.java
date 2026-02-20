@@ -83,35 +83,17 @@ public interface IRepoStorageAuditor
     return aSecond == null ? this : and (this, aSecond);
   }
 
-  @NonNull
-  static IRepoStorageAuditor and (@NonNull final IRepoStorageAuditor aFirst, @NonNull final IRepoStorageAuditor aSecond)
+  @Nullable
+  static IRepoStorageAuditor and (@Nullable final IRepoStorageAuditor aFirst,
+                                  @Nullable final IRepoStorageAuditor aSecond)
   {
-    return new IRepoStorageAuditor ()
-    {
-      public void onRead (@NonNull final IRepoStorage aRepo,
-                          @NonNull final RepoStorageKey aKey,
-                          @NonNull final ESuccess eSuccess)
-      {
-        aFirst.onRead (aRepo, aKey, eSuccess);
-        aSecond.onRead (aRepo, aKey, eSuccess);
-      }
+    if (aFirst == null)
+      return aSecond;
 
-      public void onWrite (@NonNull final IRepoStorage aRepo,
-                           @NonNull final RepoStorageKey aKey,
-                           @NonNull final IRepoStorageContent aContent,
-                           @NonNull final ESuccess eSuccess)
-      {
-        aFirst.onWrite (aRepo, aKey, aContent, eSuccess);
-        aSecond.onWrite (aRepo, aKey, aContent, eSuccess);
-      }
+    if (aSecond == null)
+      return aFirst;
 
-      public void onDelete (@NonNull final IRepoStorage aRepo,
-                            @NonNull final RepoStorageKey aKey,
-                            @NonNull final ESuccess eSuccess)
-      {
-        aFirst.onDelete (aRepo, aKey, eSuccess);
-        aSecond.onDelete (aRepo, aKey, eSuccess);
-      }
-    };
+    // Both are present
+    return new InternalMultipleRepoStorageAuditor (aFirst, aSecond);
   }
 }

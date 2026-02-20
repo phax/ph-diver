@@ -43,6 +43,7 @@ import com.helger.diver.repo.RepoStorageContentHelper;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
 import com.helger.diver.repo.http.mock.LocalJettyRunner;
+import com.helger.diver.repo.toc.RepoTopTocServiceAuditor;
 import com.helger.diver.repo.toc.RepoTopTocServiceRepoBasedXML;
 import com.helger.httpclient.HttpClientManager;
 import com.helger.io.file.FileOperationManager;
@@ -72,12 +73,13 @@ public final class RepoStorageHttpTest
   @NonNull
   private static RepoStorageHttp _createRepoReadOnly ()
   {
-    return new RepoStorageHttp (new HttpClientManager (),
-                                LocalJettyRunner.DEFAULT_ACCESS_URL,
-                                "unittest",
-                                ERepoWritable.WITHOUT_WRITE,
-                                ERepoDeletable.WITHOUT_DELETE,
-                                new RepoTopTocServiceRepoBasedXML ());
+    final RepoStorageHttp ret = new RepoStorageHttp (new HttpClientManager (),
+                                                     LocalJettyRunner.DEFAULT_ACCESS_URL,
+                                                     "unittest",
+                                                     ERepoWritable.WITHOUT_WRITE,
+                                                     ERepoDeletable.WITHOUT_DELETE);
+    ret.setAuditor (new RepoTopTocServiceAuditor (new RepoTopTocServiceRepoBasedXML ()));
+    return ret;
   }
 
   @Test
@@ -102,12 +104,13 @@ public final class RepoStorageHttpTest
   @NonNull
   private static RepoStorageHttp _createRepoWritable ()
   {
-    return new RepoStorageHttp (new HttpClientManager (),
-                                LocalJettyRunner.DEFAULT_ACCESS_URL,
-                                "unittest",
-                                ERepoWritable.WITH_WRITE,
-                                ERepoDeletable.WITH_DELETE,
-                                new RepoTopTocServiceRepoBasedXML ());
+    final RepoStorageHttp ret = new RepoStorageHttp (new HttpClientManager (),
+                                                     LocalJettyRunner.DEFAULT_ACCESS_URL,
+                                                     "unittest",
+                                                     ERepoWritable.WITH_WRITE,
+                                                     ERepoDeletable.WITH_DELETE);
+    ret.setAuditor (new RepoTopTocServiceAuditor (new RepoTopTocServiceRepoBasedXML ()));
+    return ret;
   }
 
   @Test

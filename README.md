@@ -134,6 +134,8 @@ v4.2.0 - work in progress
 * Added a "default key prefix" to be applied to S3 repos. See [#2](https://github.com/phax/ph-diver/issues/2)
 * Extracted new class `DoNothingRepoTopTocService` as an empty implementation of `IRepoTopTocService`
 * The `IRepoStorageAuditor` is now optional in `AbstractRepoStorage` implementations
+* Moved the usage of the `IRepoTopTocService` into a specific `IRepoStorageAuditor` implementation
+* Removed the `IRepoTopTocService` parameter from the actual repository storage implementations (backwards incompatible change)
 
 v4.1.0 - 2025-11-16
 * Updated to ph-commons 12.1.0

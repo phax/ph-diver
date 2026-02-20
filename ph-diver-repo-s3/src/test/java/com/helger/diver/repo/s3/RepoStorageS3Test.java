@@ -41,7 +41,6 @@ import com.helger.diver.repo.RepoStorageContentByteArray;
 import com.helger.diver.repo.RepoStorageContentHelper;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageKeyOfArtefact;
-import com.helger.diver.repo.toc.DoNothingRepoTopTocService;
 
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.core.exception.SdkClientException;
@@ -79,13 +78,14 @@ public final class RepoStorageS3Test
   private static RepoStorageS3 _createRepoWritable ()
   {
     final String sDefaultKeyPrefix = "";
-    return new RepoStorageS3 (_s3Client (),
-                              "bucket",
-                              sDefaultKeyPrefix,
-                              "unittest.s3",
-                              ERepoWritable.WITH_WRITE,
-                              ERepoDeletable.WITH_DELETE,
-                              DoNothingRepoTopTocService.INSTANCE);
+    final RepoStorageS3 ret = new RepoStorageS3 (_s3Client (),
+                                                 "bucket",
+                                                 sDefaultKeyPrefix,
+                                                 "unittest.s3",
+                                                 ERepoWritable.WITH_WRITE,
+                                                 ERepoDeletable.WITH_DELETE);
+    // Choice: no top-toc service
+    return ret;
   }
 
   @Test
