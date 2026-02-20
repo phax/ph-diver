@@ -50,8 +50,8 @@ public final class DigestInputStreamFuncTest
   {
     try (final DigestInputStream aMDIS = _createMDIS ())
     {
-      final int nextByte = aMDIS.read ();
-      assertEquals (98, nextByte);
+      final int nNextByte = aMDIS.read ();
+      assertEquals (98, nNextByte);
     }
   }
 
@@ -60,8 +60,8 @@ public final class DigestInputStreamFuncTest
   {
     try (final DigestInputStream aMDIS = _createMDIS ())
     {
-      final int bytesRead = aMDIS.read (new byte [1], 0, 1);
-      assertEquals (1, bytesRead);
+      final int nBytesRead = aMDIS.read (new byte [1], 0, 1);
+      assertEquals (1, nBytesRead);
     }
   }
 
