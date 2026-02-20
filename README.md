@@ -129,13 +129,14 @@ Alternate usage as a Maven BOM:
 
 # News and Noteworthy
 
-v4.2.0 - work in progress
+v4.2.0 - 2026-02-20
 * Added new method `IRepoTopTocService.refreshFromRepo`. See [#1](https://github.com/phax/ph-diver/issues/1)
 * Added a "default key prefix" to be applied to S3 repos. See [#2](https://github.com/phax/ph-diver/issues/2)
 * Extracted new class `DoNothingRepoTopTocService` as an empty implementation of `IRepoTopTocService`
 * The `IRepoStorageAuditor` is now optional in `AbstractRepoStorage` implementations
 * Moved the usage of the `IRepoTopTocService` into a specific `IRepoStorageAuditor` implementation
 * Removed the `IRepoTopTocService` parameter from the actual repository storage implementations (backwards incompatible change)
+* The resulting JAR files are no longer provided as OSGI bundles
 
 v4.1.0 - 2025-11-16
 * Updated to ph-commons 12.1.0
@@ -173,7 +174,7 @@ v1.1.1 - 2024-03-29
 * Ensured Java 21 compatibility
 
 v1.1.0 - 2024-03-09
-* Extracted `RepoStorageKeyOfArtefact` from `RepoStorageKey` [backwards incompatible change]
+* Extracted `RepoStorageKeyOfArtefact` from `RepoStorageKey` (backwards incompatible change)
 * Class `RepoStorageHttp` got an API extension, so that the used HTTP requests can be customized
 * Added a top-level table of contents (ToC) service that contains all groups and the artefacts of all groups (via `IRepoTopTocService`) and an XML based implementation (class `RepoTopTocServiceRepoBasedXML`)
 * Added a new interface `IRepoStorageAuditor` to be able to handle accesses to the repository 
