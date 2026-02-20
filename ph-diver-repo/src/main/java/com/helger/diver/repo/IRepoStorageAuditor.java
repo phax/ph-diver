@@ -17,53 +17,101 @@
 package com.helger.diver.repo;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import com.helger.base.state.ESuccess;
 
 /**
- * Callback interface for a repository storage auditor. Implementations of this
- * interface may e.g. log all actions in a DB or so.
+ * Callback interface for a repository storage auditor. Implementations of this interface may e.g.
+ * log all actions in a DB or so.
  *
  * @author Philip Helger
  */
 public interface IRepoStorageAuditor
 {
-  void onRead (@NonNull IRepoStorage aRepo, @NonNull RepoStorageKey aKey, @NonNull ESuccess eSuccess);
-
-  void onWrite (@NonNull IRepoStorage aRepo, @NonNull RepoStorageKey aKey, @NonNull ESuccess eSuccess);
-
-  void onDelete (@NonNull IRepoStorage aRepo, @NonNull RepoStorageKey aKey, @NonNull ESuccess eSuccess);
+  /**
+   * Called after a read on a repository
+   *
+   * @param aRepo
+   *        The repository on which the action took place. Never <code>null</code>.
+   * @param aKey
+   *        They repository key that was read. Never <code>null</code>.
+   * @param eSuccess
+   *        Whether the read action was successful or not. Never <code>null</code>.
+   */
+  default void onRead (@NonNull final IRepoStorage aRepo,
+                       @NonNull final RepoStorageKey aKey,
+                       @NonNull final ESuccess eSuccess)
+  {}
 
   /**
-   * The "nil" object
+   * Called after a write on a repository
+   *
+   * @param aRepo
+   *        The repository on which the action took place. Never <code>null</code>.
+   * @param aKey
+   *        They repository key that was written. Never <code>null</code>.
+   * @param aContent
+   *        The content that was supposed to be written. Never <code>null</code>. Since v4.2.0.
+   * @param eSuccess
+   *        Whether the write action was successful or not. Never <code>null</code>.
    */
-  IRepoStorageAuditor DO_NOTHING_AUDITOR = new IRepoStorageAuditor ()
-  {
-    public void onRead (@NonNull final IRepoStorage aRepo,
+  default void onWrite (@NonNull final IRepoStorage aRepo,
                         @NonNull final RepoStorageKey aKey,
+                        @NonNull final IRepoStorageContent aContent,
                         @NonNull final ESuccess eSuccess)
-    {
-      // empty
-    }
+  {}
 
-    public void onWrite (@NonNull final IRepoStorage aRepo,
+  /**
+   * Called after a delete on a repository
+   *
+   * @param aRepo
+   *        The repository on which the action took place. Never <code>null</code>.
+   * @param aKey
+   *        They repository key that was deleted. Never <code>null</code>.
+   * @param eSuccess
+   *        Whether the delete action was successful or not. Never <code>null</code>.
+   */
+  default void onDelete (@NonNull final IRepoStorage aRepo,
                          @NonNull final RepoStorageKey aKey,
                          @NonNull final ESuccess eSuccess)
-    {
-      // empty
-    }
+  {}
 
-    public void onDelete (@NonNull final IRepoStorage aRepo,
+  @NonNull
+  default IRepoStorageAuditor and (@Nullable final IRepoStorageAuditor aSecond)
+  {
+    return aSecond == null ? this : and (this, aSecond);
+  }
+
+  @NonNull
+  static IRepoStorageAuditor and (@NonNull final IRepoStorageAuditor aFirst, @NonNull final IRepoStorageAuditor aSecond)
+  {
+    return new IRepoStorageAuditor ()
+    {
+      public void onRead (@NonNull final IRepoStorage aRepo,
                           @NonNull final RepoStorageKey aKey,
                           @NonNull final ESuccess eSuccess)
-    {
-      // empty
-    }
+      {
+        aFirst.onRead (aRepo, aKey, eSuccess);
+        aSecond.onRead (aRepo, aKey, eSuccess);
+      }
 
-    @Override
-    public String toString ()
-    {
-      return "DO_NOTHING_AUDITOR";
-    }
-  };
+      public void onWrite (@NonNull final IRepoStorage aRepo,
+                           @NonNull final RepoStorageKey aKey,
+                           @NonNull final IRepoStorageContent aContent,
+                           @NonNull final ESuccess eSuccess)
+      {
+        aFirst.onWrite (aRepo, aKey, aContent, eSuccess);
+        aSecond.onWrite (aRepo, aKey, aContent, eSuccess);
+      }
+
+      public void onDelete (@NonNull final IRepoStorage aRepo,
+                            @NonNull final RepoStorageKey aKey,
+                            @NonNull final ESuccess eSuccess)
+      {
+        aFirst.onDelete (aRepo, aKey, eSuccess);
+        aSecond.onDelete (aRepo, aKey, eSuccess);
+      }
+    };
+  }
 }

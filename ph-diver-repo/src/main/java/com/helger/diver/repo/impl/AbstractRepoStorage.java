@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.Nonempty;
+import com.helger.annotation.Nonnegative;
 import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.base.array.ArrayHelper;
 import com.helger.base.enforce.ValueEnforcer;
@@ -74,7 +75,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   private final ERepoDeletable m_eDeleteEnabled;
   // Verify hash value on read
   private boolean m_bVerifyHashOnRead = DEFAULT_VERIFY_HASH_VALUE;
-  private IRepoStorageAuditor m_aAuditor = IRepoStorageAuditor.DO_NOTHING_AUDITOR;
+  private IRepoStorageAuditor m_aAuditor;
 
   protected AbstractRepoStorage (@NonNull final IRepoStorageType aRepoStorageType,
                                  @NonNull @Nonempty final String sID,
@@ -120,16 +121,25 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     return thisAsT ();
   }
 
-  @NonNull
+  /**
+   * @return The global repository storage auditor to use. May be <code>null</code>.
+   */
+  @Nullable
   public final IRepoStorageAuditor getAuditor ()
   {
     return m_aAuditor;
   }
 
+  /**
+   * Set the repository auditor to use.
+   *
+   * @param aAuditor
+   *        The new auditor to use. May be <code>null</code>.
+   * @return this for chaining
+   */
   @NonNull
-  public final IMPLTYPE setAuditor (@NonNull final IRepoStorageAuditor aAuditor)
+  public final IMPLTYPE setAuditor (@Nullable final IRepoStorageAuditor aAuditor)
   {
-    ValueEnforcer.notNull (aAuditor, "Auditor");
     m_aAuditor = aAuditor;
     return thisAsT ();
   }
@@ -149,7 +159,8 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   private InputStream _getInputStreamWithAudit (@NonNull final RepoStorageKey aKey)
   {
     final InputStream ret = getInputStream (aKey);
-    m_aAuditor.onRead (thisAsT (), aKey, ESuccess.valueOf (ret != null));
+    if (m_aAuditor != null)
+      m_aAuditor.onRead (thisAsT (), aKey, ESuccess.valueOf (ret != null));
     return ret;
   }
 
@@ -184,7 +195,7 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
           }
           catch (final IllegalArgumentException ex)
           {
-            // TODO remove when everyhing is updated
+            // TODO remove when everything is updated
             // Invalid digest - maybe not hex encoded (legacy)
           }
         }
@@ -241,7 +252,9 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
       }
 
       if (aRepoContent != null)
+      {
         return new RepoStorageReadItem (aRepoContent, aRepoDigest, aCalculatedDigest, eHashState);
+      }
     }
     catch (final IOException ex)
     {
@@ -266,7 +279,8 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
                                           @NonNull final IRepoStorageContent aContent)
   {
     final ESuccess ret = writeObject (aKey, aContent);
-    m_aAuditor.onWrite (thisAsT (), aKey, ret);
+    if (m_aAuditor != null)
+      m_aAuditor.onWrite (thisAsT (), aKey, aContent, ret);
     return ret;
   }
 
@@ -293,11 +307,13 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
         return aContent.isReadMultiple ();
       }
 
+      @NonNull
       public InputStream getInputStream ()
       {
         return new DigestInputStream (aContent.getInputStream (), aMD);
       }
 
+      @Nonnegative
       public long getLength ()
       {
         return aContent.getLength ();
@@ -357,8 +373,8 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     if (doWriteRepoStorageItem (aKey, aContent).isFailure ())
       return ESuccess.FAILURE;
 
-    if (aKey instanceof RepoStorageKeyOfArtefact)
-      if (onAfterWrite ((RepoStorageKeyOfArtefact) aKey, aContent, aPublicationDT).isFailure ())
+    if (aKey instanceof final RepoStorageKeyOfArtefact aArtefactKey)
+      if (onAfterWrite (aArtefactKey, aContent, aPublicationDT).isFailure ())
         return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;
@@ -376,7 +392,8 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
   private ESuccess _deleteObjectWithAudit (@NonNull final RepoStorageKey aKey)
   {
     final ESuccess ret = deleteObject (aKey);
-    m_aAuditor.onDelete (thisAsT (), aKey, ret);
+    if (m_aAuditor != null)
+      m_aAuditor.onDelete (thisAsT (), aKey, ret);
     return ret;
   }
 
@@ -424,8 +441,8 @@ public abstract class AbstractRepoStorage <IMPLTYPE extends AbstractRepoStorage 
     if (_doDeleteRepoStorageItem (aKey).isFailure ())
       return ESuccess.FAILURE;
 
-    if (aKey instanceof RepoStorageKeyOfArtefact)
-      if (onAfterDelete ((RepoStorageKeyOfArtefact) aKey).isFailure ())
+    if (aKey instanceof final RepoStorageKeyOfArtefact aArtefactKey)
+      if (onAfterDelete (aArtefactKey).isFailure ())
         return ESuccess.FAILURE;
 
     return ESuccess.SUCCESS;

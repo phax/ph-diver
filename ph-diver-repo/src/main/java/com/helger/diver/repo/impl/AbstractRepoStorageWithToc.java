@@ -47,8 +47,7 @@ import com.helger.diver.repo.toc.jaxb.RepoToc1Marshaller;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 
 /**
- * Abstract implementation of a repository storage with table of contents
- * support.
+ * Abstract implementation of a repository storage with table of contents support.
  *
  * @author Philip Helger
  * @param <IMPLTYPE>
@@ -105,17 +104,14 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
   }
 
   /**
-   * Update the table of contents for a specific group ID and artifact ID. This
-   * method may only be called if {@link #isEnableTocUpdates()} returned
-   * <code>true</code>.
+   * Update the table of contents for a specific group ID and artifact ID. This method may only be
+   * called if {@link #isEnableTocUpdates()} returned <code>true</code>.
    *
    * @param aKeyToc
    *        The ToC key with group ID and artifact ID. Never <code>null</code>.
    * @param aTocConsumer
-   *        The main activities are done in the callback. Never
-   *        <code>null</code>.
-   * @return {@link ESuccess#SUCCESS} if updating was successful. Never
-   *         <code>null</code>.
+   *        The main activities are done in the callback. Never <code>null</code>.
+   * @return {@link ESuccess#SUCCESS} if updating was successful. Never <code>null</code>.
    */
   @NonNull
   @OverrideOnDemand
@@ -132,6 +128,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
     }
     else
     {
+      // Read existing ToC
       final RepoTocType aJaxbToc = new RepoToc1Marshaller ().read (aTocItem.getContent ().getBufferedInputStream ());
       if (aJaxbToc == null)
         throw new IllegalStateException ("Invalid TOC found in '" + aKeyToc.getPath () + "'");
@@ -140,7 +137,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
 
     try
     {
-      // Make modifications
+      // Make modifications on ToC
       aTocConsumer.accept (aToc);
     }
     catch (final RuntimeException ex)
@@ -171,9 +168,10 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
   {
     if (isEnableTocUpdates ())
     {
-      // Update ToC
-      return updateToc (aKey.getKeyToc (), toc -> {
-        final DVRCoordinate aCoord = aKey.getCoordinate ();
+      final DVRCoordinate aCoord = aKey.getCoordinate ();
+
+      // Update group/artifact ToC
+      if (updateToc (aKey.getKeyToc (), toc -> {
         // Make sure a publication DT is present and always UTC
         final OffsetDateTime aRealPubDT = aPublicationDT != null ? aPublicationDT : PDTFactory
                                                                                               .getCurrentOffsetDateTimeUTC ();
@@ -191,10 +189,11 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
         {
           LOGGER.info ("Successfully added version '" + aCoord.getAsSingleID () + "' to ToC");
         }
+      }).isFailure ())
+        return ESuccess.FAILURE;
 
-        // Update top-level ToC
-        getTopTocService ().registerGroupAndArtifact (aCoord.getGroupID (), aCoord.getArtifactID ());
-      });
+      // Update top-level ToC
+      getTopTocService ().registerGroupAndArtifact (aCoord.getGroupID (), aCoord.getArtifactID ());
     }
 
     return ESuccess.SUCCESS;
@@ -207,7 +206,7 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
     if (isEnableTocUpdates ())
     {
       // Update ToC
-      return updateToc (aKey.getKeyToc (), toc -> {
+      if (updateToc (aKey.getKeyToc (), toc -> {
         final DVRCoordinate aCoord = aKey.getCoordinate ();
         // Remove deleted version
         if (toc.removeVersion (aCoord.getVersionObj ()).isUnchanged ())
@@ -220,7 +219,8 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
         {
           LOGGER.info ("Successfully deleted version '" + aCoord.getAsSingleID () + "' from ToC");
         }
-      });
+      }).isFailure ())
+        return ESuccess.FAILURE;
     }
 
     return ESuccess.SUCCESS;
