@@ -53,6 +53,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
  */
 public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
 {
+  /** The default repo storage type for this kind of repos */
   public static final IRepoStorageType AWS_S3 = new RepoStorageType ("aws-s3", true, true);
 
   private static final Logger LOGGER = LoggerFactory.getLogger (RepoStorageS3.class);
@@ -78,8 +79,6 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
    *        Is the repository writable? May not be <code>null</code>.
    * @param eDeleteEnabled
    *        Is the repository deletable? May not be <code>null</code>.
-   * @param aTopTocService
-   *        The top-level Table of Content service to be used. May not be <code>null</code>.
    */
   public RepoStorageS3 (@NonNull final S3Client aS3Client,
                         @NonNull @Nonempty final String sBucketName,
