@@ -16,8 +16,98 @@ This library consists of the following submodules:
 * **`ph-diver-repo-http`** - contains specific support for HTTP based repositories
 * **`ph-diver-repo-s3`** - contains specific support for AWS S3 based repositories
 
-The reason why the several types of repositories are separated, is mainly because of specific runtime dependencies needed, and to 
+The reason why the several types of repositories are separated, is mainly because of specific runtime dependencies needed, and to
   avoid that your dependencies are bloated if you only need a specific kind of repository.
+
+# Requirements
+
+* Java 17 or later
+
+# Quick Start
+
+## Creating a DVR Coordinate
+
+```java
+// Using the factory method
+DVRCoordinate coord = DVRCoordinate.create ("com.ecosio", "invoice-rules", "1.2.0");
+
+// With an optional classifier
+DVRCoordinate coord = DVRCoordinate.create ("com.ecosio", "invoice-rules", "1.2.0", "sources");
+
+// Parsing from a string
+DVRCoordinate coord = DVRCoordinate.parseOrThrow ("com.ecosio:invoice-rules:1.2.0");
+
+// Safe parsing (returns null on invalid input)
+DVRCoordinate coord = DVRCoordinate.parseOrNull ("com.ecosio:invoice-rules:1.2.0");
+```
+
+## Using Repositories
+
+```java
+// Create a local file system repository
+RepoStorageLocalFileSystem localRepo = new RepoStorageLocalFileSystem (
+    new File ("/path/to/repo"),
+    "my-local-repo",
+    ERepoWritable.WITH_WRITE,
+    ERepoDeletable.WITH_DELETE);
+
+// Or an in-memory repository
+RepoStorageInMemory memRepo = RepoStorageInMemory.createDefault ("my-mem-repo");
+
+// Create a storage key from a coordinate
+DVRCoordinate coord = DVRCoordinate.create ("com.ecosio", "invoice-rules", "1.2.0");
+RepoStorageKeyOfArtefact key = RepoStorageKeyOfArtefact.of (coord, ".xml");
+// Resolves to path: com/ecosio/invoice-rules/1.2.0/invoice-rules-1.2.0.xml
+
+// Write content
+IRepoStorageContent content = RepoStorageContentByteArray.ofUtf8 ("<rules>...</rules>");
+localRepo.write (key, content);
+
+// Read content back
+IRepoStorageReadItem item = localRepo.read (key);
+if (item != null)
+{
+  String data = item.getContent ().getAsUtf8String ();
+}
+
+// Delete
+localRepo.delete (key);
+```
+
+## Chaining Repositories
+
+Multiple repositories can be composed into a chain. Reads are attempted in order; if caching is enabled, content found in a later (e.g. remote) repository is automatically written to the first writable repository (e.g. a local cache).
+
+```java
+RepoStorageLocalFileSystem localCache = new RepoStorageLocalFileSystem (
+    new File ("/tmp/cache"),
+    "local-cache",
+    ERepoWritable.WITH_WRITE,
+    ERepoDeletable.WITHOUT_DELETE);
+
+RepoStorageHttp remoteRepo = /* ... */;
+
+// Reads check localCache first, then remoteRepo
+RepoStorageChain chain = RepoStorageChain.of (localCache, remoteRepo);
+chain.setCacheRemoteContent (true);
+
+IRepoStorageReadItem item = chain.read (key);
+// If found remotely, the item is now cached locally for subsequent reads
+```
+
+## Table of Contents
+
+Repositories implementing `IRepoStorageWithToc` maintain a per-artefact table of contents (`toc-diver.xml`) listing all available versions. This allows resolving pseudo-versions without scanning directories.
+
+```java
+IRepoStorageWithToc tocRepo = /* e.g. RepoStorageInMemory, RepoStorageLocalFileSystem */;
+
+// Look up the latest release version of an artefact
+DVRCoordinate latest = tocRepo.getLatestReleaseVersion ("com.ecosio", "invoice-rules");
+
+// Read the full ToC model
+RepoToc toc = tocRepo.readTocModel ("com.ecosio", "invoice-rules");
+```
 
 # DVR Coordinate
 
@@ -82,6 +172,26 @@ Other components might define their own pseudo versions by
 1. in this implementation registering all pseudo version definitions
 
 Note: the resolution logic is not implemented in this project. This is e.g. provided by the [phive](https://github.com/phax/phive) project.
+
+# Storage Key Path Mapping
+
+A `DVRCoordinate` is mapped to a file path (the `RepoStorageKeyOfArtefact`) using the following structure:
+
+```
+{groupID with dots replaced by /}/{artifactID}/{version}/{artifactID}-{version}[-{classifier}]{extension}
+```
+
+Examples:
+| DVR Coordinate | Extension | Storage Path |
+|---|---|---|
+| `com.ecosio:invoice-rules:1.2.0` | `.xml` | `com/ecosio/invoice-rules/1.2.0/invoice-rules-1.2.0.xml` |
+| `com.ecosio:invoice-rules:1.2.0:sources` | `.jar` | `com/ecosio/invoice-rules/1.2.0/invoice-rules-1.2.0-sources.jar` |
+| `com.ecosio:invoice-rules:3-SNAPSHOT` | `.xml` | `com/ecosio/invoice-rules/3-SNAPSHOT/invoice-rules-3-SNAPSHOT.xml` |
+
+The Table of Contents file for a given Group ID / Artefact ID combination is stored at:
+```
+{groupID with dots replaced by /}/{artifactID}/toc-diver.xml
+```
 
 # Repository
 
