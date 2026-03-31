@@ -1,7 +1,9 @@
+.claude/
 .settings/
 bin/
 target/
 
 .classpath
+.DS_Store
 .project
 zz
