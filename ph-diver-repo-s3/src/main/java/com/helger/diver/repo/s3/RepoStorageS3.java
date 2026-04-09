@@ -107,6 +107,38 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
     m_sDefaultKeyPrefix = sDefaultKeyPrefix == null ? "" : sDefaultKeyPrefix;
   }
 
+  /**
+   * @return The underlying S3 client object that is used. Never <code>null</code>.
+   * @since 4.2.1
+   */
+  @NonNull
+  public S3Client getS3Client ()
+  {
+    return m_aS3Client;
+  }
+
+  /**
+   * @return The S3 bucket name in which the data is persisted. Neither <code>null</code> nor empty.
+   * @since 4.2.1
+   */
+  @NonNull
+  @Nonempty
+  public String getBucketName ()
+  {
+    return m_sBucketName;
+  }
+
+  /**
+   * @return The optional S3 key prefix to be used (e.g. a constant base folder). Never
+   *         <code>null</code> but maybe empty.
+   * @since 4.2.1
+   */
+  @NonNull
+  public String getDefaultKeyPrefix ()
+  {
+    return m_sDefaultKeyPrefix;
+  }
+
   @NonNull
   private String _getRealKey (@NonNull final RepoStorageKey aKey)
   {

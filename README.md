@@ -241,6 +241,9 @@ Alternate usage as a Maven BOM:
 
 # News and Noteworthy
 
+v4.2.1 - work in progress
+* Extended the API of `RepoStorageS3` to access the parameters from the constructor
+
 v4.2.0 - 2026-02-20
 * Added new method `IRepoTopTocService.refreshFromRepo`. See [#1](https://github.com/phax/ph-diver/issues/1)
 * Added a "default key prefix" to be applied to S3 repos. See [#2](https://github.com/phax/ph-diver/issues/2)
