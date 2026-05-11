@@ -143,6 +143,62 @@ Each DVR Coordinate consists of a combination of:
 
 The limitations in the allowed characters for the different parts are meant to allow an easy representation on file systems. 
 
+## Naming Best Practices for Group ID and Artefact ID
+
+The syntactic rules above define what is *allowed*. The recommendations below are conventions for keeping coordinates readable, predictable, and collision-free across organisations and over time.
+They are particularly relevant when a coordinate is going to be referenced by external consumers (as with validation rule sets, schema bundles, or other shared artefacts).
+
+### Group ID
+
+1. **Use reverse-DNS notation, all lowercase.**
+   Example: `eu.cen.en16931` — not `EU_CEN_EN16931` or `cen.en16931.eu`. Reverse-DNS aligns with Maven coordinates and Java package names, and keeps the namespace globally unique.
+
+2. **Pick the root segment by who *owns* the artefact, not where it is used.**
+    * National format issued by a state body → ISO 3166-1 alpha-2 country code as the root, e.g. `de.xrechnung`, `nl.setu`, `at.ebinterface`.
+    * International standards body → `org.{body}`, e.g. `org.oasis-open`.
+    * UN-controlled standard → `un.{body}`, e.g. `un.unece.uncefact`.
+    * EU-level body or initiative → `eu.{name}`, e.g. `eu.cen.en16931`.
+    * Private company → reverse of the actual domain, e.g. `com.acme`.
+
+3. **Use at least three segments when the root is generic.**
+   Roots like `eu.`, `org.`, `gov.`, `gob.` are easily collided. Spell out the body or initiative under them: prefer `es.gob.facturae` over `es.gob`. Short flat IDs may seem clean, but they leave no room for sibling artefacts from the same authority.
+
+4. **Pick one root per ecosystem and keep it stable.**
+   Do not oscillate between e.g. `eu.foo.*` and `org.foo.*` for artefacts that belong to the same logical ecosystem. Either is fine; consistency matters more than the exact choice. Switching the root after the fact is a breaking change for every consumer.
+
+5. **Reserve sub-namespaces for genuine sub-projects, not ad-hoc variants.**
+   A sub-namespace like `de.foo.extension` is appropriate only when "extension" is a separately governed product. If it is merely a flag on an existing artefact, encode it in the artefact ID instead — group IDs should describe the *publisher*, not a property of an individual artefact.
+
+6. **Do not embed version numbers in the Group ID.**
+   Versioning belongs in the version field. `vendor.format-2025` looks broken the moment `2026` arrives.
+
+7. **Avoid acronyms in the Group ID unless they are the official, externally-recognised identifier.**
+   If the issuing authority publishes itself as `CTC`, `CTC` is fine. Internal abbreviations are not.
+
+### Artefact ID
+
+1. **Use lowercase kebab-case.**
+   Example: `ubl-invoice`, `credit-note`, `application-response`. Avoid camelCase (`invoiceData`), snake_case (`invoice_data`), and gratuitous concatenation (`creditnote`) when a separator improves readability. Pick one style per Group ID and stay with it.
+
+2. **Describe the *artefact*, not its variant.**
+   Differences such as version, profile, or environment belong in the version field, not the artefact ID. Prefer the pair `(invoice, 1.3.0)` and `(invoice, 1.3.1)` over `invoice-1-3-0` / `invoice-1-3-1`. This is what makes pseudo-versions like `latest` and `latest-release` work.
+
+3. **Include the syntax/format only when one Group ID covers multiple syntaxes.**
+   `ubl-invoice`, `cii-invoice`, `cdar-invoice` is appropriate where the Group ID spans them. When a Group ID only ever contains one syntax, the syntax prefix is noise.
+
+4. **Be consistent across releases.**
+   An artefact ID that exists in v1 should keep the same spelling in v2. Renaming an artefact ID forces every consumer to update lookups; bumping the version does not.
+
+5. **Avoid classifiers.**
+   The classifier slot exists for marginal cases (e.g. distinguishing a `sources` jar from the main artefact). For most domains a distinct artefact ID or a different version is clearer than a classifier.
+
+6. **Stay well within the 64-character limit.**
+   Long IDs are valid but harder to read in logs and file paths. Aim for 30 characters or less.
+
+### Why these conventions matter
+
+Group IDs and Artefact IDs feed directly into file system paths (see *Storage Key Path Mapping* below) and into the Table of Contents. Inconsistent names produce parallel paths for the same logical artefact; version numbers embedded in the artefact ID break pseudo-version resolution (`latest`, `latest-release`) and clutter the ToC.
+
 ## DVR Coordinate string representation
 
 Each DVR Coordinate can be represented in a single string in the form `groupID:artifactID:version[:classifier]`.
