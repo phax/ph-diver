@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>3.0.3</version>
+    <version>3.0.5</version>
   </parent>
   <groupId>com.helger.diver</groupId>
   <artifactId>ph-diver-parent-pom</artifactId>
@@ -68,7 +68,7 @@
     <jaxb-plugin.version>4.0.14</jaxb-plugin.version>
     <ph-jaxb-plugin.version>5.1.2</ph-jaxb-plugin.version>
     
-    <awssdk-version>2.44.8</awssdk-version>
+    <awssdk-version>2.45.0</awssdk-version>
     <jetty.version>12.1.9</jetty.version>
   </properties>
   
