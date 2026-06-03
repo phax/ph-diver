@@ -3,6 +3,8 @@
 <!-- ph-badge-start -->
 [![Sonatype Central](https://maven-badges.sml.io/sonatype-central/com.helger.diver/ph-diver-parent-pom/badge.svg)](https://maven-badges.sml.io/sonatype-central/com.helger.diver/ph-diver-parent-pom/)
 [![javadoc](https://javadoc.io/badge2/com.helger.diver/ph-diver-api/javadoc.svg)](https://javadoc.io/doc/com.helger.diver/ph-diver-api)
+
+> If this project saved you some time or made your day a little easier, a star would mean a lot — it helps others find it too.
 <!-- ph-badge-end -->
 
 ph-diver - PH Digitally Versioned Resources - in collaboration with [![ecosio Logo](https://raw.githubusercontent.com/phax/ph-diver/main/docs/ecosio-logo-rgb_black_blue_xs.jpg)](https://www.ecosio.com)
