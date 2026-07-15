@@ -51,6 +51,13 @@ public class RepoStorageKey
     ValueEnforcer.isFalse ( () -> sPath.startsWith ("/"),
                             () -> "Path ('" + sPath + "') should not start with a slash ('/')");
     ValueEnforcer.isFalse ( () -> sPath.endsWith ("/"), "Path ('" + sPath + "') should not end with a slash ('/')");
+    // Prevent path traversal: reject backslashes (Windows separator) and any ".."
+    // path segment. Wrapping in slashes catches "..", "../x", "x/..", and "x/../y"
+    // while still allowing legitimate dots inside a segment (e.g. "1.0" or "a.b").
+    ValueEnforcer.isFalse ( () -> sPath.indexOf ('\\') >= 0,
+                            () -> "Path ('" + sPath + "') should not contain a backslash ('\\')");
+    ValueEnforcer.isFalse ( () -> ("/" + sPath + "/").contains ("/../"),
+                            () -> "Path ('" + sPath + "') should not contain a parent directory segment ('..')");
 
     m_sPath = sPath;
   }
