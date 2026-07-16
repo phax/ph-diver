@@ -170,10 +170,14 @@ public class RepoStorageChain implements IRepoStorageBase
         // 2. Caching of content is enabled
         // 3. It is a real artifact and not just "any" data (like TopToC)
         // 4. The data can be read multiple times
+        // 5. The content hash was verified and matches. Caching unverified or
+        // non-matching content would persist potentially tampered data locally
+        // and even "launder" it into a locally re-hashed VERIFIED_MATCHING copy.
         if (aReadStorage.getRepoType ().isRemote () &&
             m_bCacheRemoteContent &&
             aKey instanceof RepoStorageKeyOfArtefact &&
-            aReadItem.getContent ().isReadMultiple ())
+            aReadItem.getContent ().isReadMultiple () &&
+            aReadItem.getHashState () == ERepoHashState.VERIFIED_MATCHING)
         {
           // Item was read from remote
           if (m_aWritableStorages.isNotEmpty ())
