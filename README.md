@@ -299,8 +299,12 @@ Alternate usage as a Maven BOM:
 
 # News and Noteworthy
 
-v4.2.1 - work in progress
+v4.2.1 - 2026-07-16
 * Extended the API of `RepoStorageS3` to access the parameters from the constructor
+* Security: `RepoStorageKey` now rejects `..` path segments and backslashes to prevent path traversal outside the repository base directory
+* Security: `RepoStorageChain` now only caches remote content locally if the content hash was verified and matching (`VERIFIED_MATCHING`), to avoid persisting unverified or tampered artefacts (backwards incompatible change)
+* `RepoStorageHttp.exists` now uses an HTTP `HEAD` request instead of a full download, and falls back to `GET` if the server does not support `HEAD`
+* Fixed the Maven scope of the `jetty-ee10-servlet` dependency in `ph-diver-repo-http` to `test`, so it is no longer pulled into consumers' runtime classpath
 
 v4.2.0 - 2026-02-20
 * Added new method `IRepoTopTocService.refreshFromRepo`. See [#1](https://github.com/phax/ph-diver/issues/1)
