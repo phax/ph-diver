@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpHead;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.io.entity.InputStreamEntity;
@@ -46,13 +47,20 @@ import com.helger.diver.repo.IRepoStorageContent;
 import com.helger.diver.repo.RepoStorageKey;
 import com.helger.diver.repo.RepoStorageType;
 import com.helger.diver.repo.impl.AbstractRepoStorageWithToc;
+import com.helger.http.CHttp;
 import com.helger.httpclient.HttpClientManager;
 import com.helger.httpclient.response.ResponseHandlerByteArray;
 import com.helger.io.file.FilenameHelper;
 
 /**
  * Base implementation of {@link IRepoStorage} for arbitrary HTTP connections. Supports HTTP GET,
- * PUT and DELETE.
+ * HEAD, PUT and DELETE.
+ * <p>
+ * Note: this class provides <b>no built-in authentication</b>. Any credentials (e.g. Basic auth,
+ * bearer tokens) or transport security must be supplied by the caller through the passed
+ * {@link HttpClientManager} settings, or per request via the read/write/delete customizers. There
+ * is likewise no enforcement of the URL scheme, so <code>http://</code> prefixes are accepted as-is
+ * &mdash; use <code>https://</code> for confidentiality and integrity in transit.
  *
  * @author Philip Helger
  */
@@ -146,8 +154,37 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
   {
     ValueEnforcer.notNull (aKey, "Key");
 
-    // Not ideal, but what shall we do :)
-    return read (aKey) != null;
+    final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
+    CONDLOG.info (() -> "Checking for existence on HTTP '" + sURL + "'");
+
+    try
+    {
+      // Prefer HTTP HEAD to avoid downloading the whole payload just to check
+      // for existence
+      final HttpHead aHead = new HttpHead (sURL);
+      final int nStatusCode = m_aHttpClient.execute (aHead, aHttpResponse -> Integer.valueOf (aHttpResponse.getCode ()))
+                                           .intValue ();
+
+      // If the server does not support HEAD, fall back to a full read
+      if (nStatusCode == CHttp.HTTP_METHOD_NOT_ALLOWED || nStatusCode == CHttp.HTTP_NOT_IMPLEMENTED)
+      {
+        CONDLOG.info (() -> "HTTP HEAD is not supported by '" +
+                            sURL +
+                            "' (HTTP " +
+                            nStatusCode +
+                            "); falling back to GET");
+        return read (aKey) != null;
+      }
+
+      final boolean bExists = nStatusCode >= 200 && nStatusCode < 300;
+      CONDLOG.info (() -> (bExists ? "Found" : "Did not find") + " on HTTP '" + sURL + "'");
+      return bExists;
+    }
+    catch (final IOException ex)
+    {
+      CONDLOG.warn (() -> "Failed to check for existence on HTTP '" + sURL + "': " + ex.getMessage ());
+      return false;
+    }
   }
 
   @Override
@@ -155,7 +192,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
   protected InputStream getInputStream (@NonNull final RepoStorageKey aKey)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
-    CONDLOG.info ( () -> "Reading from HTTP '" + sURL + "'");
+    CONDLOG.info (() -> "Reading from HTTP '" + sURL + "'");
 
     try
     {
@@ -169,12 +206,12 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
 
       final byte [] aResponse = m_aHttpClient.execute (aGet, new ResponseHandlerByteArray ());
 
-      CONDLOG.info ( () -> "Found on HTTP '" + sURL + "' for " + ArrayHelper.getSize (aResponse) + " bytes");
+      CONDLOG.info (() -> "Found on HTTP '" + sURL + "' for " + ArrayHelper.getSize (aResponse) + " bytes");
       return new NonBlockingByteArrayInputStream (aResponse);
     }
     catch (final IOException ex)
     {
-      CONDLOG.warn ( () -> "Failed to read from HTTP '" + sURL + "': " + ex.getMessage ());
+      CONDLOG.warn (() -> "Failed to read from HTTP '" + sURL + "': " + ex.getMessage ());
       return null;
     }
   }
@@ -184,7 +221,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
   protected ESuccess writeObject (@NonNull final RepoStorageKey aKey, @NonNull final IRepoStorageContent aContent)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
-    CONDLOG.info ( () -> "Writing to HTTP '" + sURL + "'");
+    CONDLOG.info (() -> "Writing to HTTP '" + sURL + "'");
 
     try
     {
@@ -207,11 +244,11 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     }
     catch (final IOException ex)
     {
-      CONDLOG.warn ( () -> "Failed to write to HTTP '" + sURL + "': " + ex.getMessage ());
+      CONDLOG.warn (() -> "Failed to write to HTTP '" + sURL + "': " + ex.getMessage ());
       return ESuccess.FAILURE;
     }
 
-    CONDLOG.info ( () -> "Successfully wrote to HTTP '" + sURL + "'");
+    CONDLOG.info (() -> "Successfully wrote to HTTP '" + sURL + "'");
     return ESuccess.SUCCESS;
   }
 
@@ -220,7 +257,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
   protected ESuccess deleteObject (@NonNull final RepoStorageKey aKey)
   {
     final String sURL = FilenameHelper.getCleanConcatenatedUrlPath (m_sURLPrefix, aKey.getPath ());
-    CONDLOG.info ( () -> "Deleting from HTTP '" + sURL + "'");
+    CONDLOG.info (() -> "Deleting from HTTP '" + sURL + "'");
 
     try
     {
@@ -240,11 +277,11 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
     }
     catch (final IOException ex)
     {
-      CONDLOG.warn ( () -> "Failed to delete from HTTP '" + sURL + "': " + ex.getMessage ());
+      CONDLOG.warn (() -> "Failed to delete from HTTP '" + sURL + "': " + ex.getMessage ());
       return ESuccess.FAILURE;
     }
 
-    CONDLOG.info ( () -> "Successfully deleted from HTTP '" + sURL + "'");
+    CONDLOG.info (() -> "Successfully deleted from HTTP '" + sURL + "'");
     return ESuccess.SUCCESS;
   }
 

@@ -101,6 +101,53 @@ public final class RepoStorageHttpTest
     assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
   }
 
+  @Test
+  public void testExists () throws DVRVersionException
+  {
+    final RepoStorageHttp aRepo = _createRepoReadOnly ();
+
+    // This one exists on HTTP (checked via HTTP HEAD)
+    assertTrue (aRepo.exists (RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio", "http-only", "1"),
+                                                           ".txt")));
+
+    // This one does not exist on HTTP
+    assertFalse (aRepo.exists (RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio", "local", "1"),
+                                                            ".txt")));
+  }
+
+  @Test
+  public void testExistsFallbackWhenHeadUnsupported () throws Exception
+  {
+    // Use a dedicated server on a different port that answers HEAD with HTTP 405
+    final int nPort = LocalJettyRunner.DEFAULT_PORT + 1;
+    final LocalJettyRunner aRunner = new LocalJettyRunner (nPort,
+                                                           LocalJettyRunner.DEFAULT_TEST_RESOURCE_BASE,
+                                                           ERepoWritable.WITHOUT_WRITE,
+                                                           ERepoDeletable.WITHOUT_DELETE).setHeadSupported (false);
+    aRunner.startJetty ();
+    try
+    {
+      final RepoStorageHttp aRepo = new RepoStorageHttp (new HttpClientManager (),
+                                                         "http://localhost:" + nPort + "/",
+                                                         "unittest-nohead",
+                                                         ERepoWritable.WITHOUT_WRITE,
+                                                         ERepoDeletable.WITHOUT_DELETE);
+      aRepo.setAuditor (new RepoTopTocAuditor (new RepoTopTocServiceRepoBasedXML ()));
+
+      // HEAD is rejected with 405 -> falls back to GET, which finds the artefact
+      assertTrue (aRepo.exists (RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio", "http-only", "1"),
+                                                             ".txt")));
+
+      // HEAD is rejected with 405 -> falls back to GET, which does not find it
+      assertFalse (aRepo.exists (RepoStorageKeyOfArtefact.of (DVRCoordinate.create ("com.ecosio", "local", "1"),
+                                                              ".txt")));
+    }
+    finally
+    {
+      aRunner.stopJetty ();
+    }
+  }
+
   @NonNull
   private static RepoStorageHttp _createRepoWritable ()
   {

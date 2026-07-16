@@ -59,6 +59,7 @@ public class LocalJettyRunner
   private static final Logger LOGGER = LoggerFactory.getLogger (LocalJettyRunner.class);
 
   private final Server m_aServer;
+  private boolean m_bHeadSupported = true;
 
   public LocalJettyRunner (@Nonnegative final int nPort,
                            @NonNull final File aResourceBase,
@@ -132,6 +133,34 @@ public class LocalJettyRunner
       }
     };
 
+    final Handler.Abstract headHandler = new Handler.Abstract ()
+    {
+      public boolean handle (final Request request, final Response response, final Callback callback) throws Exception
+      {
+        if (request.getMethod ().equals (EHttpMethod.HEAD.getName ()))
+        {
+          if (!m_bHeadSupported)
+          {
+            // Simulate a server that does not support HEAD
+            LOGGER.info ("Jetty HEAD [not supported]");
+            response.setStatus (HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            response.write (true, StandardCharsets.UTF_8.encode (""), callback);
+            return true;
+          }
+
+          final File targetFile = new File (aResourceBase, request.getHttpURI ().getPath ());
+          final boolean bExists = targetFile.isFile ();
+          LOGGER.info ("Jetty HEAD [" + (bExists ? "found" : "not found") + "] '" + targetFile.getAbsolutePath () + "'");
+
+          // Status before payload! HEAD has no body.
+          response.setStatus (bExists ? HttpServletResponse.SC_OK : HttpServletResponse.SC_NOT_FOUND);
+          response.write (true, StandardCharsets.UTF_8.encode (""), callback);
+          return true;
+        }
+        return false;
+      }
+    };
+
     final Handler.Abstract getHandler = new Handler.Abstract ()
     {
       public boolean handle (final Request request, final Response response, final Callback callback) throws Exception
@@ -172,6 +201,9 @@ public class LocalJettyRunner
     if (eDeleteEnabled.isDeleteEnabled ())
       sequence.addHandler (deleteHandler);
 
+    // Existence check handler
+    sequence.addHandler (headHandler);
+
     // Read handler
     sequence.addHandler (getHandler);
 
@@ -191,6 +223,20 @@ public class LocalJettyRunner
       sequence.addHandler (new DefaultHandler ());
 
     m_aServer.setHandler (sequence);
+  }
+
+  /**
+   * Enable or disable HTTP HEAD support, to simulate servers that do not implement it.
+   *
+   * @param bHeadSupported
+   *        <code>true</code> to answer HEAD normally, <code>false</code> to reply with HTTP 405.
+   * @return this for chaining
+   */
+  @NonNull
+  public LocalJettyRunner setHeadSupported (final boolean bHeadSupported)
+  {
+    m_bHeadSupported = bHeadSupported;
+    return this;
   }
 
   public void startJetty () throws Exception

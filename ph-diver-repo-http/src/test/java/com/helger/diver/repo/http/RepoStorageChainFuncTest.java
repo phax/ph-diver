@@ -104,24 +104,17 @@ public final class RepoStorageChainFuncTest
 
     try
     {
-      // Read from chain, ending up with the item from HTTP
-      // This should implicitly copy the item to in-memory and local FS repo
+      // Read from chain, ending up with the item from HTTP. The remote artefact
+      // has no published hash, so it reads back as NOT_VERIFIED.
       IRepoStorageReadItem aItem = aRepoChain.read (aKey);
       assertNotNull (aItem);
       assertEquals ("This file is on HTTP native", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
       assertSame (ERepoHashState.NOT_VERIFIED, aItem.getHashState ());
 
-      // Now it should be present in memory as well
-      aItem = aRepoInMemory.read (aKey);
-      assertNotNull (aItem);
-      assertEquals ("This file is on HTTP native", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
-      assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
-
-      // Now it should be present locally as well
-      aItem = aRepoLocalFS.read (aKey);
-      assertNotNull (aItem);
-      assertEquals ("This file is on HTTP native", RepoStorageContentHelper.getAsUtf8String (aItem.getContent ()));
-      assertSame (ERepoHashState.VERIFIED_MATCHING, aItem.getHashState ());
+      // Even though caching is enabled, unverified content must NOT be cached
+      // locally, to avoid persisting (and re-hashing) potentially tampered data.
+      assertNull (aRepoInMemory.read (aKey));
+      assertNull (aRepoLocalFS.read (aKey));
     }
     finally
     {
