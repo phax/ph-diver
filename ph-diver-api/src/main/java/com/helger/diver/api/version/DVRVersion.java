@@ -380,37 +380,28 @@ public final class DVRVersion implements Comparable <DVRVersion>
   }
 
   /**
-   * Checks if the provided version is a valid static version.
-   * <ul>
-   * <li>1.0.0</li>
-   * <li>1.0</li>
-   * <li>1</li>
-   * <li>1.0.0-SNAPSHOT</li>
-   * <li>1.0-SNAPSHOT</li>
-   * <li>1-SNAPSHOT</li>
-   * <li>1.0.0.SNAPSHOT</li>
-   * <li>1.0.SNAPSHOT</li>
-   * <li>1.SNAPSHOT</li>
-   * </ul>
+   * Parse the provided version to a static {@link Version} object.
    *
    * @param sVersion
-   *        The version to check
-   * @return <code>true</code> if the version is a valid static version, <code>false</code> if not.
+   *        The version to parse. May be <code>null</code>.
+   * @return <code>null</code> if the provided version is not a valid static version.
+   * @see #isValidStaticVersion(String)
    */
-  public static boolean isValidStaticVersion (@Nullable final String sVersion)
+  @Nullable
+  private static Version _parseStaticVersionOrNull (@Nullable final String sVersion)
   {
     // Must not be empty
     if (StringHelper.isEmpty (sVersion))
-      return false;
+      return null;
 
     // Must follow the DVR Coordinate constraints
     if (!DVRValidityHelper.isValidCoordinateVersion (sVersion))
-      return false;
+      return null;
 
     // Parse to Version object
     final Version aParsedVersion = Version.parse (sVersion);
     if (aParsedVersion == null)
-      return false;
+      return null;
 
     // Check if the parsing result equals the original in a way
     // This section clearly would win the price for ugly coding - but the
@@ -425,10 +416,21 @@ public final class DVRVersion implements Comparable <DVRVersion>
           if (sVersion.equals (sText))
           {
             // We found a match
-            return true;
+            return aParsedVersion;
           }
           aPossibleVersions.add (sText);
         }
+
+    // Fallback to the strict layout "major[.minor[.micro]][-classifier]".
+    // Version.parse takes a purely numeric version classifier as the micro
+    // version number instead, so e.g. "1.4-03" is not covered by the check
+    // above, even though it is the string representation of "1.4.0-03".
+    // This is deliberately only a fallback, because for a version like
+    // "1.4-1.2.3" both interpretations are possible, and the one established
+    // above must win to stay backwards compatible.
+    final Version aStrictVersion = Version.parseStrictOrNull (sVersion);
+    if (aStrictVersion != null)
+      return aStrictVersion;
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("'" +
@@ -440,7 +442,32 @@ public final class DVRVersion implements Comparable <DVRVersion>
                                  .build ());
 
     // Nope, invalid version
-    return false;
+    return null;
+  }
+
+  /**
+   * Checks if the provided version is a valid static version.
+   * <ul>
+   * <li>1.0.0</li>
+   * <li>1.0</li>
+   * <li>1</li>
+   * <li>1.0.0-SNAPSHOT</li>
+   * <li>1.0-SNAPSHOT</li>
+   * <li>1-SNAPSHOT</li>
+   * <li>1.0.0.SNAPSHOT</li>
+   * <li>1.0.SNAPSHOT</li>
+   * <li>1.SNAPSHOT</li>
+   * <li>1.4.0-03</li>
+   * <li>1.4-03</li>
+   * </ul>
+   *
+   * @param sVersion
+   *        The version to check
+   * @return <code>true</code> if the version is a valid static version, <code>false</code> if not.
+   */
+  public static boolean isValidStaticVersion (@Nullable final String sVersion)
+  {
+    return _parseStaticVersionOrNull (sVersion) != null;
   }
 
   @NonNull
@@ -454,11 +481,9 @@ public final class DVRVersion implements Comparable <DVRVersion>
     if (ePseudoVersion != null)
       return of (ePseudoVersion);
 
-    if (isValidStaticVersion (sVersion))
-    {
-      // Try to convert into a Version object instead
-      return of (Version.parse (sVersion));
-    }
+    final Version aStaticVersion = _parseStaticVersionOrNull (sVersion);
+    if (aStaticVersion != null)
+      return of (aStaticVersion);
 
     throw new DVRVersionException ("Failed to parse '" + sVersion + "' to a DVR Version");
   }

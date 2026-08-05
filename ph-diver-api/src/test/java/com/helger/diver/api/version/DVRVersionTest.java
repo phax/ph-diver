@@ -18,6 +18,7 @@ package com.helger.diver.api.version;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -100,6 +101,56 @@ public final class DVRVersionTest
     assertEquals (0, aVer.getMinor ());
     assertEquals (0, aVer.getMicro ());
     assertEquals ("blafoo", aVer.getQualifier ());
+  }
+
+  @Test
+  public void testVersionClassifier ()
+  {
+    // A version classifier may be separated with "-" or with "."
+    for (final String sVersion : new String [] { "1.4.0-03", "1.4.0.03" })
+    {
+      final DVRVersion ver = DVRVersion.parseOrNull (sVersion);
+      assertNotNull (ver);
+      assertTrue (ver.isStaticVersion ());
+
+      final Version aVer = ver.getStaticVersion ();
+      assertEquals (1, aVer.getMajor ());
+      assertEquals (4, aVer.getMinor ());
+      assertEquals (0, aVer.getMicro ());
+      assertEquals ("03", aVer.getQualifier ());
+
+      // Trailing zero micro version is not part of the string representation
+      assertEquals ("1.4-03", ver.getAsString ());
+    }
+
+    // Every version classifier can be read back from the string representation,
+    // numeric ones included
+    for (final String sClassifier : new String [] { "SNAPSHOT", "RC1", "hotfix03", "03", "3" })
+    {
+      final DVRVersion ver = DVRVersion.parseOrNull ("1.4.0-" + sClassifier);
+      assertNotNull (ver);
+      assertEquals ("1.4-" + sClassifier, ver.getAsString ());
+      assertEquals (ver, DVRVersion.parseOrNull (ver.getAsString ()));
+    }
+
+    // The short form of a numeric version classifier is only reachable via the
+    // strict layout, because Version.parse would take the "03" as the micro
+    // version number
+    assertEquals (DVRVersion.parseOrNull ("1.4.0-03"), DVRVersion.parseOrNull ("1.4-03"));
+    assertEquals (DVRVersion.parseOrNull ("1.4.0-3"), DVRVersion.parseOrNull ("1.4-3"));
+
+    // A numeric version classifier is something different than a micro version
+    assertEquals ("1.4.3", DVRVersion.parseOrNull ("1.4.3").getAsString ());
+    assertNotEquals (DVRVersion.parseOrNull ("1.4.3"), DVRVersion.parseOrNull ("1.4-3"));
+
+    // Backwards compatibility: for "1.4-1.2.3" both interpretations are
+    // possible, and the established one wins over the strict layout
+    final DVRVersion verAmbiguous = DVRVersion.parseOrNull ("1.4-1.2.3");
+    assertNotNull (verAmbiguous);
+    assertEquals (1, verAmbiguous.getStaticVersion ().getMajor ());
+    assertEquals (0, verAmbiguous.getStaticVersion ().getMinor ());
+    assertEquals (0, verAmbiguous.getStaticVersion ().getMicro ());
+    assertEquals ("4-1.2.3", verAmbiguous.getStaticVersion ().getQualifier ());
   }
 
   @Test

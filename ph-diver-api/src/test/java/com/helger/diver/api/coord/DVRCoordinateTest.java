@@ -89,4 +89,30 @@ public final class DVRCoordinateTest
     assertNull (DVRCoordinate.parseOrNull (":::"));
     assertNull (DVRCoordinate.parseOrNull ("a:b:"));
   }
+
+  @Test
+  public void testVersionClassifier () throws DVRVersionException
+  {
+    // Both separators lead to the same Coordinate
+    final DVRCoordinate aID1 = DVRCoordinate.create ("fr.ctc", "cdar", "1.4.0-03");
+    assertEquals ("1.4-03", aID1.getVersionString ());
+    assertEquals ("fr.ctc:cdar:1.4-03", aID1.getAsSingleID ());
+    assertEquals (aID1, DVRCoordinate.create ("fr.ctc", "cdar", "1.4.0.03"));
+
+    // The version with the classifier differs from the one without
+    TestHelper.testEqualsImplementationWithDifferentContentObject (aID1,
+                                                                   DVRCoordinate.create ("fr.ctc", "cdar", "1.4.0"));
+
+    // A Coordinate with a version classifier survives a single ID round trip,
+    // numeric classifiers included
+    final DVRCoordinate aID2 = DVRCoordinate.create ("fr.ctc", "cdar", "1.4.0-hotfix03");
+    assertEquals ("fr.ctc:cdar:1.4-hotfix03", aID2.getAsSingleID ());
+    assertEquals (aID2, DVRCoordinate.parseOrNull (aID2.getAsSingleID ()));
+    assertEquals (aID1, DVRCoordinate.parseOrNull (aID1.getAsSingleID ()));
+
+    // All spellings lead to the same Coordinate
+    assertEquals (aID1, DVRCoordinate.parseOrNull ("fr.ctc:cdar:1.4-03"));
+    assertEquals (aID1, DVRCoordinate.parseOrNull ("fr.ctc:cdar:1.4.0-03"));
+    assertEquals (aID1, DVRCoordinate.parseOrNull ("fr.ctc:cdar:1.4.0.03"));
+  }
 }

@@ -299,6 +299,14 @@ Alternate usage as a Maven BOM:
 
 # News and Noteworthy
 
+v4.2.2 - work in progress
+* Updated to ph-commons 12.3.5
+* Fixed the handling of purely numeric version classifiers like in `1.4.0-03`.
+  Previously the string representation `1.4-03` could not be parsed back, because `Version.parse` takes the numeric `03` as the micro version number, resulting in `1.4.3`.
+  `DVRVersion` now falls back to the strict version layout `major[.minor[.micro]][-classifier]` (via the new `Version.parseStrictOrNull`), so `1.4-03`, `1.4.0-03` and `1.4.0.03` all lead to the same version, and `getAsString ()` is round trip safe again.
+  Non-numeric version classifiers like `SNAPSHOT`, `RC1` or `hotfix03` were never affected.
+  The strict layout is deliberately only used as a fallback: for an ambiguous version like `1.4-1.2.3` the previously established interpretation (`0.0.0` with the classifier `4-1.2.3`) still wins, so no previously valid version changes its meaning
+
 v4.2.1 - 2026-07-16
 * Extended the API of `RepoStorageS3` to access the parameters from the constructor
 * Security: `RepoStorageKey` now rejects `..` path segments and backslashes to prevent path traversal outside the repository base directory
