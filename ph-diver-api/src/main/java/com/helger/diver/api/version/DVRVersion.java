@@ -28,6 +28,7 @@ import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.MustImplementComparable;
 import com.helger.annotation.style.MustImplementEqualsAndHashcode;
+import com.helger.base.compare.CompareHelper;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.equals.EqualsHelper;
 import com.helger.base.hashcode.HashCodeGenerator;
@@ -42,18 +43,30 @@ import com.helger.diver.api.settings.DVRValidityHelper;
 
 /**
  * This class contains the version of a DVR Coordinate. This can either be a static version or a
- * pseudo version. This version type has a specific kind of ordering, so that versions using the
- * classifier "SNAPSHOT" are ordered BEFORE respective release versions. Example order:
+ * pseudo version. This version type has a specific kind of ordering, so that versions using a well
+ * known pre-release classifier are ordered BEFORE the respective release versions. Example order:
  * <ol>
  * <li>1.0</li>
  * <li>1.1-SNAPSHOT</li>
  * <li>1.1</li>
  * <li>1.2</li>
  * <li>1.3-SNAPSHOT</li>
+ * <li>1.3-alpha1</li>
+ * <li>1.3-beta</li>
+ * <li>1.3-milestone2</li>
+ * <li>1.3-rc9</li>
+ * <li>1.3-rc10</li>
  * <li>1.3</li>
+ * <li>1.3-01</li>
  * </ol>
+ * The complete ordering of the version classifiers of one and the same numeric version is:
+ * <code>SNAPSHOT &lt; alpha &lt; beta &lt; milestone &lt; rc &lt; release (no classifier) &lt; any
+ * other classifier</code>. The well known pre-release classifiers are matched case insensitively -
+ * see {@link EDVRPreReleaseQualifier} for the details. Every other classifier keeps being compared
+ * as a String, and is ordered after the release version.
  *
  * @author Philip Helger
+ * @see EDVRPreReleaseQualifier
  */
 @Immutable
 @MustImplementComparable
@@ -104,12 +117,13 @@ public final class DVRVersion implements Comparable <DVRVersion>
   /**
    * @param sQualifier
    *        The qualifier to check. May be <code>null</code>.,
-   * @return <code>true</code> if the qualifier is "SNAPSHOT".
+   * @return <code>true</code> if the qualifier is "SNAPSHOT". The check is case insensitive since
+   *         v4.2.2.
    * @since 3.0.0
    */
   public static boolean isStaticSnapshotVersion (@Nullable final String sQualifier)
   {
-    return QUALIFIER_SNAPSHOT.equals (sQualifier);
+    return EDVRPreReleaseQualifier.getFromQualifierOrNull (sQualifier) == EDVRPreReleaseQualifier.SNAPSHOT;
   }
 
   /**
@@ -242,47 +256,80 @@ public final class DVRVersion implements Comparable <DVRVersion>
     return getAsString (m_aPseudoVersion);
   }
 
-  @NonNull
-  private static Version _getWithoutQualifier (@NonNull final Version aSrc)
+  /**
+   * Sort rank of a version without any qualifier - the final release. It is higher than the rank of
+   * all pre-release qualifiers and lower than the rank of all unknown qualifiers.
+   */
+  private static final int RANK_RELEASE = EDVRPreReleaseQualifier.MAX_RANK + 1;
+  /** Sort rank of a version with a qualifier that is not a well known pre-release qualifier */
+  private static final int RANK_OTHER = RANK_RELEASE + 1;
+
+  private static int _getQualifierRank (@Nullable final EDVRPreReleaseQualifier ePreRelease,
+                                        @Nullable final String sQualifier)
   {
-    return new Version (aSrc.getMajor (), aSrc.getMinor (), aSrc.getMicro (), null);
+    if (ePreRelease != null)
+      return ePreRelease.getRank ();
+    return StringHelper.isEmpty (sQualifier) ? RANK_RELEASE : RANK_OTHER;
+  }
+
+  /**
+   * Compare the qualifiers of two versions that have the same major, minor and micro version.
+   *
+   * @param sLhs
+   *        Left hand side qualifier. May be <code>null</code>.
+   * @param sRhs
+   *        Right hand side qualifier. May be <code>null</code>.
+   * @return &lt; 0, 0 or &gt; 0
+   */
+  private static int _compareQualifier (@Nullable final String sLhs, @Nullable final String sRhs)
+  {
+    final EDVRPreReleaseQualifier eLhs = EDVRPreReleaseQualifier.getFromQualifierOrNull (sLhs);
+    final EDVRPreReleaseQualifier eRhs = EDVRPreReleaseQualifier.getFromQualifierOrNull (sRhs);
+
+    // First the rank decides: SNAPSHOT < alpha < beta < milestone < rc <
+    // release < anything else
+    int ret = Integer.compare (_getQualifierRank (eLhs, sLhs), _getQualifierRank (eRhs, sRhs));
+    if (ret != 0)
+      return ret;
+
+    // Same rank - if both use the same pre-release qualifier, the trailing
+    // number decides. It must be compared numerically, otherwise "rc9" would be
+    // sorted after "rc10"
+    if (eLhs != null)
+    {
+      ret = Integer.compare (eLhs.getNumber (sLhs), eRhs.getNumber (sRhs));
+      if (ret != 0)
+        return ret;
+    }
+
+    // Both versions have no qualifier at all
+    if (StringHelper.isEmpty (sLhs) && StringHelper.isEmpty (sRhs))
+      return 0;
+
+    // Fallback to the String comparison, so that two different qualifiers never
+    // compare as equal - as in "RC1" vs. "rc1" or "rc1" vs. "rc01". Returning 0
+    // for them would make them indistinguishable in a sorted set or map.
+    return CompareHelper.compare (sLhs, sRhs);
   }
 
   private static int _compareSemantically (@NonNull final Version aLhs, @NonNull final Version aRhs)
   {
-    if (QUALIFIER_SNAPSHOT.equals (aLhs.getQualifier ()))
+    // The numeric version parts always win over the qualifier
+    int ret = Integer.compare (aLhs.getMajor (), aRhs.getMajor ());
+    if (ret == 0)
     {
-      if (QUALIFIER_SNAPSHOT.equals (aRhs.getQualifier ()))
+      ret = Integer.compare (aLhs.getMinor (), aRhs.getMinor ());
+      if (ret == 0)
       {
-        // Lhs & Rhs are Snapshots
-        return aLhs.compareTo (aRhs);
+        ret = Integer.compare (aLhs.getMicro (), aRhs.getMicro ());
+        if (ret == 0)
+        {
+          // Same numeric version - the qualifier decides
+          ret = _compareQualifier (aLhs.getQualifier (), aRhs.getQualifier ());
+        }
       }
-      // Lhs is Snapshot
-      final Version aLhsClean = _getWithoutQualifier (aLhs);
-      final int nCmp = aLhsClean.compareTo (aRhs);
-      if (nCmp == 0)
-      {
-        // Snapshots comes before release
-        return -1;
-      }
-      return nCmp;
     }
-
-    if (QUALIFIER_SNAPSHOT.equals (aRhs.getQualifier ()))
-    {
-      // Rhs is Snapshot
-      final Version aRhsClean = _getWithoutQualifier (aRhs);
-      final int nCmp = aLhs.compareTo (aRhsClean);
-      if (nCmp == 0)
-      {
-        // Snapshots comes before release
-        return +1;
-      }
-      return nCmp;
-    }
-
-    // No snapshot version contained
-    return aLhs.compareTo (aRhs);
+    return ret;
   }
 
   /**

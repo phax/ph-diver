@@ -137,8 +137,8 @@ Each DVR Coordinate consists of a combination of:
     * Each Version Number must be unique per combination of *Group ID* and *Artefact ID*
     * The usage of semantic version supports the strict ordering of elements
     * Each version must follow either the form `major[.minor[.micro[-classifier]]]` where `major`, `minor` and `micro` must be unsigned integer values (like 1 or 2023) or the form `classifier` which is interpreted as `0.0.0-classifier`.
-    * The version classifier `SNAPSHOT` is a special case and identifies "work in progress" artefacts that are not final yet
-    * The Version Number MUST be treated case sensitive
+    * The version classifiers `SNAPSHOT`, `alpha`, `beta`, `milestone` and `rc` are special cases and identify "pre-release" artefacts that are not final yet. They are ordered BEFORE the respective final release - see *Version Classifier Ordering* below
+    * The Version Number MUST be treated case sensitive. The only exception is the recognition of the pre-release classifiers listed above, which is case **insensitive**. That affects the ordering only - `1.0.0-RC1` and `1.0.0-rc1` remain two different versions
 * Optional **Classifier**
     * It MAY be empty and follow the regular expression `[a-zA-Z0-9_\-\.]{0,64}`
     * The Classifier MUST be treated case sensitive
@@ -212,6 +212,28 @@ The string representation of version numbers is a bit tricky, because `1`, `1.0`
   Versions that only consist of a version classifier like `0.0.0-XYZ` are represented only as the version  classifier `XYZ`.
   That is a work around to be able to handle all kind of versions, but they are treated with a major version of `0`, a minor version of `0` and a micro version of `0`.
   
+## Version Classifier Ordering
+
+Versions with the same `major.minor.micro` numbers are ordered by their version classifier as follows:
+
+```
+SNAPSHOT  <  alpha  <  beta  <  milestone  <  rc  <  release (no classifier)  <  any other classifier
+```
+
+Example: `1.0.0-SNAPSHOT` < `1.0.0-alpha1` < `1.0.0-beta` < `1.0.0-milestone2` < `1.0.0-rc9` < `1.0.0-rc10` < `1.0.0` < `1.0.0-01`
+
+* All pre-release classifiers except `SNAPSHOT` MAY be followed by a number, as in `rc2`.
+  The number is compared **numerically**, so `rc9` is correctly ordered before `rc10`.
+  A classifier without a number comes before the same classifier with a number, so `rc` < `rc1`.
+* The pre-release classifiers are matched **case insensitively** and must match as a whole, optionally followed by digits.
+  `RC1`, `rc1` and `Rc1` therefore all have the same rank. They are still three different versions though, and are ordered deterministically among each other, so that no two versions ever compare as equal.
+* Single letter abbreviations like `a` for "alpha" or `b` for "beta" are deliberately **not** supported, because they collide with revision letters. `1.3.6-a` is therefore *newer* than `1.3.6`, not older.
+* Every classifier that is none of the above - like `03`, `a` or `hotfix03` - keeps being compared as a String and is ordered **after** the respective release version.
+  A purely numeric classifier is compared as a String as well, so `2.0.3-9` comes after `2.0.3-13`.
+  If numeric classifiers are used, they should be zero padded to a fixed length (`2.0.3-09`) to keep them comparable.
+
+The relevant API is the enum `EDVRPreReleaseQualifier`.
+
 ## DVR Pseudo Versions
 
 There are use cases, where the usage of a specific version number (like `1.0.5`) is not suitable and instead a more generic approach is needed.
@@ -301,6 +323,14 @@ Alternate usage as a Maven BOM:
 
 v4.2.2 - work in progress
 * Updated to ph-commons 12.3.5
+* The well known pre-release version classifiers `alpha`, `beta`, `milestone` and `rc` are now ordered BEFORE the respective final release version, as in `1.0.0-rc1` &lt; `1.0.0`.
+  Previously a version with a classifier was always ordered after the same version without one, so a release candidate was considered *newer* than its own release, and the pseudo versions `latest` and `latest-release` resolved to the release candidate.
+  The complete ordering is now `SNAPSHOT < alpha < beta < milestone < rc < release < any other classifier` - see the new section *Version Classifier Ordering* in this document
+* Added the new enum `EDVRPreReleaseQualifier` that contains the well known pre-release version classifiers
+* All pre-release classifiers except `SNAPSHOT` may be followed by a number, which is compared numerically, so that `1.0.0-rc9` is correctly ordered before `1.0.0-rc10`
+* The pre-release version classifiers are now matched case insensitively. This also applies to `DVRVersion.isStaticSnapshotVersion`, so `1.0.0-snapshot` is now recognized as a SNAPSHOT version, and is excluded by the `latest-release` pseudo version.
+  Note that this affects the ordering and the SNAPSHOT detection only - the version itself is still case sensitive, hence `1.0.0-RC1` and `1.0.0-rc1` remain two different versions
+* Note: classifiers that are none of the well known pre-release classifiers are unaffected and keep being compared as Strings. That especially includes revision letters like in `1.3.6-a` and numeric classifiers like in `1.4.0-03`, which are both still ordered after the respective release version
 * Fixed the handling of purely numeric version classifiers like in `1.4.0-03`.
   Previously the string representation `1.4-03` could not be parsed back, because `Version.parse` takes the numeric `03` as the micro version number, resulting in `1.4.3`.
   `DVRVersion` now falls back to the strict version layout `major[.minor[.micro]][-classifier]` (via the new `Version.parseStrictOrNull`), so `1.4-03`, `1.4.0-03` and `1.4.0.03` all lead to the same version, and `getAsString ()` is round trip safe again.
