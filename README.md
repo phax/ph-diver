@@ -327,6 +327,8 @@ v4.2.2 - work in progress
   Previously a version with a classifier was always ordered after the same version without one, so a release candidate was considered *newer* than its own release, and the pseudo versions `latest` and `latest-release` resolved to the release candidate.
   The complete ordering is now `SNAPSHOT < alpha < beta < milestone < rc < release < any other classifier` - see the new section *Version Classifier Ordering* in this document
 * Added the new enum `EDVRPreReleaseQualifier` that contains the well known pre-release version classifiers
+* Added the new method `DVRVersion.compareToClassic` that preserves the ordering of v4.2.1, where `SNAPSHOT` was the only pre-release version classifier and was matched case sensitively.
+  Use it via `Comparator<DVRVersion> c = DVRVersion::compareToClassic` if the previous ordering must be kept
 * All pre-release classifiers except `SNAPSHOT` may be followed by a number, which is compared numerically, so that `1.0.0-rc9` is correctly ordered before `1.0.0-rc10`
 * The pre-release version classifiers are now matched case insensitively. This also applies to `DVRVersion.isStaticSnapshotVersion`, so `1.0.0-snapshot` is now recognized as a SNAPSHOT version, and is excluded by the `latest-release` pseudo version.
   Note that this affects the ordering and the SNAPSHOT detection only - the version itself is still case sensitive, hence `1.0.0-RC1` and `1.0.0-rc1` remain two different versions

@@ -18,6 +18,7 @@ package com.helger.diver.api.version;
 
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.ToIntBiFunction;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -332,6 +333,63 @@ public final class DVRVersion implements Comparable <DVRVersion>
     return ret;
   }
 
+  @NonNull
+  private static Version _getWithoutQualifier (@NonNull final Version aSrc)
+  {
+    return new Version (aSrc.getMajor (), aSrc.getMinor (), aSrc.getMicro (), null);
+  }
+
+  /**
+   * The static version comparison as it was up to v4.2.1: "SNAPSHOT" is the only pre-release
+   * qualifier, it is matched case sensitively, and every other qualifier - including
+   * <code>rc</code>, <code>alpha</code>, <code>beta</code> and <code>milestone</code> - is compared
+   * as a String and is ordered AFTER the respective release version.
+   *
+   * @param aLhs
+   *        Left hand side version. May not be <code>null</code>.
+   * @param aRhs
+   *        Right hand side version. May not be <code>null</code>.
+   * @return &lt; 0, 0 or &gt; 0
+   */
+  private static int _compareSemanticallyClassic (@NonNull final Version aLhs, @NonNull final Version aRhs)
+  {
+    // Deliberately using the case sensitive check here, and not
+    // isStaticSnapshotVersion, which became case insensitive in v4.2.2
+    if (QUALIFIER_SNAPSHOT.equals (aLhs.getQualifier ()))
+    {
+      if (QUALIFIER_SNAPSHOT.equals (aRhs.getQualifier ()))
+      {
+        // Lhs & Rhs are Snapshots
+        return aLhs.compareTo (aRhs);
+      }
+      // Lhs is Snapshot
+      final Version aLhsClean = _getWithoutQualifier (aLhs);
+      final int nCmp = aLhsClean.compareTo (aRhs);
+      if (nCmp == 0)
+      {
+        // Snapshots comes before release
+        return -1;
+      }
+      return nCmp;
+    }
+
+    if (QUALIFIER_SNAPSHOT.equals (aRhs.getQualifier ()))
+    {
+      // Rhs is Snapshot
+      final Version aRhsClean = _getWithoutQualifier (aRhs);
+      final int nCmp = aLhs.compareTo (aRhsClean);
+      if (nCmp == 0)
+      {
+        // Snapshots comes before release
+        return +1;
+      }
+      return nCmp;
+    }
+
+    // No snapshot version contained
+    return aLhs.compareTo (aRhs);
+  }
+
   /**
    * Compare a static version with a pseudo version
    *
@@ -348,12 +406,24 @@ public final class DVRVersion implements Comparable <DVRVersion>
     return -aPseudoVersion.compareToVersion (aStaticVersion);
   }
 
-  public int compareTo (@NonNull final DVRVersion rhs)
+  /**
+   * The shared comparison logic. Only the comparison of two static versions differs between the
+   * current and the classic ordering - the handling of pseudo versions is identical.
+   *
+   * @param rhs
+   *        The version to compare to. May not be <code>null</code>.
+   * @param aStaticVersionComparator
+   *        The comparison to be used if both sides are static versions. May not be
+   *        <code>null</code>.
+   * @return &lt; 0, 0 or &gt; 0
+   */
+  private int _compareTo (@NonNull final DVRVersion rhs,
+                          @NonNull final ToIntBiFunction <Version, Version> aStaticVersionComparator)
   {
     if (isStaticVersion ())
     {
       if (rhs.isStaticVersion ())
-        return _compareSemantically (m_aStaticVersion, rhs.m_aStaticVersion);
+        return aStaticVersionComparator.applyAsInt (m_aStaticVersion, rhs.m_aStaticVersion);
       return _compareWithPseudoVersion (m_aStaticVersion, rhs.m_aPseudoVersion);
     }
 
@@ -364,8 +434,36 @@ public final class DVRVersion implements Comparable <DVRVersion>
       return -_compareWithPseudoVersion (rhs.m_aStaticVersion, m_aPseudoVersion);
     }
 
-    // Both are psudo versions
+    // Both are pseudo versions
     return m_aPseudoVersion.compareToPseudoVersion (rhs.m_aPseudoVersion);
+  }
+
+  /**
+   * Compare this version to the provided one, using the ordering as it was up to v4.2.1: "SNAPSHOT"
+   * is the only known pre-release qualifier, it is matched case sensitively, and every other
+   * qualifier - including <code>rc</code>, <code>alpha</code>, <code>beta</code> and
+   * <code>milestone</code> - is compared as a String and is ordered AFTER the respective release
+   * version. So <code>1.0.0</code> is considered older than <code>1.0.0-rc1</code>.
+   * <p>
+   * This method is provided for backwards compatibility only. Use {@link #compareTo(DVRVersion)}
+   * unless the old ordering must be preserved.
+   *
+   * @param rhs
+   *        The version to compare to. May not be <code>null</code>.
+   * @return &lt; 0, 0 or &gt; 0
+   * @since 4.2.2
+   * @see #compareTo(DVRVersion)
+   */
+  public int compareToClassic (@NonNull final DVRVersion rhs)
+  {
+    ValueEnforcer.notNull (rhs, "Rhs");
+    return _compareTo (rhs, DVRVersion::_compareSemanticallyClassic);
+  }
+
+  public int compareTo (@NonNull final DVRVersion rhs)
+  {
+    ValueEnforcer.notNull (rhs, "Rhs");
+    return _compareTo (rhs, DVRVersion::_compareSemantically);
   }
 
   @Override
