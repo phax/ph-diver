@@ -321,7 +321,7 @@ Alternate usage as a Maven BOM:
 
 # News and Noteworthy
 
-v4.2.2 - work in progress
+v4.2.2 - 2026-08-12
 * Updated to ph-commons 12.3.5
 * The well known pre-release version classifiers `alpha`, `beta`, `milestone` and `rc` are now ordered BEFORE the respective final release version, as in `1.0.0-rc1` &lt; `1.0.0`.
   Previously a version with a classifier was always ordered after the same version without one, so a release candidate was considered *newer* than its own release, and the pseudo versions `latest` and `latest-release` resolved to the release candidate.
