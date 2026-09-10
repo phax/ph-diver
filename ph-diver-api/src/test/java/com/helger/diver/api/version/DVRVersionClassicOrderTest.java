@@ -196,9 +196,7 @@ public final class DVRVersionClassicOrderTest
         final DVRVersion aLhs = _parse (sLhs);
         final DVRVersion aRhs = _parse (sRhs);
         final String sMsg = "'" + sLhs + "' <=> '" + sRhs + "'";
-        assertEquals (sMsg,
-                      Integer.signum (aLhs.compareTo (aRhs)),
-                      Integer.signum (aLhs.compareToClassic (aRhs)));
+        assertEquals (sMsg, Integer.signum (aLhs.compareTo (aRhs)), Integer.signum (aLhs.compareToClassic (aRhs)));
       }
   }
 
@@ -207,8 +205,16 @@ public final class DVRVersionClassicOrderTest
   {
     // The whole point of the classic comparison - the two orderings are
     // inverted for the pre-release qualifiers introduced in v4.2.2
-    for (final String sQualifier : new String [] { "alpha", "alpha1", "beta", "beta7", "milestone", "milestone2", "rc",
-                                                   "rc1", "RC2", "snapshot" })
+    for (final String sQualifier : new String [] { "alpha",
+                                                   "alpha1",
+                                                   "beta",
+                                                   "beta7",
+                                                   "milestone",
+                                                   "milestone2",
+                                                   "rc",
+                                                   "rc1",
+                                                   "RC2",
+                                                   "snapshot" })
     {
       final DVRVersion aPre = _parse ("1.0.0-" + sQualifier);
       final DVRVersion aRelease = _parse ("1.0.0");

@@ -27,8 +27,8 @@ import com.helger.base.state.ESuccess;
 import com.helger.security.messagedigest.EMessageDigestAlgorithm;
 
 /**
- * Defines an abstract way to read and write repository items, identified by
- * repository keys. Each storage must be readable, writable is optional.
+ * Defines an abstract way to read and write repository items, identified by repository keys. Each
+ * storage must be readable, writable is optional.
  *
  * @author Philip Helger
  */
@@ -40,15 +40,14 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
   EMessageDigestAlgorithm DEFAULT_MD_ALGORITHM = EMessageDigestAlgorithm.SHA_256;
 
   /**
-   * @return The repository storage type the implementation handles. May not be
-   *         <code>null</code>.
+   * @return The repository storage type the implementation handles. May not be <code>null</code>.
    */
   @NonNull
   IRepoStorageType getRepoType ();
 
   /**
-   * @return The ID of the repository storage type the implementation handles.
-   *         May neither be <code>null</code> nor empty.
+   * @return The ID of the repository storage type the implementation handles. May neither be
+   *         <code>null</code> nor empty.
    */
   @NonNull
   @Nonempty
@@ -65,9 +64,9 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
   boolean canWrite ();
 
   /**
-   * Write the provided item to the repository. This can only be called if
-   * {@link #canWrite()} returned <code>true</code>. This overload uses the
-   * current date time as the publication date time.
+   * Write the provided item to the repository. This can only be called if {@link #canWrite()}
+   * returned <code>true</code>. This overload uses the current date time as the publication date
+   * time.
    *
    * @param aKey
    *        The key to write. May not be <code>null</code>.
@@ -82,16 +81,15 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
   }
 
   /**
-   * Write the provided item to the repository. This can only be called if
-   * {@link #canWrite()} returned <code>true</code>.
+   * Write the provided item to the repository. This can only be called if {@link #canWrite()}
+   * returned <code>true</code>.
    *
    * @param aKey
    *        The key to write. May not be <code>null</code>.
    * @param aContent
    *        The main content to write. May not be <code>null</code>.
    * @param aPublicationDT
-   *        Publication date and time. If <code>null</code> the current date
-   *        time is used.
+   *        Publication date and time. If <code>null</code> the current date time is used.
    * @return {@link ESuccess}
    */
   @NonNull
@@ -105,13 +103,12 @@ public interface IRepoStorage extends IHasID <String>, IRepoStorageBase
   boolean canDelete ();
 
   /**
-   * Delete the provided item from the repository. This can only be called if
-   * {@link #canDelete()} returned <code>true</code>.
+   * Delete the provided item from the repository. This can only be called if {@link #canDelete()}
+   * returned <code>true</code>.
    *
    * @param aKey
    *        The key to delete. May not be <code>null</code>.
-   * @return {@link ESuccess#SUCCESS} if deletion was successful,
-   *         {@link ESuccess#FAILURE} if not.
+   * @return {@link ESuccess#SUCCESS} if deletion was successful, {@link ESuccess#FAILURE} if not.
    */
   @NonNull
   ESuccess delete (@NonNull RepoStorageKey aKey);

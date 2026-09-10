@@ -52,10 +52,9 @@ import com.helger.diver.repo.toc.jaxb.v10.RTVersioningType;
 import com.helger.diver.repo.toc.jaxb.v10.RepoTocType;
 
 /**
- * Local representation of a Repository Table of Contents (ToC) for a single
- * artifact. The key is the combination of Group ID and Artefact ID. A table of
- * contents can only contain static versions. Pseudo versions can never be in a
- * ToC.
+ * Local representation of a Repository Table of Contents (ToC) for a single artifact. The key is
+ * the combination of Group ID and Artefact ID. A table of contents can only contain static
+ * versions. Pseudo versions can never be in a ToC.
  *
  * @author Philip Helger
  * @since 1.0.1
@@ -80,11 +79,9 @@ public class RepoToc
    * Constructor
    *
    * @param sGroupID
-   *        DVR Coordinate Group ID of the ToC. May neither be <code>null</code>
-   *        nor empty.
+   *        DVR Coordinate Group ID of the ToC. May neither be <code>null</code> nor empty.
    * @param sArtifactID
-   *        DVR Coordinate Artifact ID of the ToC. May neither be
-   *        <code>null</code> nor empty.
+   *        DVR Coordinate Artifact ID of the ToC. May neither be <code>null</code> nor empty.
    */
   public RepoToc (@NonNull @Nonempty final String sGroupID, @NonNull @Nonempty final String sArtifactID)
   {
@@ -105,8 +102,8 @@ public class RepoToc
   }
 
   /**
-   * @return The DVR Coordinate Group ID as provided in the constructor. Neither
-   *         <code>null</code> nor empty.
+   * @return The DVR Coordinate Group ID as provided in the constructor. Neither <code>null</code>
+   *         nor empty.
    */
   @NonNull
   @Nonempty
@@ -116,8 +113,8 @@ public class RepoToc
   }
 
   /**
-   * @return The DVR Coordinate Artefact ID as provided in the constructor.
-   *         Neither <code>null</code> nor empty.
+   * @return The DVR Coordinate Artefact ID as provided in the constructor. Neither
+   *         <code>null</code> nor empty.
    */
   @NonNull
   @Nonempty
@@ -136,8 +133,8 @@ public class RepoToc
   }
 
   /**
-   * @return A copy of all contained versions as a map from version to its
-   *         publication date. Never <code>null</code>.
+   * @return A copy of all contained versions as a map from version to its publication date. Never
+   *         <code>null</code>.
    */
   @NonNull
   @ReturnsMutableCopy
@@ -147,8 +144,7 @@ public class RepoToc
   }
 
   /**
-   * @return A copy of all contained versions as a sorted set. Never
-   *         <code>null</code>.
+   * @return A copy of all contained versions as a sorted set. Never <code>null</code>.
    * @since 1.1.0
    */
   @NonNull
@@ -159,8 +155,7 @@ public class RepoToc
   }
 
   /**
-   * @return A copy of all contained versions as a list. Never
-   *         <code>null</code>.
+   * @return A copy of all contained versions as a list. Never <code>null</code>.
    * @since 1.2.0
    */
   @NonNull
@@ -173,8 +168,7 @@ public class RepoToc
   /**
    * Get the latest overall version, including snapshot versions.
    *
-   * @return The latest overall version. May be <code>null</code> if no version
-   *         is contained.
+   * @return The latest overall version. May be <code>null</code> if no version is contained.
    * @see #getLatestReleaseVersion()
    */
   @Nullable
@@ -186,8 +180,8 @@ public class RepoToc
   /**
    * Get the latest overall version number, including snapshot versions.
    *
-   * @return The version number of the latest overall version. May be
-   *         <code>null</code> if no version is contained.
+   * @return The version number of the latest overall version. May be <code>null</code> if no
+   *         version is contained.
    * @see #getLatestReleaseVersionAsString()
    */
   @Nullable
@@ -200,8 +194,8 @@ public class RepoToc
   /**
    * Get the latest overall publication date time, including snapshot versions.
    *
-   * @return The publication date time of the latest overall version. May be
-   *         <code>null</code> if no version is contained.
+   * @return The publication date time of the latest overall version. May be <code>null</code> if no
+   *         version is contained.
    * @see #getLatestReleaseVersionPublicationDateTime()
    */
   @Nullable
@@ -213,8 +207,8 @@ public class RepoToc
   /**
    * Get the latest overall version, without snapshot versions.
    *
-   * @return The latest overall release version. May be <code>null</code> if no
-   *         version is contained.
+   * @return The latest overall release version. May be <code>null</code> if no version is
+   *         contained.
    * @see #getLatestVersion()
    */
   @Nullable
@@ -226,8 +220,8 @@ public class RepoToc
   /**
    * Get the latest overall version number, without snapshot versions.
    *
-   * @return The version number of the latest overall release version. May be
-   *         <code>null</code> if no version is contained.
+   * @return The version number of the latest overall release version. May be <code>null</code> if
+   *         no version is contained.
    * @see #getLatestVersionAsString()
    */
   @Nullable
@@ -240,8 +234,8 @@ public class RepoToc
   /**
    * Get the latest overall publication date time, without snapshot versions.
    *
-   * @return The publication date time of the latest overall release version.
-   *         May be <code>null</code> if no version is contained.
+   * @return The publication date time of the latest overall release version. May be
+   *         <code>null</code> if no version is contained.
    * @see #getLatestVersionPublicationDateTime()
    */
   @Nullable
@@ -255,8 +249,7 @@ public class RepoToc
    *
    * @param aVersion
    *        The version to check. May be <code>null</code>.
-   * @return <code>true</code> if the version is contained, <code>false</code>
-   *         if not.
+   * @return <code>true</code> if the version is contained, <code>false</code> if not.
    * @since 1.1.0
    */
   public final boolean containsVersion (@Nullable final DVRVersion aVersion)
@@ -269,8 +262,7 @@ public class RepoToc
    *
    * @param aVersion
    *        The version to query. May be <code>null</code>
-   * @return <code>null</code> if the provided version is <code>null</code> or
-   *         not present.
+   * @return <code>null</code> if the provided version is <code>null</code> or not present.
    * @since 1.1.2
    */
   @Nullable
@@ -328,11 +320,11 @@ public class RepoToc
    * Add a new version to the ToC.
    *
    * @param aVersion
-   *        The version to be added. May not be <code>null</code>. Must be a
-   *        static version - pseudo versions are not allowed.
+   *        The version to be added. May not be <code>null</code>. Must be a static version - pseudo
+   *        versions are not allowed.
    * @param aPublishDT
-   *        The publication date time to use. May not be <code>null</code>. It
-   *        is internally converted to UTC and cut after millisecond precision.
+   *        The publication date time to use. May not be <code>null</code>. It is internally
+   *        converted to UTC and cut after millisecond precision.
    * @return {@link EChange#CHANGED} if the version was successfully added,
    *         {@link EChange#UNCHANGED} otherwise.
    */
@@ -451,8 +443,8 @@ public class RepoToc
   @NonNull
   private static OffsetDateTime _toODT (@NonNull final XMLOffsetDateTime aXODT)
   {
-    return aXODT.hasOffset () ? aXODT.toOffsetDateTime () : aXODT.withOffsetSameInstant (ZoneOffset.UTC)
-                                                                 .toOffsetDateTime ();
+    return aXODT.hasOffset () ? aXODT.toOffsetDateTime ()
+                              : aXODT.withOffsetSameInstant (ZoneOffset.UTC).toOffsetDateTime ();
   }
 
   @NonNull

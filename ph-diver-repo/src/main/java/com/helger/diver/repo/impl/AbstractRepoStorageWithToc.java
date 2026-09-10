@@ -152,8 +152,8 @@ public abstract class AbstractRepoStorageWithToc <IMPLTYPE extends AbstractRepoS
       // Update group/artifact ToC
       if (updateToc (aKey.getKeyToc (), toc -> {
         // Make sure a publication DT is present and always UTC
-        final OffsetDateTime aRealPubDT = aPublicationDT != null ? aPublicationDT : PDTFactory
-                                                                                              .getCurrentOffsetDateTimeUTC ();
+        final OffsetDateTime aRealPubDT = aPublicationDT != null ? aPublicationDT
+                                                                 : PDTFactory.getCurrentOffsetDateTimeUTC ();
 
         // Add new version
         if (toc.addVersion (aCoord.getVersionObj (), aRealPubDT).isUnchanged ())

@@ -150,7 +150,11 @@ public class LocalJettyRunner
 
           final File targetFile = new File (aResourceBase, request.getHttpURI ().getPath ());
           final boolean bExists = targetFile.isFile ();
-          LOGGER.info ("Jetty HEAD [" + (bExists ? "found" : "not found") + "] '" + targetFile.getAbsolutePath () + "'");
+          LOGGER.info ("Jetty HEAD [" +
+                       (bExists ? "found" : "not found") +
+                       "] '" +
+                       targetFile.getAbsolutePath () +
+                       "'");
 
           // Status before payload! HEAD has no body.
           response.setStatus (bExists ? HttpServletResponse.SC_OK : HttpServletResponse.SC_NOT_FOUND);

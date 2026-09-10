@@ -30,8 +30,7 @@ import com.helger.base.tostring.ToStringGenerator;
 import com.helger.io.resource.IReadableResource;
 
 /**
- * This is the default implementation of {@link IRepoStorageContent} based on a
- * byte array.
+ * This is the default implementation of {@link IRepoStorageContent} based on a byte array.
  *
  * @author Philip Helger
  */
@@ -84,8 +83,7 @@ public class RepoStorageContentByteArray implements IRepoStorageContent
   }
 
   /**
-   * Create a new item, that does not copy the byte array for performance
-   * reasons.
+   * Create a new item, that does not copy the byte array for performance reasons.
    *
    * @param aContent
    *        The data to be wrapped.

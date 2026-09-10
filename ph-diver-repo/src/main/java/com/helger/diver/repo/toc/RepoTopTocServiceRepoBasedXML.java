@@ -127,7 +127,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
 
     // Initial read
     final RepoTopTocXML aTmpTopToc = _readTopToc (true);
-    m_aRWLock.writeLocked ( () -> m_aTopToc = aTmpTopToc);
+    m_aRWLock.writeLocked (() -> m_aTopToc = aTmpTopToc);
   }
 
   private void _checkInited ()
@@ -142,7 +142,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
 
     // Re-read and atomic assign
     final RepoTopTocXML aTmpTopToc = _readTopToc (true);
-    m_aRWLock.writeLocked ( () -> m_aTopToc = aTmpTopToc);
+    m_aRWLock.writeLocked (() -> m_aTopToc = aTmpTopToc);
   }
 
   public boolean containsGroupAndArtifact (@Nullable final String sGroupID, @Nullable final String sArtifactID)
@@ -154,7 +154,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     if (StringHelper.isEmpty (sArtifactID))
       return false;
 
-    return m_aRWLock.readLockedBoolean ( () -> m_aTopToc.containsGroupAndArtifact (sGroupID, sArtifactID));
+    return m_aRWLock.readLockedBoolean (() -> m_aTopToc.containsGroupAndArtifact (sGroupID, sArtifactID));
   }
 
   public void iterateAllTopLevelGroupNames (@NonNull final Consumer <String> aGroupNameConsumer)
@@ -162,7 +162,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     ValueEnforcer.notNull (aGroupNameConsumer, "GroupNameConsumer");
     _checkInited ();
 
-    m_aRWLock.readLocked ( () -> m_aTopToc.iterateAllTopLevelGroupNames (aGroupNameConsumer));
+    m_aRWLock.readLocked (() -> m_aTopToc.iterateAllTopLevelGroupNames (aGroupNameConsumer));
   }
 
   public void iterateAllSubGroups (@NonNull @Nonempty final String sGroupID,
@@ -173,7 +173,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     ValueEnforcer.notNull (aGroupNameConsumer, "GroupNameConsumer");
     _checkInited ();
 
-    m_aRWLock.readLocked ( () -> m_aTopToc.iterateAllSubGroups (sGroupID, aGroupNameConsumer, bRecursive));
+    m_aRWLock.readLocked (() -> m_aTopToc.iterateAllSubGroups (sGroupID, aGroupNameConsumer, bRecursive));
   }
 
   public void iterateAllArtifacts (@NonNull @Nonempty final String sGroupID,
@@ -183,7 +183,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     ValueEnforcer.notNull (aArtifactNameConsumer, "ArtifactNameConsumer");
     _checkInited ();
 
-    m_aRWLock.readLocked ( () -> m_aTopToc.iterateAllArtifacts (sGroupID, aArtifactNameConsumer));
+    m_aRWLock.readLocked (() -> m_aTopToc.iterateAllArtifacts (sGroupID, aArtifactNameConsumer));
   }
 
   @NonNull
@@ -194,7 +194,7 @@ public class RepoTopTocServiceRepoBasedXML implements IRepoTopTocService
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
     _checkInited ();
 
-    return m_aRWLock.writeLockedGet ( () -> {
+    return m_aRWLock.writeLockedGet (() -> {
       if (m_aTopToc.registerGroupAndArtifact (sGroupID, sArtifactID).isChanged ())
       {
         try

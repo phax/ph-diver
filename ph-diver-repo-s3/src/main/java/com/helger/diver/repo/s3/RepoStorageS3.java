@@ -93,14 +93,14 @@ public class RepoStorageS3 extends AbstractRepoStorageWithToc <RepoStorageS3>
     ValueEnforcer.isEqual (sBucketName, sBucketName.trim (), "BucketName must be trimmed");
     if (StringHelper.isNotEmpty (sDefaultKeyPrefix))
     {
-      ValueEnforcer.isFalse ( () -> sDefaultKeyPrefix.startsWith ("/"),
-                              () -> "The default key prefix ('" +
-                                    sDefaultKeyPrefix +
-                                    "') must not start with a slash ('/')");
-      ValueEnforcer.isTrue ( () -> sDefaultKeyPrefix.endsWith ("/"),
-                             () -> "The default key prefix ('" + sDefaultKeyPrefix + "') must end with a slash ('/')");
-      ValueEnforcer.isFalse ( () -> sDefaultKeyPrefix.equals ("/"),
-                              () -> "The default key prefix must not be a single slash ('/')");
+      ValueEnforcer.isFalse (() -> sDefaultKeyPrefix.startsWith ("/"),
+                             () -> "The default key prefix ('" +
+                                   sDefaultKeyPrefix +
+                                   "') must not start with a slash ('/')");
+      ValueEnforcer.isTrue (() -> sDefaultKeyPrefix.endsWith ("/"),
+                            () -> "The default key prefix ('" + sDefaultKeyPrefix + "') must end with a slash ('/')");
+      ValueEnforcer.isFalse (() -> sDefaultKeyPrefix.equals ("/"),
+                             () -> "The default key prefix must not be a single slash ('/')");
     }
     m_aS3Client = aS3Client;
     m_sBucketName = sBucketName;

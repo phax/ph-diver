@@ -36,8 +36,8 @@ public interface IDVRPseudoVersionRegistry
    *
    * @param aPseudoVersion
    *        The pseudo version to register. Must not be <code>null</code>.
-   * @return {@link EChange#CHANGED} if it was added, {@link EChange#UNCHANGED}
-   *         if it was already present. Never <code>null</code>.
+   * @return {@link EChange#CHANGED} if it was added, {@link EChange#UNCHANGED} if it was already
+   *         present. Never <code>null</code>.
    */
   @NonNull
   EChange registerPseudoVersion (@NonNull IDVRPseudoVersion aPseudoVersion);

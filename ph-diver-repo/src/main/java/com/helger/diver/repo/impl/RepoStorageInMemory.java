@@ -99,7 +99,7 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Checking for existance in-memory '" + sRealKey + "'");
 
-    final boolean bExists = m_aRWLock.readLockedBoolean ( () -> m_aCache.containsKey (sRealKey));
+    final boolean bExists = m_aRWLock.readLockedBoolean (() -> m_aCache.containsKey (sRealKey));
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("In-memory object '" + sRealKey + "' " + (bExists ? "exists" : "does not exist"));
@@ -115,7 +115,7 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Reading from in-memory '" + sRealKey + "'");
 
-    final byte [] aData = m_aRWLock.readLockedGet ( () -> m_aCache.get (sRealKey));
+    final byte [] aData = m_aRWLock.readLockedGet (() -> m_aCache.get (sRealKey));
     if (aData == null)
     {
       if (LOGGER.isDebugEnabled ())
@@ -138,8 +138,8 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
                            @NonNull final IRepoStorageContent aContent,
                            final boolean bAllowOverwrite)
   {
-    ValueEnforcer.isTrue ( () -> aContent.isLengthAnInt (),
-                           () -> "Content Length " + aContent.getLength () + " is too large (>2GB) to store in Memory");
+    ValueEnforcer.isTrue (() -> aContent.isLengthAnInt (),
+                          () -> "Content Length " + aContent.getLength () + " is too large (>2GB) to store in Memory");
 
     final String sRealKey = aKey.getPath ();
 
@@ -154,7 +154,7 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
     {
       // Just overwrite
       // Use the source payload
-      m_aRWLock.writeLocked ( () -> m_aCache.put (sRealKey, aPayload));
+      m_aRWLock.writeLocked (() -> m_aCache.put (sRealKey, aPayload));
       eSuccess = ESuccess.SUCCESS;
     }
     else
@@ -229,7 +229,7 @@ public class RepoStorageInMemory extends AbstractRepoStorageWithToc <RepoStorage
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Deleting from in-memory '" + sRealKey + "'");
 
-    final boolean bDeleted = m_aRWLock.writeLockedBoolean ( () -> m_aCache.remove (sRealKey) != null);
+    final boolean bDeleted = m_aRWLock.writeLockedBoolean (() -> m_aCache.remove (sRealKey) != null);
     if (!bDeleted)
     {
       LOGGER.warn ("Failed to delete in-memory object '" + sRealKey + "'");

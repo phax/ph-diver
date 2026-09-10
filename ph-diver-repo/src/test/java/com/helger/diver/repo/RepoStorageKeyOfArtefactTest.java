@@ -33,7 +33,8 @@ public final class RepoStorageKeyOfArtefactTest
   @Test
   public void testBasic () throws DVRException
   {
-    RepoStorageKey aKey = RepoStorageKeyOfArtefact.of (DVRCoordinate.parseOrThrow ("com.ecosio:test-artefact:1.2.0"), ".xml");
+    RepoStorageKey aKey = RepoStorageKeyOfArtefact.of (DVRCoordinate.parseOrThrow ("com.ecosio:test-artefact:1.2.0"),
+                                                       ".xml");
     // Breaking change "1.2.0" -> "1.2" no trailing spaces
     assertEquals ("com/ecosio/test-artefact/1.2/test-artefact-1.2.xml", aKey.getPath ());
 

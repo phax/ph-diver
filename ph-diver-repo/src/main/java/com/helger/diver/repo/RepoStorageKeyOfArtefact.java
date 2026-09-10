@@ -58,8 +58,8 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
   {
     super (sPath);
     ValueEnforcer.notNull (aCoord, "Coord");
-    ValueEnforcer.isTrue ( () -> aCoord.getVersionObj ().isStaticVersion (),
-                           "DVR Coordinate must use a static version to access a repository item");
+    ValueEnforcer.isTrue (() -> aCoord.getVersionObj ().isStaticVersion (),
+                          "DVR Coordinate must use a static version to access a repository item");
 
     m_aCoord = aCoord;
   }
@@ -171,7 +171,7 @@ public class RepoStorageKeyOfArtefact extends RepoStorageKey
   {
     ValueEnforcer.notEmpty (sVersion, "Version");
     ValueEnforcer.notEmpty (sFileExt, "FileExt");
-    ValueEnforcer.isTrue ( () -> sFileExt.startsWith ("."), "FileExt must start with a dot");
+    ValueEnforcer.isTrue (() -> sFileExt.startsWith ("."), "FileExt must start with a dot");
 
     final String sRealClassifier = StringHelper.isNotEmpty (sClassifier) ? DVRVersion.DEFAULT_CLASSIFIER_SEPARATOR +
                                                                            sClassifier : "";

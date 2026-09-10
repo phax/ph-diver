@@ -24,8 +24,8 @@ import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 
 /**
- * This class contains global settings for every DVR coordinate used. Modifies
- * the validity of all DVR coordinates around, so handle with care.
+ * This class contains global settings for every DVR coordinate used. Modifies the validity of all
+ * DVR coordinates around, so handle with care.
  *
  * @author Philip Helger
  * @since 1.0.2

@@ -110,16 +110,16 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
                         @Nullable final String sClassifier)
   {
     ValueEnforcer.notEmpty (sGroupID, "GroupID");
-    ValueEnforcer.isTrue ( () -> DVRValidityHelper.isValidCoordinateGroupID (sGroupID),
-                           () -> "GroupID '" + sGroupID + "' is invalid");
+    ValueEnforcer.isTrue (() -> DVRValidityHelper.isValidCoordinateGroupID (sGroupID),
+                          () -> "GroupID '" + sGroupID + "' is invalid");
     ValueEnforcer.notEmpty (sArtifactID, "ArtifactID");
-    ValueEnforcer.isTrue ( () -> DVRValidityHelper.isValidCoordinateArtifactID (sArtifactID),
-                           () -> "ArtifactID '" + sArtifactID + "' is invalid");
+    ValueEnforcer.isTrue (() -> DVRValidityHelper.isValidCoordinateArtifactID (sArtifactID),
+                          () -> "ArtifactID '" + sArtifactID + "' is invalid");
     ValueEnforcer.notNull (aVersion, "Version");
-    ValueEnforcer.isTrue ( () -> DVRValidityHelper.isValidCoordinateVersion (aVersion.getAsString ()),
-                           () -> "Version '" + aVersion + "' is invalid");
-    ValueEnforcer.isTrue ( () -> DVRValidityHelper.isValidCoordinateClassifier (sClassifier),
-                           () -> "Classifier '" + sClassifier + "' is invalid");
+    ValueEnforcer.isTrue (() -> DVRValidityHelper.isValidCoordinateVersion (aVersion.getAsString ()),
+                          () -> "Version '" + aVersion + "' is invalid");
+    ValueEnforcer.isTrue (() -> DVRValidityHelper.isValidCoordinateClassifier (sClassifier),
+                          () -> "Classifier '" + sClassifier + "' is invalid");
     m_sGroupID = sGroupID;
     m_sArtifactID = sArtifactID;
     m_aVersion = aVersion;
@@ -356,8 +356,7 @@ public final class DVRCoordinate implements IDVRCoordinate, Comparable <DVRCoord
    *         In case the version is incorrect
    */
   @NonNull
-  public static DVRCoordinate parseOrThrow (@Nullable final String sCoords) throws DVRCoordinateException,
-                                                                            DVRVersionException
+  public static DVRCoordinate parseOrThrow (@Nullable final String sCoords) throws DVRCoordinateException, DVRVersionException
   {
     final List <String> aParts = StringHelper.getExploded (PART_SEPARATOR, sCoords);
     final int nSize = aParts.size ();

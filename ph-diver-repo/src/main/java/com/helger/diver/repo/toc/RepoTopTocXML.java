@@ -59,8 +59,7 @@ public class RepoTopTocXML
     public Group (@NonNull @Nonempty final String sName)
     {
       ValueEnforcer.notEmpty (sName, "Name");
-      ValueEnforcer.isTrue ( () -> DVRValidityHelper.isValidCoordinateGroupID (sName),
-                             "Name is not a valid group part");
+      ValueEnforcer.isTrue (() -> DVRValidityHelper.isValidCoordinateGroupID (sName), "Name is not a valid group part");
       m_sName = sName;
     }
 

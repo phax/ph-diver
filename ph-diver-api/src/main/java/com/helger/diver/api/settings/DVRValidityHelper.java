@@ -46,8 +46,8 @@ public final class DVRValidityHelper
                                        @Nonnegative final int nMinLen,
                                        @Nonnegative final int nMaxLen)
   {
-    ValueEnforcer.isTrue ( () -> nMinLen <= nMaxLen,
-                           () -> "Min length (" + nMinLen + ") must be <= Max length (" + nMaxLen + ")");
+    ValueEnforcer.isTrue (() -> nMinLen <= nMaxLen,
+                          () -> "Min length (" + nMinLen + ") must be <= Max length (" + nMaxLen + ")");
     return REGEX_CACHE.computeIfAbsent ("[a-zA-Z0-9_\\-\\.]{" + nMinLen + "," + nMaxLen + "}", Pattern::compile)
                       .matcher (sPart)
                       .matches ();

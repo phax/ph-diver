@@ -22,8 +22,7 @@ import org.jspecify.annotations.Nullable;
 import com.helger.annotation.style.ReturnsMutableCopy;
 
 /**
- * Base interface for the data of an item in a repository as retrieved by
- * reading.
+ * Base interface for the data of an item in a repository as retrieved by reading.
  *
  * @author Philip Helger
  */
@@ -36,8 +35,7 @@ public interface IRepoStorageReadItem
   IRepoStorageContent getContent ();
 
   /**
-   * @return <code>true</code> if this repo item has an expected hash value
-   *         assigned with it.
+   * @return <code>true</code> if this repo item has an expected hash value assigned with it.
    */
   boolean hasExpectedDigest ();
 
@@ -50,8 +48,8 @@ public interface IRepoStorageReadItem
   byte [] getExpectedDigest ();
 
   /**
-   * @return <code>true</code> if a hash value was calculated during reading,
-   *         <code>false</code> if not.
+   * @return <code>true</code> if a hash value was calculated during reading, <code>false</code> if
+   *         not.
    */
   boolean hasCalculatedDigest ();
 
