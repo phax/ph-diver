@@ -13,6 +13,7 @@ The modules contained in this repository provide access to versioned resources t
   external resource types like HTTP servers, local disks or in-memory data structures.
 
 This library consists of the following submodules:
+* **`ph-diver-bom`** - a Maven Bill of Materials (BOM) that contains the versions of all ph-diver artefacts
 * **`ph-diver-api`** - contains the basic API like version structured
 * **`ph-diver-repo`** - contains the data structures for a generic repository of version objects that can read, write and delete data. Also contains an in-memory based repository and afile system based repository.
 * **`ph-diver-repo-http`** - contains specific support for HTTP based repositories
@@ -307,12 +308,12 @@ Add the following to your `pom.xml` to use e.g. the HTTP repository artifact, re
 </dependency>
 ```
 
-Alternate usage as a Maven BOM:
+Alternate usage as a Maven BOM in the `<dependencyManagement>` section:
 
 ```xml
 <dependency>
   <groupId>com.helger.diver</groupId>
-  <artifactId>ph-diver-parent-pom</artifactId>
+  <artifactId>ph-diver-bom</artifactId>
   <version>x.y.z</version>
   <type>pom</type>
   <scope>import</scope>
@@ -320,6 +321,10 @@ Alternate usage as a Maven BOM:
 ```
 
 # News and Noteworthy
+
+v4.2.3 - 2026-11-15
+* Added the new submodule `ph-diver-bom` as a Maven Bill of Materials (BOM) that only contains the ph-diver artefacts.
+  Use it instead of importing `ph-diver-parent-pom`, which also manages the versions of third-party dependencies
 
 v4.2.2 - 2026-08-12
 * Updated to ph-commons 12.3.5

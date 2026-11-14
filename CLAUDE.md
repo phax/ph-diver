@@ -28,6 +28,7 @@ mvn test -pl ph-diver-api -Dtest=DVRCoordinateTest#testBasic
 ## Module Structure
 
 ```
+ph-diver-bom          → Maven BOM with the versions of all ph-diver artefacts (no dependencies on the other modules)
 ph-diver-api          → Core API: DVRCoordinate, DVRVersion, DVRPseudoVersion
 ph-diver-repo         → Repository abstraction + in-memory/local-FS implementations + JAXB-generated ToC classes
 ph-diver-repo-http    → HTTP repository implementation (uses ph-httpclient, Jetty for tests)
