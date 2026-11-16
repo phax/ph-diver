@@ -31,11 +31,12 @@ mvn test -pl ph-diver-api -Dtest=DVRCoordinateTest#testBasic
 ph-diver-bom          → Maven BOM with the versions of all ph-diver artefacts (no dependencies on the other modules)
 ph-diver-api          → Core API: DVRCoordinate, DVRVersion, DVRPseudoVersion
 ph-diver-repo         → Repository abstraction + in-memory/local-FS implementations + JAXB-generated ToC classes
+ph-diver-repo-config  → XML repository configuration (urn:fdc:com:helger:diver:repoconfig:v1.0) + storage factories
 ph-diver-repo-http    → HTTP repository implementation (uses ph-httpclient, Jetty for tests)
 ph-diver-repo-s3      → AWS S3 repository implementation
 ```
 
-Dependencies flow left-to-right: `api` <- `repo` <- `repo-http` / `repo-s3`.
+Dependencies flow left-to-right: `api` <- `repo` <- `repo-config` / `repo-http` / `repo-s3`.
 
 ## Architecture
 
@@ -49,7 +50,9 @@ Dependencies flow left-to-right: `api` <- `repo` <- `repo-http` / `repo-s3`.
 
 **Pseudo-versions:** `oldest`, `latest`, `latest-release` are resolved at runtime via SPI (`IDVRPseudoVersionRegistrarSPI`).
 
-**JAXB code generation:** `ph-diver-repo` generates Java classes from XSD schemas in `src/main/resources/schemas/` using the `ph-jaxb-plugin`.
+**Repository configuration:** `RepoStorageConfigReader` reads the XML into a `RepoStorageConfig` (list of `RepoStorageDefinition`); `createAllRepoStorages` uses the `IRepoStorageFactory` registered per type in `RepoStorageFactoryRegistry` (default: `RepoStorageFactoryLocalFileSystem`, type `localfs`, property `basedir`) and initialises the top-level ToC service. Factories are registered explicitly, not via SPI.
+
+**JAXB code generation:** `ph-diver-repo` and `ph-diver-repo-config` generate Java classes from XSD schemas in `src/main/resources/schemas/` using the `ph-jaxb-plugin`. New XML namespace URIs must start with `urn:fdc:`.
 
 ## Testing
 

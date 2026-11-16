@@ -296,6 +296,44 @@ The filename used is `toc-diver.xml` per default.
 
 An extended API is available for repository storage implementations via the `IRepoStorageWithToc` interface. 
 
+# Repository configuration
+
+Since v4.3.0 the submodule `ph-diver-repo-config` allows to describe a list of repositories in an XML file, so that applications don't need to construct the repository storages in code.
+The XML Schema is `schemas/repoconfig-1.0.xsd` with the namespace URI `urn:fdc:com:helger:diver:repoconfig:v1.0`.
+
+```xml
+<repositories xmlns="urn:fdc:com:helger:diver:repoconfig:v1.0">
+  <repository id="custom-rules" type="localfs" toptoc="diver-xml">
+    <property name="basedir">/data/rules/repository</property>
+  </repository>
+</repositories>
+```
+
+Each `repository` element has the following attributes:
+* `id` (required) - the unique ID of the repository
+* `type` (required) - the repository type. Currently only `localfs` (local file system) is supported out of the box
+* `writable` (optional, default `false`) - is writing allowed?
+* `deletable` (optional, default `false`) - is deleting allowed?
+* `verifyHash` (optional, default `true`) - should hash values be verified when reading?
+* `toptoc` (optional, default `none`) - the kind of top-level ToC of the repository. Use `diver-xml` for the `toptoc-diver.xml` file
+
+Repository type specific settings are provided as generic `property` elements.
+The type `localfs` requires the property `basedir`. A relative base directory is resolved against the directory of the configuration file.
+A read-only repository whose base directory does not exist is an error.
+
+Usage:
+
+```java
+ErrorList aErrorList = new ErrorList ();
+RepoStorageConfig aConfig = RepoStorageConfigReader.read (new File ("repositories.xml"), aErrorList);
+if (aConfig != null) {
+  ICommonsList<ConfiguredRepoStorage> aStorages = aConfig.createAllRepoStorages (RepoStorageFactoryRegistry.createDefault (), aErrorList);
+  // check aErrorList for errors
+}
+```
+
+Factories for additional repository types are registered explicitly via `RepoStorageFactoryRegistry.registerFactory`, so that factories with external dependencies (like an HTTP client) can be constructed by the application.
+
 # Maven usage
 
 Add the following to your `pom.xml` to use e.g. the HTTP repository artifact, replacing `x.y.z` with the latest version:
@@ -321,6 +359,10 @@ Alternate usage as a Maven BOM in the `<dependencyManagement>` section:
 ```
 
 # News and Noteworthy
+
+v4.3.0 - work in progress
+* Added the new submodule `ph-diver-repo-config` to describe a list of repositories in an XML file (namespace URI `urn:fdc:com:helger:diver:repoconfig:v1.0`) and create the repository storages from it.
+  See the new section *Repository configuration* in this document
 
 v4.2.3 - 2026-11-15
 * Added the new submodule `ph-diver-bom` as a Maven Bill of Materials (BOM) that only contains the ph-diver artefacts.

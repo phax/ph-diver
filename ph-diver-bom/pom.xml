@@ -66,6 +66,11 @@
       </dependency>
       <dependency>
         <groupId>com.helger.diver</groupId>
+        <artifactId>ph-diver-repo-config</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.helger.diver</groupId>
         <artifactId>ph-diver-repo-http</artifactId>
         <version>${project.version}</version>
       </dependency>

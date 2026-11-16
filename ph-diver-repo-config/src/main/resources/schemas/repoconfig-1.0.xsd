@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2023-2026 Philip Helger
+    philip[at]helger[dot]com
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="urn:fdc:com:helger:diver:repoconfig:v1.0"
+           targetNamespace="urn:fdc:com:helger:diver:repoconfig:v1.0"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified"
+           version="1.0">
+  <xs:annotation>
+    <xs:documentation>
+This XML Schema is used to describe a list of Diver Repositories, independent of the application using them.
+
+Version: 2026-11-16
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:simpleType name="RCNonEmptyStringType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="RCTopTocType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="none">
+        <xs:annotation>
+          <xs:documentation>The repository has no top-level ToC</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="diver-xml">
+        <xs:annotation>
+          <xs:documentation>The repository has a top-level ToC in the file "toptoc-diver.xml"</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="RCPropertyType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" type="RCNonEmptyStringType" use="required">
+          <xs:annotation>
+            <xs:documentation>The name of the property. It must be unique per repository. Which property names are supported depends on the repository type.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="RCRepositoryType">
+    <xs:sequence>
+      <xs:element name="property" type="RCPropertyType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Repository type specific settings</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" type="RCNonEmptyStringType" use="required">
+      <xs:annotation>
+        <xs:documentation>The unique ID of the repository</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="type" type="RCNonEmptyStringType" use="required">
+      <xs:annotation>
+        <xs:documentation>The repository type, e.g. "localfs". Which types are supported depends on the application.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="writable" type="xs:boolean" use="optional" default="false">
+      <xs:annotation>
+        <xs:documentation>Is writing to the repository allowed?</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="deletable" type="xs:boolean" use="optional" default="false">
+      <xs:annotation>
+        <xs:documentation>Is deleting from the repository allowed?</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="verifyHash" type="xs:boolean" use="optional" default="true">
+      <xs:annotation>
+        <xs:documentation>Should the hash values be verified when reading from the repository?</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="toptoc" type="RCTopTocType" use="optional" default="none">
+      <xs:annotation>
+        <xs:documentation>The kind of top-level ToC the repository has</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="RepoConfigType">
+    <xs:sequence>
+      <xs:element name="repository" type="RCRepositoryType" minOccurs="0" maxOccurs="unbounded">
+        <xs:unique name="UniquePropertyName">
+          <xs:selector xpath="*" />
+          <xs:field xpath="@name" />
+        </xs:unique>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="repositories" type="RepoConfigType">
+    <xs:annotation>
+      <xs:documentation>
+        The root element of the Repository Configuration.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:unique name="UniqueRepositoryID">
+      <xs:selector xpath="*" />
+      <xs:field xpath="@id" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>
