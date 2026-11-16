@@ -26,7 +26,7 @@
   </parent>
   <groupId>com.helger.diver</groupId>
   <artifactId>ph-diver-parent-pom</artifactId>
-  <version>4.2.4-SNAPSHOT</version>
+  <version>4.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>diver-parent-pom</name>
   <description>Base POM to build ph-diver - the Philip Helger Digitally Versioned Resources library</description>
@@ -114,6 +114,11 @@
       </dependency>
       <dependency>
         <groupId>com.helger.diver</groupId>
+        <artifactId>ph-diver-repo-config</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.helger.diver</groupId>
         <artifactId>ph-diver-repo-http</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -152,6 +157,7 @@
     <module>ph-diver-bom</module>
     <module>ph-diver-api</module>
     <module>ph-diver-repo</module>
+    <module>ph-diver-repo-config</module>
     <module>ph-diver-repo-http</module>
     <module>ph-diver-repo-s3</module>
   </modules>
