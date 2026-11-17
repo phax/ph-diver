@@ -360,7 +360,7 @@ Alternate usage as a Maven BOM in the `<dependencyManagement>` section:
 
 # News and Noteworthy
 
-v4.3.0 - work in progress
+v4.3.0 - 2026-11-17
 * Added the new submodule `ph-diver-repo-config` to describe a list of repositories in an XML file (namespace URI `urn:fdc:com:helger:diver:repoconfig:v1.0`) and create the repository storages from it.
   See the new section *Repository configuration* in this document
 
