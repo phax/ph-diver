@@ -79,7 +79,7 @@ Version: 2026-11-16
     </xs:attribute>
     <xs:attribute name="type" type="RCNonEmptyStringType" use="required">
       <xs:annotation>
-        <xs:documentation>The repository type, e.g. "localfs". Which types are supported depends on the application.</xs:documentation>
+        <xs:documentation>The repository type, e.g. "localfs", "http" or "aws-s3". Which types are supported depends on the factories registered by the application.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="writable" type="xs:boolean" use="optional" default="false">

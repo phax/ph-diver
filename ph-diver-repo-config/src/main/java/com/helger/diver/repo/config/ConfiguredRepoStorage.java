@@ -18,23 +18,30 @@ package com.helger.diver.repo.config;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
+import com.helger.diver.repo.IRepoStorage;
 import com.helger.diver.repo.toc.IRepoStorageWithToc;
 import com.helger.diver.repo.toc.IRepoTopTocService;
 
 /**
  * A repository storage that was created from a {@link RepoStorageDefinition}, together with its
- * top-level ToC service.
+ * top-level ToC service. Since v4.4.0 it is {@link AutoCloseable}: if the repository storage holds
+ * resources (e.g. an HTTP or S3 client created by its factory), it implements
+ * {@link AutoCloseable} itself and is closed by {@link #close()}.
  *
  * @author Philip Helger
  * @since 4.3.0
  */
 @Immutable
-public final class ConfiguredRepoStorage
+public final class ConfiguredRepoStorage implements AutoCloseable
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (ConfiguredRepoStorage.class);
+
   private final RepoStorageDefinition m_aDefinition;
   private final IRepoStorageWithToc m_aRepoStorage;
   private final IRepoTopTocService m_aTopTocService;
@@ -90,6 +97,37 @@ public final class ConfiguredRepoStorage
   public boolean hasTopTocService ()
   {
     return m_aTopTocService != null;
+  }
+
+  /**
+   * Close the provided repository storage, if it implements {@link AutoCloseable}. Exceptions are
+   * logged and not propagated.
+   *
+   * @param aRepoStorage
+   *        The repository storage to close. May not be <code>null</code>.
+   * @since 4.4.0
+   */
+  static void closeRepoStorage (@NonNull final IRepoStorage aRepoStorage)
+  {
+    if (aRepoStorage instanceof final AutoCloseable aCloseable)
+      try
+      {
+        aCloseable.close ();
+      }
+      catch (final Exception ex)
+      {
+        LOGGER.warn ("Failed to close repository storage '" + aRepoStorage.getID () + "'", ex);
+      }
+  }
+
+  /**
+   * Close the repository storage, if it holds resources. The object must not be used afterwards.
+   *
+   * @since 4.4.0
+   */
+  public void close ()
+  {
+    closeRepoStorage (m_aRepoStorage);
   }
 
   @Override

@@ -158,7 +158,8 @@ public final class RepoStorageConfig
    *        The error list to be filled. May not be <code>null</code>. Callers must check it for
    *        errors, because the definitions with errors are not part of the result.
    * @return The list of all successfully created storages in the order of declaration. Never
-   *         <code>null</code>.
+   *         <code>null</code>. The caller is responsible for closing them via
+   *         {@link ConfiguredRepoStorage#close()}.
    */
   @NonNull
   @ReturnsMutableCopy
@@ -197,7 +198,11 @@ public final class RepoStorageConfig
       {
         aTopTocService = _createTopTocService (aDefinition, aRepoStorage, aErrorList);
         if (aTopTocService == null)
+        {
+          // Release the resources of the storage that is not returned
+          ConfiguredRepoStorage.closeRepoStorage (aRepoStorage);
           continue;
+        }
       }
 
       LOGGER.info ("Created repository storage '" + aDefinition.getID () + "' of type '" + aDefinition.getType () + "'");
