@@ -72,6 +72,7 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
   protected final HttpClientManager m_aHttpClient;
   protected final String m_sURLPrefix;
 
+  private Consumer <? super HttpHead> m_aHeadCustomizer;
   private Consumer <? super HttpGet> m_aReadCustomizer;
   private Consumer <? super HttpPut> m_aWriteCustomizer;
   private Consumer <? super HttpDelete> m_aDeleteCustomizer;
@@ -109,6 +110,34 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
   public static boolean setSilentMode (final boolean bSilentMode)
   {
     return !CONDLOG.setEnabled (!bSilentMode);
+  }
+
+  /**
+   * @return The customizer applied to the HTTP HEAD requests of {@link #exists(RepoStorageKey)}.
+   *         May be <code>null</code>.
+   * @since 4.4.0
+   */
+  @Nullable
+  public final Consumer <? super HttpHead> getHeadCustomizer ()
+  {
+    return m_aHeadCustomizer;
+  }
+
+  /**
+   * Set the customizer applied to the HTTP HEAD requests of {@link #exists(RepoStorageKey)}, e.g.
+   * to add authentication headers. If HEAD is not supported by the server, the existence check
+   * falls back to a read, which uses the read customizer.
+   *
+   * @param aHeadCustomizer
+   *        The customizer to use. May be <code>null</code>.
+   * @return this for chaining
+   * @since 4.4.0
+   */
+  @NonNull
+  public final RepoStorageHttp setHeadCustomizer (@Nullable final Consumer <? super HttpHead> aHeadCustomizer)
+  {
+    m_aHeadCustomizer = aHeadCustomizer;
+    return this;
   }
 
   @Nullable
@@ -162,6 +191,8 @@ public class RepoStorageHttp extends AbstractRepoStorageWithToc <RepoStorageHttp
       // Prefer HTTP HEAD to avoid downloading the whole payload just to check
       // for existence
       final HttpHead aHead = new HttpHead (sURL);
+      if (m_aHeadCustomizer != null)
+        m_aHeadCustomizer.accept (aHead);
       final int nStatusCode = m_aHttpClient.execute (aHead, aHttpResponse -> Integer.valueOf (aHttpResponse.getCode ()))
                                            .intValue ();
 
