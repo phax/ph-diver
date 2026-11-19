@@ -408,7 +408,7 @@ Alternate usage as a Maven BOM in the `<dependencyManagement>` section:
 
 # News and Noteworthy
 
-v4.4.0 - work in progress
+v4.4.0 - 2026-11-19
 * Added `RepoStorageFactoryHttp` (type `http`) in `ph-diver-repo-http` and `RepoStorageFactoryS3` (type `aws-s3`) in `ph-diver-repo-s3` to create HTTP and S3 repositories from the repository configuration.
   Secrets are referenced via ph-config keys, and `https://` is required unless `allow-insecure` is set
 * `ph-diver-repo-config` now depends on `ph-config`
