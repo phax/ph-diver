@@ -60,6 +60,7 @@ public class LocalJettyRunner
 
   private final Server m_aServer;
   private boolean m_bHeadSupported = true;
+  private String m_sRequiredAuthorization;
 
   public LocalJettyRunner (@Nonnegative final int nPort,
                            @NonNull final File aResourceBase,
@@ -195,7 +196,27 @@ public class LocalJettyRunner
       }
     };
 
+    final Handler.Abstract authHandler = new Handler.Abstract ()
+    {
+      public boolean handle (final Request request, final Response response, final Callback callback) throws Exception
+      {
+        final String sRequired = m_sRequiredAuthorization;
+        if (sRequired != null && !sRequired.equals (request.getHeaders ().get (HttpHeader.AUTHORIZATION)))
+        {
+          LOGGER.info ("Jetty " + request.getMethod () + " [unauthorized] '" + request.getHttpURI ().getPath () + "'");
+          response.setStatus (HttpServletResponse.SC_UNAUTHORIZED);
+          response.write (true, StandardCharsets.UTF_8.encode (""), callback);
+          return true;
+        }
+        // Not handled - continue with the next handler
+        return false;
+      }
+    };
+
     final Handler.Sequence sequence = new Handler.Sequence ();
+
+    // Authentication check
+    sequence.addHandler (authHandler);
 
     // Write handler
     if (eWriteEnabled.isWriteEnabled ())
@@ -240,6 +261,20 @@ public class LocalJettyRunner
   public LocalJettyRunner setHeadSupported (final boolean bHeadSupported)
   {
     m_bHeadSupported = bHeadSupported;
+    return this;
+  }
+
+  /**
+   * Require an exact value of the HTTP <code>Authorization</code> header for all requests.
+   *
+   * @param sRequiredAuthorization
+   *        The required header value, or <code>null</code> to not require authentication.
+   * @return this for chaining
+   */
+  @NonNull
+  public LocalJettyRunner setRequiredAuthorization (final String sRequiredAuthorization)
+  {
+    m_sRequiredAuthorization = sRequiredAuthorization;
     return this;
   }
 
