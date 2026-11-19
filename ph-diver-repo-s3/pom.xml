@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.diver</groupId>
     <artifactId>ph-diver-parent-pom</artifactId>
-    <version>4.3.1-SNAPSHOT</version>
+    <version>4.4.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-diver-repo-s3</artifactId>
   <packaging>jar</packaging>
@@ -57,6 +57,10 @@
     <dependency>
       <groupId>com.helger.diver</groupId>
       <artifactId>ph-diver-repo</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.diver</groupId>
+      <artifactId>ph-diver-repo-config</artifactId>
     </dependency>
 
     <dependency>
