@@ -409,12 +409,14 @@ Alternate usage as a Maven BOM in the `<dependencyManagement>` section:
 # News and Noteworthy
 
 v4.4.0 - work in progress
-* Added `RepoStorageFactoryHttp` (type `http`) in `ph-diver-repo-http` and `RepoStorageFactoryS3` (type `aws-s3`) in `ph-diver-repo-s3` to create HTTP and S3 repositories from the repository configuration. Secrets are referenced via ph-config keys, and `https://` is required unless `allow-insecure` is set
+* Added `RepoStorageFactoryHttp` (type `http`) in `ph-diver-repo-http` and `RepoStorageFactoryS3` (type `aws-s3`) in `ph-diver-repo-s3` to create HTTP and S3 repositories from the repository configuration.
+  Secrets are referenced via ph-config keys, and `https://` is required unless `allow-insecure` is set
 * `ph-diver-repo-config` now depends on `ph-config`
 * `ph-diver-repo-http` and `ph-diver-repo-s3` now depend on `ph-diver-repo-config`
 * Added `RepoStorageFactoryHelper` with shared property checks for repository storage factories
 * `RepoStorageFactoryHttp.getAllSupportedPropertyNames ()` and `RepoStorageFactoryS3.getAllSupportedPropertyNames ()` expose the names of all supported properties
-* `ConfiguredRepoStorage` is now `AutoCloseable` and closes repository storages that hold resources. `RepoStorageConfig.createAllRepoStorages` closes storages that are not returned because of an error
+* `ConfiguredRepoStorage` is now `AutoCloseable` and closes repository storages that hold resources.
+  `RepoStorageConfig.createAllRepoStorages` closes storages that are not returned because of an error
 * Added `RepoStorageHttp.setHeadCustomizer`, so that the HTTP HEAD request of the existence check can be customised (e.g. authenticated) like the other requests
 
 v4.3.0 - 2026-11-17
@@ -434,9 +436,11 @@ v4.2.2 - 2026-08-12
 * Added the new method `DVRVersion.compareToClassic` that preserves the ordering of v4.2.1, where `SNAPSHOT` was the only pre-release version classifier and was matched case sensitively.
   Use it via `Comparator<DVRVersion> c = DVRVersion::compareToClassic` if the previous ordering must be kept
 * All pre-release classifiers except `SNAPSHOT` may be followed by a number, which is compared numerically, so that `1.0.0-rc9` is correctly ordered before `1.0.0-rc10`
-* The pre-release version classifiers are now matched case insensitively. This also applies to `DVRVersion.isStaticSnapshotVersion`, so `1.0.0-snapshot` is now recognized as a SNAPSHOT version, and is excluded by the `latest-release` pseudo version.
+* The pre-release version classifiers are now matched case insensitively.
+  This also applies to `DVRVersion.isStaticSnapshotVersion`, so `1.0.0-snapshot` is now recognized as a SNAPSHOT version, and is excluded by the `latest-release` pseudo version.
   Note that this affects the ordering and the SNAPSHOT detection only - the version itself is still case sensitive, hence `1.0.0-RC1` and `1.0.0-rc1` remain two different versions
-* Note: classifiers that are none of the well known pre-release classifiers are unaffected and keep being compared as Strings. That especially includes revision letters like in `1.3.6-a` and numeric classifiers like in `1.4.0-03`, which are both still ordered after the respective release version
+* Note: classifiers that are none of the well known pre-release classifiers are unaffected and keep being compared as Strings.
+  That especially includes revision letters like in `1.3.6-a` and numeric classifiers like in `1.4.0-03`, which are both still ordered after the respective release version
 * Fixed the handling of purely numeric version classifiers like in `1.4.0-03`.
   Previously the string representation `1.4-03` could not be parsed back, because `Version.parse` takes the numeric `03` as the micro version number, resulting in `1.4.3`.
   `DVRVersion` now falls back to the strict version layout `major[.minor[.micro]][-classifier]` (via the new `Version.parseStrictOrNull`), so `1.4-03`, `1.4.0-03` and `1.4.0.03` all lead to the same version, and `getAsString ()` is round trip safe again.
@@ -451,8 +455,10 @@ v4.2.1 - 2026-07-16
 * Fixed the Maven scope of the `jetty-ee10-servlet` dependency in `ph-diver-repo-http` to `test`, so it is no longer pulled into consumers' runtime classpath
 
 v4.2.0 - 2026-02-20
-* Added new method `IRepoTopTocService.refreshFromRepo`. See [#1](https://github.com/phax/ph-diver/issues/1)
-* Added a "default key prefix" to be applied to S3 repos. See [#2](https://github.com/phax/ph-diver/issues/2)
+* Added new method `IRepoTopTocService.refreshFromRepo`.
+  See [#1](https://github.com/phax/ph-diver/issues/1)
+* Added a "default key prefix" to be applied to S3 repos.
+  See [#2](https://github.com/phax/ph-diver/issues/2)
 * Extracted new class `DoNothingRepoTopTocService` as an empty implementation of `IRepoTopTocService`
 * The `IRepoStorageAuditor` is now optional in `AbstractRepoStorage` implementations
 * Moved the usage of the `IRepoTopTocService` into a specific `IRepoStorageAuditor` implementation
@@ -474,7 +480,8 @@ v3.0.1 - 2024-09-15
 
 v3.0.0 - 2024-09-13
 * Renamed `DVRID` to `DVRCoordinate`
-* Made a lot of API changes and extension on the API part. Now it is stable.
+* Made a lot of API changes and extension on the API part.
+  Now it is stable.
 
 v2.0.0 - 2024-09-12
 * Renamed `*VESID*` to `*DVRID*`
