@@ -32,11 +32,11 @@ ph-diver-bom          → Maven BOM with the versions of all ph-diver artefacts 
 ph-diver-api          → Core API: DVRCoordinate, DVRVersion, DVRPseudoVersion
 ph-diver-repo         → Repository abstraction + in-memory/local-FS implementations + JAXB-generated ToC classes
 ph-diver-repo-config  → XML repository configuration (urn:fdc:com:helger:diver:repoconfig:v1.0) + storage factories
-ph-diver-repo-http    → HTTP repository implementation (uses ph-httpclient, Jetty for tests)
-ph-diver-repo-s3      → AWS S3 repository implementation
+ph-diver-repo-http    → HTTP repository implementation + RepoStorageFactoryHttp (uses ph-httpclient, Jetty for tests)
+ph-diver-repo-s3      → AWS S3 repository implementation + RepoStorageFactoryS3
 ```
 
-Dependencies flow left-to-right: `api` <- `repo` <- `repo-config` / `repo-http` / `repo-s3`.
+Dependencies flow left-to-right: `api` <- `repo` <- `repo-config` <- `repo-http` / `repo-s3`. ph-diver must not depend on phive or ph-scuba (they depend on ph-diver).
 
 ## Architecture
 
@@ -50,7 +50,7 @@ Dependencies flow left-to-right: `api` <- `repo` <- `repo-config` / `repo-http` 
 
 **Pseudo-versions:** `oldest`, `latest`, `latest-release` are resolved at runtime via SPI (`IDVRPseudoVersionRegistrarSPI`).
 
-**Repository configuration:** `RepoStorageConfigReader` reads the XML into a `RepoStorageConfig` (list of `RepoStorageDefinition`); `createAllRepoStorages` uses the `IRepoStorageFactory` registered per type in `RepoStorageFactoryRegistry` (default: `RepoStorageFactoryLocalFileSystem`, type `localfs`, property `basedir`) and initialises the top-level ToC service. Factories are registered explicitly, not via SPI.
+**Repository configuration:** `RepoStorageConfigReader` reads the XML into a `RepoStorageConfig` (list of `RepoStorageDefinition`); `createAllRepoStorages` uses the `IRepoStorageFactory` registered per type in `RepoStorageFactoryRegistry` (default: `RepoStorageFactoryLocalFileSystem`, type `localfs`, property `basedir`) and initialises the top-level ToC service. Factories are registered explicitly, not via SPI. Since 4.4.0 there are `RepoStorageFactoryHttp` (type `http`) and `RepoStorageFactoryS3` (type `aws-s3`); shared property checks live in `RepoStorageFactoryHelper`. Secrets are never in the config: only ph-config keys (`password-key`, `bearertoken-key`, resolved via the `IConfig` passed to `RepoStorageFactoryHttp`, default `ConfigFactory.getDefaultConfig ()`) or the AWS credential chain / `profile`. Network URLs require `https://` unless `allow-insecure=true`. Factory-created storages own their client and implement `AutoCloseable`; `ConfiguredRepoStorage.close ()` closes them. `RepoStorageHttp` applies its customizers to HEAD (existence check) as well as GET/PUT/DELETE - authentication must be set on all four.
 
 **JAXB code generation:** `ph-diver-repo` and `ph-diver-repo-config` generate Java classes from XSD schemas in `src/main/resources/schemas/` using the `ph-jaxb-plugin`. New XML namespace URIs must start with `urn:fdc:`.
 

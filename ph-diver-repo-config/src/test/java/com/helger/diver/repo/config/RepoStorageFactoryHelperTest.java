@@ -63,9 +63,9 @@ public final class RepoStorageFactoryHelperTest
     assertFalse (aErrorList.containsAtLeastOneError ());
     aErrorList.clear ();
 
-    assertEquals ("value", RepoStorageFactoryHelper.getTrimmedProperty (aDef, "a"));
-    assertNull (RepoStorageFactoryHelper.getTrimmedProperty (aDef, "empty"));
-    assertNull (RepoStorageFactoryHelper.getTrimmedProperty (aDef, "missing"));
+    assertEquals ("value", RepoStorageFactoryHelper.getPropertyOrNull (aDef, "a"));
+    assertNull (RepoStorageFactoryHelper.getPropertyOrNull (aDef, "empty"));
+    assertNull (RepoStorageFactoryHelper.getPropertyOrNull (aDef, "missing"));
 
     assertNull (RepoStorageFactoryHelper.getRequiredProperty (aDef, "empty", aErrorList));
     assertEquals (1, aErrorList.getErrorCount ());
@@ -83,12 +83,12 @@ public final class RepoStorageFactoryHelperTest
   {
     final RepoStorageDefinition aDef = _create (Map.of ());
     final ErrorList aErrorList = new ErrorList ();
-    assertTrue (RepoStorageFactoryHelper.checkURLScheme (aDef, "url", "https://x/", false, aErrorList));
-    assertTrue (RepoStorageFactoryHelper.checkURLScheme (aDef, "url", "HTTPS://x/", false, aErrorList));
-    assertTrue (RepoStorageFactoryHelper.checkURLScheme (aDef, "url", "http://x/", true, aErrorList));
+    assertTrue (RepoStorageFactoryHelper.checkUrlScheme (aDef, "url", "https://x/", false, aErrorList));
+    assertTrue (RepoStorageFactoryHelper.checkUrlScheme (aDef, "url", "HTTPS://x/", false, aErrorList));
+    assertTrue (RepoStorageFactoryHelper.checkUrlScheme (aDef, "url", "http://x/", true, aErrorList));
     assertTrue (aErrorList.isEmpty ());
-    assertFalse (RepoStorageFactoryHelper.checkURLScheme (aDef, "url", "http://x/", false, aErrorList));
-    assertFalse (RepoStorageFactoryHelper.checkURLScheme (aDef, "url", "file:///x/", true, aErrorList));
+    assertFalse (RepoStorageFactoryHelper.checkUrlScheme (aDef, "url", "http://x/", false, aErrorList));
+    assertFalse (RepoStorageFactoryHelper.checkUrlScheme (aDef, "url", "file:///x/", true, aErrorList));
     assertEquals (2, aErrorList.getErrorCount ());
   }
 

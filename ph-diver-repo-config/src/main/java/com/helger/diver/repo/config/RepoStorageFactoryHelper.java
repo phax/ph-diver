@@ -49,8 +49,7 @@ public final class RepoStorageFactoryHelper
   {}
 
   /**
-   * Add a warning for each property of the definition that is not supported by the repository
-   * type.
+   * Add a warning for each property of the definition that is not supported by the repository type.
    *
    * @param aDefinition
    *        The definition to check. May not be <code>null</code>.
@@ -88,8 +87,8 @@ public final class RepoStorageFactoryHelper
    * @return <code>null</code> if the property is not present or empty after trimming.
    */
   @Nullable
-  public static String getTrimmedProperty (@NonNull final RepoStorageDefinition aDefinition,
-                                           @NonNull @Nonempty final String sName)
+  public static String getPropertyOrNull (@NonNull final RepoStorageDefinition aDefinition,
+                                          @NonNull @Nonempty final String sName)
   {
     final String ret = StringHelper.trim (aDefinition.getPropertyValue (sName));
     return StringHelper.isEmpty (ret) ? null : ret;
@@ -104,15 +103,14 @@ public final class RepoStorageFactoryHelper
    *        The property name. May neither be <code>null</code> nor empty.
    * @param aErrorList
    *        The error list to add the error to. May not be <code>null</code>.
-   * @return <code>null</code> if the property is missing or empty. In that case an error was
-   *         added.
+   * @return <code>null</code> if the property is missing or empty. In that case an error was added.
    */
   @Nullable
   public static String getRequiredProperty (@NonNull final RepoStorageDefinition aDefinition,
                                             @NonNull @Nonempty final String sName,
                                             @NonNull final ErrorList aErrorList)
   {
-    final String ret = getTrimmedProperty (aDefinition, sName);
+    final String ret = getPropertyOrNull (aDefinition, sName);
     if (ret == null)
       aErrorList.add (SingleError.builderError ()
                                  .errorFieldName (aDefinition.getID ())
@@ -147,12 +145,12 @@ public final class RepoStorageFactoryHelper
                                             final boolean bDefault,
                                             @NonNull final ErrorList aErrorList)
   {
-    final String sValue = getTrimmedProperty (aDefinition, sName);
+    final String sValue = getPropertyOrNull (aDefinition, sName);
     if (sValue == null)
       return Boolean.valueOf (bDefault);
-    if ("true".equals (sValue))
+    if ("true".equalsIgnoreCase (sValue))
       return Boolean.TRUE;
-    if ("false".equals (sValue))
+    if ("false".equalsIgnoreCase (sValue))
       return Boolean.FALSE;
 
     aErrorList.add (SingleError.builderError ()
@@ -175,8 +173,7 @@ public final class RepoStorageFactoryHelper
    * @param aDefinition
    *        The definition the URL belongs to. May not be <code>null</code>.
    * @param sName
-   *        The name of the property containing the URL. May neither be <code>null</code> nor
-   *        empty.
+   *        The name of the property containing the URL. May neither be <code>null</code> nor empty.
    * @param sURL
    *        The URL to check. May not be <code>null</code>.
    * @param bAllowInsecure
@@ -185,7 +182,7 @@ public final class RepoStorageFactoryHelper
    *        The error list to add the error to. May not be <code>null</code>.
    * @return <code>true</code> if the URL is acceptable, <code>false</code> if an error was added.
    */
-  public static boolean checkURLScheme (@NonNull final RepoStorageDefinition aDefinition,
+  public static boolean checkUrlScheme (@NonNull final RepoStorageDefinition aDefinition,
                                         @NonNull @Nonempty final String sName,
                                         @NonNull final String sURL,
                                         final boolean bAllowInsecure,
@@ -237,8 +234,8 @@ public final class RepoStorageFactoryHelper
    *        The configuration to resolve the key in. May not be <code>null</code>.
    * @param aErrorList
    *        The error list to add the error to. May not be <code>null</code>.
-   * @return <code>null</code> if the property is not present, or if the configuration key has no
-   *         or an empty value (in that case an error was added).
+   * @return <code>null</code> if the property is not present, or if the configuration key has no or
+   *         an empty value (in that case an error was added).
    */
   @Nullable
   public static String getSecretFromConfig (@NonNull final RepoStorageDefinition aDefinition,
@@ -246,7 +243,7 @@ public final class RepoStorageFactoryHelper
                                             @NonNull final IConfig aConfig,
                                             @NonNull final ErrorList aErrorList)
   {
-    final String sConfigKey = getTrimmedProperty (aDefinition, sName);
+    final String sConfigKey = getPropertyOrNull (aDefinition, sName);
     if (sConfigKey == null)
       return null;
 

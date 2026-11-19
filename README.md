@@ -311,7 +311,7 @@ The XML Schema is `schemas/repoconfig-1.0.xsd` with the namespace URI `urn:fdc:c
 
 Each `repository` element has the following attributes:
 * `id` (required) - the unique ID of the repository
-* `type` (required) - the repository type. Currently only `localfs` (local file system) is supported out of the box
+* `type` (required) - the repository type. `localfs` (local file system) is supported out of the box; since v4.4.0 `http` and `aws-s3` are available via the factories of the HTTP and S3 submodules (see below)
 * `writable` (optional, default `false`) - is writing allowed?
 * `deletable` (optional, default `false`) - is deleting allowed?
 * `verifyHash` (optional, default `true`) - should hash values be verified when reading?
@@ -333,6 +333,54 @@ if (aConfig != null) {
 ```
 
 Factories for additional repository types are registered explicitly via `RepoStorageFactoryRegistry.registerFactory`, so that factories with external dependencies (like an HTTP client) can be constructed by the application.
+
+Since v4.4.0 the following factories are available:
+
+```java
+RepoStorageFactoryRegistry aRegistry = RepoStorageFactoryRegistry.createDefault ();
+aRegistry.registerFactory (new RepoStorageFactoryHttp ());   // ph-diver-repo-http
+aRegistry.registerFactory (new RepoStorageFactoryS3 ());     // ph-diver-repo-s3
+```
+
+Secrets are never part of the configuration file - only [ph-config](https://github.com/phax/ph-commons/tree/master/ph-config) keys that are resolved via an `IConfig`.
+`new RepoStorageFactoryHttp ()` uses `ConfigFactory.getDefaultConfig ()`, so a key like `diver.repo.password` is resolved from the system property `diver.repo.password`, the environment variable `DIVER_REPO_PASSWORD` or the `application.properties` / `private-application.properties` files on the classpath.
+Pass another `IConfig` to the constructor to resolve secrets elsewhere.
+Network URLs must use `https://`, unless the property `allow-insecure` is set to `true` (e.g. for local tests).
+
+The type `http` (`RepoStorageFactoryHttp`) supports these properties:
+* `url` (required) - the URL prefix of the repository
+* `username` and `password-key` (optional, both or none) - HTTP Basic authentication; `password-key` is the ph-config key of the password
+* `bearertoken-key` (optional) - HTTP Bearer authentication; the ph-config key of the token. Cannot be combined with Basic authentication
+* `allow-insecure` (optional, default `false`) - allow `http://` URLs
+
+The authentication header is sent with all requests, including the HTTP HEAD request of the existence check.
+
+The type `aws-s3` (`RepoStorageFactoryS3`) supports these properties:
+* `bucket` (required) - the S3 bucket name
+* `prefix` (optional) - the key prefix within the bucket; must not start with, but must end with a slash
+* `region` (optional) - the AWS region; if absent, the default region provider chain of the AWS SDK is used
+* `endpoint` (optional) - an endpoint override for S3 compatible services
+* `path-style` (optional, default `false`) - use path style access
+* `profile` (optional) - the AWS profile to read the credentials from; if absent, the default credentials provider chain of the AWS SDK is used (environment variables, system properties, profile files, container and instance credentials)
+* `allow-insecure` (optional, default `false`) - allow an `http://` endpoint
+
+```xml
+<repositories xmlns="urn:fdc:com:helger:diver:repoconfig:v1.0">
+  <repository id="central" type="http" writable="true">
+    <property name="url">https://repo.example.org/diver/</property>
+    <property name="username">uploader</property>
+    <property name="password-key">diver.repo.password</property>
+  </repository>
+  <repository id="s3" type="aws-s3" writable="true" toptoc="diver-xml">
+    <property name="bucket">my-bucket</property>
+    <property name="prefix">diver/</property>
+    <property name="region">eu-central-1</property>
+  </repository>
+</repositories>
+```
+
+The storages created by these factories own their HTTP or S3 client.
+`ConfiguredRepoStorage` is `AutoCloseable` since v4.4.0 - close it when it is no longer needed.
 
 # Maven usage
 
@@ -359,6 +407,15 @@ Alternate usage as a Maven BOM in the `<dependencyManagement>` section:
 ```
 
 # News and Noteworthy
+
+v4.4.0 - work in progress
+* Added `RepoStorageFactoryHttp` (type `http`) in `ph-diver-repo-http` and `RepoStorageFactoryS3` (type `aws-s3`) in `ph-diver-repo-s3` to create HTTP and S3 repositories from the repository configuration. Secrets are referenced via ph-config keys, and `https://` is required unless `allow-insecure` is set
+* `ph-diver-repo-config` now depends on `ph-config`
+* `ph-diver-repo-http` and `ph-diver-repo-s3` now depend on `ph-diver-repo-config`
+* Added `RepoStorageFactoryHelper` with shared property checks for repository storage factories
+* `RepoStorageFactoryHttp.getAllSupportedPropertyNames ()` and `RepoStorageFactoryS3.getAllSupportedPropertyNames ()` expose the names of all supported properties
+* `ConfiguredRepoStorage` is now `AutoCloseable` and closes repository storages that hold resources. `RepoStorageConfig.createAllRepoStorages` closes storages that are not returned because of an error
+* Added `RepoStorageHttp.setHeadCustomizer`, so that the HTTP HEAD request of the existence check can be customised (e.g. authenticated) like the other requests
 
 v4.3.0 - 2026-11-17
 * Added the new submodule `ph-diver-repo-config` to describe a list of repositories in an XML file (namespace URI `urn:fdc:com:helger:diver:repoconfig:v1.0`) and create the repository storages from it.
